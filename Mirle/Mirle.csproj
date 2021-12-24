@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3B2A6F5E-CE8F-4A70-9080-162B60073C70}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mirle</RootNamespace>
+    <AssemblyName>Mirle</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mirle, Version=1.3.2.2012, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mirle.1.3.2\lib\net472\Mirle.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.19.11.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.115.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppEnvironment.cs" />
+    <Compile Include="DataBase\ConnectResult.cs" />
+    <Compile Include="DataBase\DataObject.cs" />
+    <Compile Include="DataBase\DB.cs" />
+    <Compile Include="DataBase\DBOptions.cs" />
+    <Compile Include="DataBase\DBResult.cs" />
+    <Compile Include="DataBase\DBTypes.cs" />
+    <Compile Include="DataBase\ExecuteSQLResult.cs" />
+    <Compile Include="DataBase\GetDataResult.cs" />
+    <Compile Include="DataBase\IDBConfig.cs" />
+    <Compile Include="DataBase\OracleClient.cs" />
+    <Compile Include="DataBase\SqlServer.cs" />
+    <Compile Include="DataBase\TransactionCtrlResult.cs" />
+    <Compile Include="DataBase\TransactionTypes.cs" />
+    <Compile Include="DataBase\ValueObject.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\ValueExtensions.cs" />
+    <Compile Include="Extensions\XmlExtensions.cs" />
+    <Compile Include="Kernel32.cs" />
+    <Compile Include="Logger\AutoArchive.cs" />
+    <Compile Include="Logger\AutoArchiveOptions.cs" />
+    <Compile Include="Logger\Log.cs" />
+    <Compile Include="Logger\LogInfo.cs" />
+    <Compile Include="Logger\LogLevel.cs" />
+    <Compile Include="Logger\LogOptions.cs" />
+    <Compile Include="MPLC\DataBlocks\BlockInfo.cs" />
+    <Compile Include="MPLC\DataBlocks\DataBlock.cs" />
+    <Compile Include="MPLC\DataBlocks\DeviceRange\BDeviceRange.cs" />
+    <Compile Include="MPLC\DataBlocks\DeviceRange\DDeviceRange.cs" />
+    <Compile Include="MPLC\DataBlocks\DeviceRange\ITypeDeviceRange.cs" />
+    <Compile Include="MPLC\DataBlocks\DeviceRange\RDeviceRange.cs" />
+    <Compile Include="MPLC\DataBlocks\DeviceRange\WDeviceRange.cs" />
+    <Compile Include="MPLC\DataBlocks\FileDataBlock.cs" />
+    <Compile Include="MPLC\DataBlocks\IDataBlock.cs" />
+    <Compile Include="MPLC\DataBlocks\SMDataBlock.cs" />
+    <Compile Include="MPLC\DataBlocks\SMDataBlockInt32.cs" />
+    <Compile Include="MPLC\DataType\Bit.cs" />
+    <Compile Include="MPLC\DataType\DataTypeExtensions.cs" />
+    <Compile Include="MPLC\DataType\DWord.cs" />
+    <Compile Include="MPLC\DataType\IDataType.cs" />
+    <Compile Include="MPLC\DataType\Word.cs" />
+    <Compile Include="MPLC\DataType\WordBlock.cs" />
+    <Compile Include="MPLC\FileData\FileDataViewer.cs" />
+    <Compile Include="MPLC\FileData\FileReader.cs" />
+    <Compile Include="MPLC\FileData\RawRecord.cs" />
+    <Compile Include="MPLC\IConnectable.cs" />
+    <Compile Include="MPLC\IMPLCProvider.cs" />
+    <Compile Include="MPLC\IPLCHost.cs" />
+    <Compile Include="MPLC\PLCHostInfo.cs" />
+    <Compile Include="MPLC\ReadWriteWrapper.cs" />
+    <Compile Include="MPLC\SharedMemory\SMReadOnlyCachedReader.cs" />
+    <Compile Include="MPLC\SharedMemory\SMReadOnlyReader.cs" />
+    <Compile Include="MPLC\SharedMemory\SMReadWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Route\ILocation.cs" />
+    <Compile Include="Route\RouteService.cs" />
+    <Compile Include="ThreadWorker.cs" />
+    <Compile Include="User32.cs" />
+    <Compile Include="XmlFile.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>此專案參考這部電腦上所缺少的 NuGet 套件。請啟用 NuGet 套件還原，以下載該套件。如需詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的檔案是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+  </Target>
+</Project>
