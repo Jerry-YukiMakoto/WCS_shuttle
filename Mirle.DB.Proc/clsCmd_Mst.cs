@@ -16,6 +16,7 @@ namespace Mirle.DB.Proc
             _config = config;
             sno = new clsSno(_config);
         }
+
         
         public bool FunGetCommand(string sCmdSno, ref CmdMstInfo cmd)
         {
@@ -40,6 +41,54 @@ namespace Mirle.DB.Proc
             }
         }
 
+        public bool FunGetCommand_ForPickupQuery(string sCmdSno, ref CmdMstInfo cmd)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        return CMD_MST.FunGetCommand_ForPickupQuery(sCmdSno, ref cmd, db);
+                    }
+                    else return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return false;
+            }
+        }
+
+        public int FunGetCommand_byBoxID(string sBoxID, ref CmdMstInfo cmd)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        return CMD_MST.FunGetCommand_byBoxID(sBoxID, ref cmd, db);
+                    }
+
+                    return iRet;
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return DBResult.Exception;
+            }
+        }
+
+       
 
         public int FunGetCmdMst_Grid(ref DataTable dtTmp)
         {
@@ -257,7 +306,27 @@ namespace Mirle.DB.Proc
             }
         }
 
-        
+        public bool FunCancelBatch(string sCmdSno)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        return CMD_MST.FunCancelBatch(sCmdSno, db);
+                    }
+                    else return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                return false;
+            }
+        }
 
         public bool FunUpdateNeedL2L(string sCmdSno, clsEnum.NeedL2L ans)
         {
@@ -324,6 +393,8 @@ namespace Mirle.DB.Proc
                 return false;
             }
         }
+
+
 
         public bool FunMoveFinishCmdToHistory_Proc()
         {
@@ -409,7 +480,5 @@ namespace Mirle.DB.Proc
                 return false;
             }
         }
-
-        
     }
 }

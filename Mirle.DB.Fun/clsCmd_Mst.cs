@@ -3,50 +3,12 @@ using Mirle.Def;
 using System.Data;
 using Mirle.Structure;
 using Mirle.DataBase;
-//using Mirle.Def.U2NMMA30;
-//using Mirle.Micron.U2NMMA30;
 
 namespace Mirle.DB.Fun
 {
     public class clsCmd_Mst
     {
         private clsTool tool = new clsTool();
-
-        public int CheckHasNeedL2LCmd(string Loc, ref string sCmdSno, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strSql = $"select * from CMD_MST where Loc = '{Loc}' and NeedShelfToShelf = '{clsEnum.NeedL2L.Y.ToString()}' ";
-                strSql += $" and CmdSts < '{clsConstValue.CmdSts.strCmd_Finished}' ";
-
-                string strEM = "";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if(iRet == DBResult.Success)
-                {
-                    sCmdSno = Convert.ToString(dtTmp.Rows[0]["CmdSno"]);
-                }
-                else if(iRet != DBResult.NoDataSelect)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
-                    iRet = DBResult.Exception;
-                }
-                else { }
-
-                return iRet;
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
 
         public int FunGetFinishCommand(ref DataTable dtTmp, SqlServer db)
         {
@@ -217,105 +179,7 @@ namespace Mirle.DB.Fun
         }
 
         
-
-        public int FunGetCommandBatch_byCmdSno(string sCmdSno, ref string sBatchID, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strEM = "";
-                string strSql = "select BatchID from CMD_MST where CmdSno = '" + sCmdSno + "' ";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if (iRet == DBResult.Success)
-                {
-                    sBatchID = Convert.ToString(dtTmp.Rows[0]["BatchID"]);
-                }
-                else if (iRet != DBResult.NoDataSelect)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
-                    iRet = DBResult.Exception;
-                }
-                else { }
-
-                return iRet;
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
-
-
-        public bool FunGetCmdMst(Location loc, ref DataTable dtTmp, SqlServer db)
-        {
-            try
-            {
-                string strEM = "";
-                string strSql = "select * from CMD_MST";
-                strSql += $" where CurDeviceID = '{loc.DeviceId}' and CurLoc = '{loc.LocationId}' ";
-                if (db.GetDataTable(strSql, ref dtTmp, ref strEM) == DBResult.Success) return true;
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public int FunGetCmdMst_StockIn_L2L(int StockerID, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strSql = "select CmdSno from CMD_MST";
-                strSql += $" where CmdSts < '{clsConstValue.CmdSts.strCmd_Finished}' " +
-                    $"and (" +
-                    $"(CmdMode = '{clsConstValue.CmdMode.StockIn}' and EquNO = '{StockerID}')" +
-                    $" or (CmdMode = '{clsConstValue.CmdMode.L2L}' and SUBSTRING(NewLoc,1,2) in ";
-                switch(StockerID)
-                {
-                    case 1:
-                        strSql += " ('01','02','03','04'))";
-                        break;
-                    case 2:
-                        strSql += " ('05','06','07','08'))";
-                        break;
-                    case 3:
-                        strSql += " ('09','10','11','12'))";
-                        break;
-                    default:
-                        strSql += " ('13','14'))";
-                        break;
-                }
-
-                strSql += ") ";
-
-                return db.GetDataTable(strSql, ref dtTmp);
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return DBResult.Exception;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
+        
 
         public int FunGetCmdMst_Grid(ref DataTable dtTmp, SqlServer db)
         {
@@ -340,6 +204,8 @@ namespace Mirle.DB.Fun
                 return DBResult.Exception;
             }
         }
+
+        
 
         public int FunCheckHasCommand(string sLoc, ref CmdMstInfo cmd, SqlServer db)
         {

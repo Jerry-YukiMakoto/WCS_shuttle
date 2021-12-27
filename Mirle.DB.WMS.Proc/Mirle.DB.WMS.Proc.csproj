@@ -33,6 +33,10 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mirle.WriLog, Version=1.0.2101.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,23 +49,8 @@
   <ItemGroup>
     <Compile Include="clsGetDB.cs" />
     <Compile Include="clsHost.cs" />
-    <Compile Include="clsLocMst.cs" />
     <Compile Include="clsWriLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mirle.DB.WMS.Fun\Mirle.DB.WMS.Fun.csproj">
-      <Project>{ad4818ff-fefa-48f2-a7fe-f1007d3cfbbc}</Project>
-      <Name>Mirle.DB.WMS.Fun</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
-      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
-      <Name>Mirle.Def</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Log\Mirle.WriLog.csproj">
-      <Project>{fcb3bfde-2247-4aa4-a652-f87c081b63fc}</Project>
-      <Name>Mirle.WriLog</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -76,6 +65,16 @@
     <PackageReference Include="Mirle.MPLC.MXComponent">
       <Version>1.0.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mirle.DB.WMS.Fun\Mirle.DB.WMS.Fun.csproj">
+      <Project>{ad4818ff-fefa-48f2-a7fe-f1007d3cfbbc}</Project>
+      <Name>Mirle.DB.WMS.Fun</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
+      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
+      <Name>Mirle.Def</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

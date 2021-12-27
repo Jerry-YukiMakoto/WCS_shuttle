@@ -208,7 +208,8 @@ namespace Mirle.DB.Fun
                 var sql = $"select * from UnitStsLog where ((STRDT between '{startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' and '{endTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')" +
                     $" or (ENDDT between '{startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' and '{endTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}'))" +
                     $" and Status = '{(int)clsEnum.PortSts.Down}'" +
-                    $" and StockerID in ('port1', 'port2', 'port3')";
+                    $" and StockerID in ('port1', 'port2', 'port3')" +
+                    $" order by StockerID, STRDT";
                 string strEM = "";
                 int iRet = db.GetDataTable(sql, ref dtTmp, ref strEM);
                 if (iRet == DBResult.Success) return true;

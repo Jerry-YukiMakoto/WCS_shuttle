@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mirle.DB.ClearCmd.Proc</RootNamespace>
     <AssemblyName>Mirle.DB.ClearCmd.Proc</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -34,6 +34,10 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mirle.WriLog, Version=1.0.2101.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,14 +59,6 @@
     <ProjectReference Include="..\Mirle.DB.Object\Mirle.DB.Object.csproj">
       <Project>{25dda85b-35be-429d-81b4-025731c0e826}</Project>
       <Name>Mirle.DB.Object</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.DB.Proc\Mirle.DB.Proc.csproj">
-      <Project>{60c72719-d780-4bc8-9198-fc21c9754918}</Project>
-      <Name>Mirle.DB.Proc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Log\Mirle.WriLog.csproj">
-      <Project>{fcb3bfde-2247-4aa4-a652-f87c081b63fc}</Project>
-      <Name>Mirle.WriLog</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

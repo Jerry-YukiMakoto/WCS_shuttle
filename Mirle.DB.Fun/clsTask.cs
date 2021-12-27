@@ -3,7 +3,7 @@ using Mirle.Structure;
 using Mirle.Def;
 using System.Data;
 using Mirle.DataBase;
-using Mirle.Micron.U2NMMA30;
+
 
 namespace Mirle.DB.Fun
 {
@@ -329,65 +329,7 @@ namespace Mirle.DB.Fun
             }
         }
 
-        public bool RepeatTaskCmd_ForToStockOutProc(CmdMstInfo cmd, int StockerID, int StkPort, SqlServer db)
-        {
-            try
-            {
-                var buffer = clsMicronCV.GetBufferByStkPort(StockerID, StkPort);
-                FunInsertHisTask(cmd.CmdSno, db);
-                string sRemark = "";
-                if (db.TransactionCtrl(TransactionTypes.Begin) != DBResult.Success)
-                {
-                    sRemark = "Error: Begin失敗！";
-                    if (sRemark != cmd.Remark)
-                    {
-                        CMD_MST.FunUpdateRemark(cmd.CmdSno, sRemark, db);
-                    }
-
-                    return false;
-                }
-
-                if (!string.IsNullOrWhiteSpace(cmd.BatchID))
-                {
-                    if (!CMD_MST.FunCancelBatch(cmd.CmdMode, cmd.BatchID, db))
-                    {
-                        db.TransactionCtrl(TransactionTypes.Rollback);
-                        return false;
-                    }
-                }
-
-                if (!FunDelTaskCmd(cmd.CmdSno, db))
-                {
-                    db.TransactionCtrl(TransactionTypes.Rollback);
-                    return false;
-                }
-
-                var cv = clsMicronCV.GetConveyorController().GetBuffer(buffer.Index);
-                if (cv.CommandID == cmd.CmdSno)
-                {
-                    if(!cv.NoticeInital().Result)
-                    {
-                        db.TransactionCtrl(TransactionTypes.Rollback);
-                        sRemark = $"Error: <Buffer> {buffer.BufferName} => 通知PLC初始失敗！";
-                        if (sRemark != cmd.Remark)
-                        {
-                            CMD_MST.FunUpdateRemark(cmd.CmdSno, sRemark, db);
-                        }
-                        return false;
-                    }
-                }
-
-                db.TransactionCtrl(TransactionTypes.Commit);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                db.TransactionCtrl(TransactionTypes.Rollback);
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
+        
 
         private bool FunRepeatTaskCmd(string CommandID, string sNewTaskNo, SqlServer db)
         {

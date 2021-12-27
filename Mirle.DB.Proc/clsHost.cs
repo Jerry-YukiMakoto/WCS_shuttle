@@ -10,9 +10,10 @@ namespace Mirle.DB.Proc
         private readonly clsCmd_Mst CMD_MST;
         private readonly clsSno SNO;
         private readonly clsLocMst LocMst;
-        //private readonly clsTask task;
+        private readonly clsTask task;
         private readonly clsAlarmData ALARMDATA;
         private readonly clsCmd_Mst_His CMD_MST_HIS;
+        private readonly clsEQ_Alarm EQ_Alarm;
         private readonly clsUnitStsLog unitStsLog;
         private readonly clsUnitModeDef unitModeDef;
         private readonly clsL2LCount L2LCount;
@@ -42,7 +43,7 @@ namespace Mirle.DB.Proc
             CMD_MST = new clsCmd_Mst(config);
             SNO = new clsSno(config);
             LocMst = new clsLocMst(config);
-            //task = new clsTask(config, config_WMS, _config_Sqlite);
+            task = new clsTask(config, config_WMS, _config_Sqlite);
             ALARMDATA = new clsAlarmData(config);
             CMD_MST_HIS = new clsCmd_Mst_His(config);
             unitStsLog = new clsUnitStsLog(config);
@@ -64,12 +65,12 @@ namespace Mirle.DB.Proc
         {
             return LocMst;
         }
-        /*
+
         public clsTask GetTask()
         {
             return task;
         }
-        */
+
         public clsSno GetSNO()
         {
             return SNO;
@@ -82,6 +83,11 @@ namespace Mirle.DB.Proc
         public clsCmd_Mst_His GetCmd_Mst_His()
         {
             return CMD_MST_HIS;
+        }
+
+        public clsEQ_Alarm GetEQ_Alarm()
+        {
+            return EQ_Alarm;
         }
 
         public clsUnitStsLog GetUnitStsLog()

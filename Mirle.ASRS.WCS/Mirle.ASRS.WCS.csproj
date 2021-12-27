@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mirle.ASRS.WCS</RootNamespace>
     <AssemblyName>Mirle.ASRS.WCS</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -41,6 +41,9 @@
     <Reference Include="Mirle.ASRS.Close.Program, Version=1.0.2008.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Mirle.ASRS.Close.Program.exe</HintPath>
+    </Reference>
+    <Reference Include="Mirle.WriLog">
+      <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -111,10 +114,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
-      <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
-      <Name>Mirle.ASRS.Conveyors</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.ClearCmd.Proc\Mirle.DB.ClearCmd.Proc.csproj">
       <Project>{31deb747-36ca-4a92-8df1-89eee47a0fa4}</Project>
       <Name>Mirle.DB.ClearCmd.Proc</Name>

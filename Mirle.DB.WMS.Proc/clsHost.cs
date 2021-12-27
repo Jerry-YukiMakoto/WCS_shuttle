@@ -8,7 +8,7 @@ namespace Mirle.DB.WMS.Proc
 {
     public class clsHost
     {
-        private readonly clsLocMst LocMst;
+        
         private clsDbConfig _config = new clsDbConfig();
         private static object _Lock = new object();
         private static bool _IsConn = false;
@@ -27,12 +27,8 @@ namespace Mirle.DB.WMS.Proc
         public clsHost(clsDbConfig config)
         {
             _config = config;
-            LocMst = new clsLocMst(_config);
         }
 
-        public clsLocMst GetLocMst()
-        {
-            return LocMst;
-        }
+        
     }
 }

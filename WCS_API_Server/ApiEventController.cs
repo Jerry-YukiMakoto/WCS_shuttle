@@ -6,6 +6,7 @@ using WCS_API_Server.Models;
 using Mirle.Structure;
 using Mirle.DB.Object;
 using Mirle.Def;
+using Mirle.DataBase;
 
 namespace WCS_API_Server
 {
@@ -24,7 +25,7 @@ namespace WCS_API_Server
             {
                 lineId = Body.lineId,
                 taskNo = Body.taskNo,
-
+                palletNo = Body.palletNo
             };
             clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_ADD start!");
             

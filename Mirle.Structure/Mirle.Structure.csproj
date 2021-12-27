@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mirle.Structure</RootNamespace>
     <AssemblyName>Mirle.Structure</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -74,12 +74,6 @@
     <Compile Include="VIDEnums.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
-      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
-      <Name>Mirle.Def</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Mirle">
       <Version>1.3.2</Version>
     </PackageReference>
@@ -89,6 +83,12 @@
     <PackageReference Include="Mirle.MPLC.MXComponent">
       <Version>1.0.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
+      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
+      <Name>Mirle.Def</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

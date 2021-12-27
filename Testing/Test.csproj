@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Test</RootNamespace>
     <AssemblyName>Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -112,10 +112,6 @@
     <ProjectReference Include="..\Mirle.DB.Object\Mirle.DB.Object.csproj">
       <Project>{25dda85b-35be-429d-81b4-025731c0e826}</Project>
       <Name>Mirle.DB.Object</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.DB.Proc\Mirle.DB.Proc.csproj">
-      <Project>{60c72719-d780-4bc8-9198-fc21c9754918}</Project>
-      <Name>Mirle.DB.Proc</Name>
     </ProjectReference>
     <ProjectReference Include="..\WCS_API_Server\WCS_API_Server.csproj">
       <Project>{9f191071-9953-42ea-a7db-8e525821462e}</Project>

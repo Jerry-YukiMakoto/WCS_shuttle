@@ -43,19 +43,19 @@
     <Reference Include="Config.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=d836a57afd299520, processorArchitecture=MSIL">
       <HintPath>..\packages\Config.Net.4.13.7\lib\net452\Config.Net.dll</HintPath>
     </Reference>
-    <Reference Include="Mirle">
-      <HintPath>..\DLL\Mirle.dll</HintPath>
+    <Reference Include="Mirle, Version=1.3.2.2012, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mirle.1.3.2\lib\net472\Mirle.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirle.ASRS.Conveyors, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLL\Mirle.ASRS.Conveyors.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.7.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
-    <Reference Include="System">
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.dll</HintPath>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core">
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Core.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.115.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.0\lib\net46\System.Data.SQLite.dll</HintPath>
     </Reference>
@@ -65,9 +65,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data">
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -139,10 +137,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
-      <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
-      <Name>Mirle.ASRS.Conveyors</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj">
       <Project>{10da0e99-fd46-4c3f-a87a-c5b66fcb4a87}</Project>
       <Name>Mirle.MPLC.MCProtocol</Name>
@@ -155,9 +149,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

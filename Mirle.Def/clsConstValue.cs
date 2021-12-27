@@ -12,6 +12,24 @@ namespace Mirle.Def
 
         public const string CarrierNoCmd = "FAILID";
 
+        public class ApiReturnCode
+        {
+            public const string Success = "200";
+            public const string Fail = "500";
+        }
+
+        public class OEECountMethod
+        {
+            public const string lot = "lot";
+            public const string bin = "bin";
+        }
+
+        public class STKC_FinishLoc
+        {
+            public const string LeftFork = "0001001";
+            public const string RightFork = "0001002";
+        }
+
         public class CmdSts
         {
             /// <summary>
@@ -51,19 +69,15 @@ namespace Mirle.Def
         public class IoType
         {
             /// <summary>
-            /// 一般入庫
+            /// 正常貨物入庫
             /// </summary>
             public const string NormalStockIn = "1";
             /// <summary>
-            /// 一般出庫
+            /// 正常貨物出庫
             /// </summary>
             public const string NormalStockOut = "2";
             /// <summary>
-            /// 庫對庫
-            /// </summary>
-            public const string StockL2L = "5";
-            /// <summary>
-            /// 整疊空棧板入庫
+            /// /整疊空棧板入庫
             /// </summary>
             public const string PalletStockIn = "6";
             /// <summary>
@@ -76,7 +90,7 @@ namespace Mirle.Def
             public const string Cycle = "8";
         }
 
-        public class LocSts
+            public class LocSts
         {
             /// <summary>
             /// 空儲位

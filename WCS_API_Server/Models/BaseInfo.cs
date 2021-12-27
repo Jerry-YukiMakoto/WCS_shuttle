@@ -8,8 +8,8 @@ namespace WCS_API_Server.Models
 {
     public class BaseInfo
     {
-        public string lineId { get; set; } //倉別
+        public string lineId { get; set; } //線別
         public string taskNo { get; set; } //任務號
-
+        
     }
 }

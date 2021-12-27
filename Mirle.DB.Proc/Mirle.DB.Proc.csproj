@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mirle.DB.Proc</RootNamespace>
     <AssemblyName>Mirle.DB.Proc</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -34,6 +34,10 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mirle.WriLog, Version=1.0.2101.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -48,6 +52,7 @@
     <Compile Include="clsAlarmData.cs" />
     <Compile Include="clsCmd_Mst.cs" />
     <Compile Include="clsCmd_Mst_His.cs" />
+    <Compile Include="clsEQ_Alarm.cs" />
     <Compile Include="clsGetDB.cs" />
     <Compile Include="clsHost.cs" />
     <Compile Include="clsL2LCount.cs" />
@@ -61,10 +66,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.ASRS.Conveyor.U2NMMA30\Mirle.ASRS.Conveyor.U2NMMA30.csproj">
-      <Project>{117af1eb-e683-4dca-8665-e196b3b0041f}</Project>
-      <Name>Mirle.ASRS.Conveyor.U2NMMA30</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.Fun\Mirle.DB.Fun.csproj">
       <Project>{c40166b0-0f5d-4535-94a7-699764a59a83}</Project>
       <Name>Mirle.DB.Fun</Name>
@@ -73,37 +74,29 @@
       <Project>{553bd8cf-f4c1-4b39-97ab-42cc2f7c8187}</Project>
       <Name>Mirle.DB.WMS.Proc</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Mirle.Def.U0NXMA30\Mirle.Def.U0NXMA30.csproj">
+      <Project>{e6f732fe-3905-49a7-b2cf-b4fa79c2dc5d}</Project>
+      <Name>Mirle.Def.U2NMMA30</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
       <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
       <Name>Mirle.Def</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Mirle.Grid\Mirle.Grid.csproj">
+      <Project>{8ab5fac9-7cc2-4eec-b583-39778e66ce1f}</Project>
+      <Name>Mirle.Gird</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mirle.Grid.U0NXMA30\Mirle.Grid.U0NXMA30.csproj">
       <Project>{39a4c47b-c53b-4057-9dc5-93b8907639e8}</Project>
-      <Name>Mirle.Grid.U0NXMA30</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Log\Mirle.WriLog.csproj">
-      <Project>{fcb3bfde-2247-4aa4-a652-f87c081b63fc}</Project>
-      <Name>Mirle.WriLog</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Micron.U2NMMA30\Mirle.Micron.U2NMMA30.csproj">
-      <Project>{baba9f79-55f0-4541-824b-06d869758189}</Project>
-      <Name>Mirle.Micron.U2NMMA30</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.STKC.R46YP320\Mirle.STKC.R46YP320.csproj">
-      <Project>{d594956b-6893-42ad-946e-64f280da75d5}</Project>
-      <Name>Mirle.STKC.R46YP320</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Stocker.R46YP320\Mirle.Stocker.R46YP320.csproj">
-      <Project>{371bf0f8-e177-48c0-946d-bf7cad9474c7}</Project>
-      <Name>Mirle.Stocker.R46YP320</Name>
+      <Name>Mirle.Grid.U2NMMA30</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.Structure\Mirle.Structure.csproj">
       <Project>{0a0d222e-0c76-4838-a8b1-6ca6f26cb225}</Project>
       <Name>Mirle.Structure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.WebAPI.U2NMMA30\Mirle.WebAPI.U2NMMA30.csproj">
-      <Project>{646741d4-de4c-48ef-9b90-1785bd22cefd}</Project>
-      <Name>Mirle.WebAPI.U2NMMA30</Name>
+    <ProjectReference Include="..\WCS_API_Client\WCS_API_Client.csproj">
+      <Project>{c09122bb-250e-4fe2-9880-1620a2b6cea4}</Project>
+      <Name>WCS_API_Client</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

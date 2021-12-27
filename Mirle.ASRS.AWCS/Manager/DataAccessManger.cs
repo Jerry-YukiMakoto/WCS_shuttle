@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Mirle.ASRS.AWCS.Model.DataAccess;
 using Mirle.ASRS.AWCS.Model.PLCDefinitions;
 using Mirle.DataBase;

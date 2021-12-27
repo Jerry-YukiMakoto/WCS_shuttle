@@ -171,6 +171,12 @@ namespace Mirle.Def
             Scan = 7
         }
 
+        public enum AlarmSts
+        {
+            OnGoing = 0,
+            Clear = 1
+        }
+
         public enum BCRReadStatus
         {
             Success = 0,
