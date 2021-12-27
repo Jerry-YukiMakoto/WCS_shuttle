@@ -20,6 +20,9 @@ namespace Mirle.ASRS.AWCS.Model.DataAccess
         public string TrayId { get; private set; }
         public string Trace { get; private set; }
 
+        public string IOType { get; private set; }
+        public string COUNT { get; internal set; }
+
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
             if (row.Table.Columns.Contains("CMDSNO"))
@@ -53,6 +56,14 @@ namespace Mirle.ASRS.AWCS.Model.DataAccess
             if (row.Table.Columns.Contains("TRACE"))
             {
                 Trace = Convert.ToString(row["TRACE"]);
+            }
+            if (row.Table.Columns.Contains("IOType"))
+            {
+                IOType = Convert.ToString(row["IOType"]);
+            }
+            if (row.Table.Columns.Contains("COUNT"))
+            {
+                COUNT = Convert.ToString(row["COUNT"]);
             }
             return this;
         }

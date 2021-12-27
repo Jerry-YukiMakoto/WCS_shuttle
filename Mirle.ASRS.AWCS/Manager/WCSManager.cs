@@ -60,100 +60,285 @@ namespace Mirle.ASRS.AWCS.Manager
         private void StoreOutProcess(object sender, ElapsedEventArgs e)
         {
             _storeOutProcess.Stop();
-            if (_isBQA)
-            {
-                StoreOut_A08_WriteCV();//OK
-                StoreOut_A08_CreateEquCmd();//OK
 
-                StoreOut_A131_WriteCV();//OK
-                StoreOut_A131_CreateEquCmd();//OK
+            StoreOut_S101_WriteCV();
+            StoreOut_S101_CreateEquCmd();
 
-                StoreOut_BQA_EquCmdFinish();//OK
-            }
-            else
-            {
-                StoreOut_A01_WriteCV();//OK
-                StoreOut_A01_CreateEquCmd();//OK
+            StoreOut_S201_WriteCV();
+            StoreOut_S201_CreateEquCmd();
 
-                StoreOut_A03_WriteCV();//OK
-                StoreOut_A03_CreateEquCmd();//OK
+            StoreOut_S301_WriteCV();
+            StoreOut_S301_CreateEquCmd();
 
-                StoreOut_B01_WriteCV();//OK
-                StoreOut_B01_CreateEquCmd();//OK
+            StoreOut_S401_WriteCV();
+            StoreOut_S401_CreateEquCmd();
 
-                StoreOut_B013_WriteCV();//OK
-                StoreOut_B013_CreateEquCmd();//OK
+            StoreOut_EquCmdFinish();
 
-                StoreOut_B02_WriteCV();//OK
-
-                StoreOut_B012_CreateEquCmd();//OK
-
-                StoreOut_B015_CreateEquCmd();//OK
-
-                StoreOut_MFG_EquCmdFinish();//OK
-            }
             _storeOutProcess.Start();
         }
 
-        #region BQA
 
-        #region A08
-        private void StoreOut_A08_WriteCV()
+
+        private void StoreOut_S101_WriteCV()
         {
-            int bufferIndex = 1;
-            var stn = new List<string>()
+            int bufferIndex = 1; //A1
+            int CmdMode = 0;
+            using (var db = _dataAccessManger.GetDB())
             {
-                StnNo.A08,
-                StnNo.A11_1,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOut(stn, out var dataObject) == GetDataResult.Success)
-            {
-                string cmdSno = dataObject[0].CmdSno;
-                string trayId = dataObject[0].TrayId;
-                int loadType = Convert.ToInt32(dataObject[0].LoadType);
 
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
-                log.CmdSno = cmdSno;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                    && _conveyor.GetBuffer(bufferIndex).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
+                if (_dataAccessManger.GetCmdMstByStoreOut("A1", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 依照棧口去做不同路口編號
                 {
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
+                    string CmdSno = dataObject[0].CmdSno;
+                    int IOType = Convert.ToInt32(dataObject[0].IOType);
+                    CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                    var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
+                    log.CmdSno = CmdSno;
+                    log.LoadCategory = CmdMode;
                     _loggerManager.WriteLogTrace(log);
 
-                    using (var db = _dataAccessManger.GetDB())
+                    //確認目前模式，是否可以切換模式，可以就寫入切換成出庫的請求
+                    if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady
+                        && _conveyor.GetBuffer(bufferIndex).Switch_Ack == 1)
                     {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreIn Ready, Can Switchmode");
+                        _loggerManager.WriteLogTrace(log);
+
+                        _conveyor.GetBuffer(bufferIndex).Switch_Mode(2);
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Switchmode Complete");
+                        _loggerManager.WriteLogTrace(log);
+                    }
+
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                        && _conveyor.GetBuffer(bufferIndex).OutMode
+                        && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                        && _conveyor.GetBuffer(bufferIndex).Presence == false
+                        && _conveyor.GetBuffer(bufferIndex).Error == false
+                        && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
+                        && _conveyor.GetBuffer(bufferIndex).CmdMode != 3    //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex + 1).CmdMode != 3  //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex + 2).CmdMode != 3//為了不跟盤點命令衝突的條件
+                        && CheckEmptyWillBefullOrNot() == false) //檢查一樓buffer是否整體滿九版空棧板了
+                    {
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
+                        log.CmdSno = CmdSno;
+                        log.LoadCategory = CmdMode;
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, CmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
+                            log.CmdSno = CmdSno;
+                            log.LoadCategory = CmdMode;
                             _loggerManager.WriteLogTrace(log);
 
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(CmdSno, CmdMode);
+
+                            //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
+
+                            if (IOType == 7 || IOType == 8 || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出，直接到A3
+                            {
+                                _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3);
+                            }
+                            else
+                            {
+                                _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2);
+                            }
                         }
+
                     }
                 }
             }
         }
-        private void StoreOut_A08_CreateEquCmd()
+
+        //判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1
+        private int LastCargoOrNot()
+        {
+            if (_dataAccessManger.GetCmdMstByStoreOutcheck("A1", out var dataObject) == GetDataResult.Success)
+            {
+                int COUNT = Convert.ToInt32(dataObject[0].COUNT);
+
+                if (_conveyor.GetBuffer(2).A2LV2 == 0 && COUNT == '0' && _conveyor.GetBuffer(2).CommandId == 0 && _conveyor.GetBuffer(1).CommandId == 0)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 99;//異常連不到資料庫
+            }
+
+        }
+
+        //根據判斷去決定一樓空棧板總數是否滿了，去擋下出庫命令
+        private bool CheckEmptyWillBefullOrNot()
+        {
+
+            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        private void StoreOut_S201_WriteCV()
+        {
+            int bufferIndex = 5; //A5
+            using (var db = _dataAccessManger.GetDB())
+            {
+
+                if (_dataAccessManger.GetCmdMstByStoreOut("A5", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                {
+                    string cmdSno = dataObject[0].CmdSno;
+                    int cmdmode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                    var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
+                    log.CmdSno = cmdSno;
+                    log.LoadCategory = cmdmode;
+                    _loggerManager.WriteLogTrace(log);
+
+
+
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                        && _conveyor.GetBuffer(bufferIndex).OutMode
+                        && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                        && _conveyor.GetBuffer(bufferIndex).Presence == false
+                        && _conveyor.GetBuffer(bufferIndex).Error == false
+                        && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
+                        && _conveyor.GetBuffer(bufferIndex).CmdMode != 3    //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex + 1).CmdMode != 3)  //為了不跟盤點命令衝突的條件
+                    {
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
+                        log.CmdSno = cmdSno;
+                        log.LoadCategory = cmdmode;
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
+                            log.CmdSno = cmdSno;
+                            log.LoadCategory = cmdmode;
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private void StoreOut_S301_WriteCV()
+        {
+            int bufferIndex = 7; //A7
+            using (var db = _dataAccessManger.GetDB())
+            {
+
+                if (_dataAccessManger.GetCmdMstByStoreOut("A7", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                {
+                    string cmdSno = dataObject[0].CmdSno;
+                    int cmdmode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                    var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
+                    log.CmdSno = cmdSno;
+                    log.LoadCategory = cmdmode;
+                    _loggerManager.WriteLogTrace(log);
+
+
+
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                        && _conveyor.GetBuffer(bufferIndex).OutMode
+                        && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                        && _conveyor.GetBuffer(bufferIndex).Presence == false
+                        && _conveyor.GetBuffer(bufferIndex).Error == false
+                        && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
+                        && _conveyor.GetBuffer(bufferIndex).CmdMode != 3    //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex + 1).CmdMode != 3)  //為了不跟盤點命令衝突的條件
+                    {
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
+                        log.CmdSno = cmdSno;
+                        log.LoadCategory = cmdmode;
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
+                            log.CmdSno = cmdSno;
+                            log.LoadCategory = cmdmode;
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private void StoreOut_S401_WriteCV()
+        {
+            int bufferIndex = 9; //A9
+            using (var db = _dataAccessManger.GetDB())
+            {
+
+                if (_dataAccessManger.GetCmdMstByStoreOut("A9", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                {
+                    string cmdSno = dataObject[0].CmdSno;
+                    int cmdmode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                    var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
+                    log.CmdSno = cmdSno;
+                    log.LoadCategory = cmdmode;
+                    _loggerManager.WriteLogTrace(log);
+
+
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                        && _conveyor.GetBuffer(bufferIndex).OutMode
+                        && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                        && _conveyor.GetBuffer(bufferIndex).Presence == false
+                        && _conveyor.GetBuffer(bufferIndex).Error == false
+                        && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
+                        && _conveyor.GetBuffer(bufferIndex).CmdMode != 3    //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex + 1).CmdMode != 3)  //為了不跟盤點命令衝突的條件
+                    {
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
+                        log.CmdSno = cmdSno;
+                        log.LoadCategory = cmdmode;
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
+                            log.CmdSno = cmdSno;
+                            log.LoadCategory = cmdmode;
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode);
+                        }
+
+                    }
+                }
+            }
+        }
+        private void StoreOut_S101_CreateEquCmd()
         {
             int bufferIndex = 1;
             List<string> stn = new List<string>()
             {
-                StnNo.A08,
-                StnNo.A11_1,
+                StnNo.A1,
             };
             if (_conveyor.GetBuffer(bufferIndex).Auto
                 && _conveyor.GetBuffer(bufferIndex).OutMode
@@ -162,25 +347,21 @@ namespace Mirle.ASRS.AWCS.Manager
                 && _conveyor.GetBuffer(bufferIndex).Error == false
                 && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
             {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
+                string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
+                int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
 
                 var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
+                log.CmdSno = cmdSno;
+                log.LoadCategory = CmdMode;
                 _loggerManager.WriteLogTrace(log);
 
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
                 {
-                    string cmdSno = dataObject[0].CmdSno;
                     string source = dataObject[0].Loc;
-                    string dest = $"{CranePortNo.A01}";
+                    string dest = $"{CranePortNo.A1}";
 
                     log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
                     log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
                     _loggerManager.WriteLogTrace(log);
 
                     using (var db = _dataAccessManger.GetDB())
@@ -188,8 +369,7 @@ namespace Mirle.ASRS.AWCS.Manager
                         if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
+                            log.CmdSno = cmdSno;
                             _loggerManager.WriteLogTrace(log);
                             return;
                         }
@@ -197,8 +377,6 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
                             _loggerManager.WriteLogTrace(log);
                             db.TransactionCtrl2(TransactionTypes.Rollback);
                             return;
@@ -212,8 +390,6 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
                             _loggerManager.WriteLogTrace(log);
                             db.TransactionCtrl2(TransactionTypes.Rollback);
                             return;
@@ -222,65 +398,14 @@ namespace Mirle.ASRS.AWCS.Manager
                 }
             }
         }
-        #endregion A08
 
-        #region A13_1
-        private void StoreOut_A131_WriteCV()
+
+        private void StoreOut_S201_CreateEquCmd()
         {
-            int bufferIndex = 15;
-            var stn = new List<string>()
-            {
-                StnNo.A17_4,
-                StnNo.A19,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOut(stn, out var dataObject) == GetDataResult.Success)
-            {
-                string cmdSno = dataObject[0].CmdSno;
-                string trayId = dataObject[0].TrayId;
-                int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
-                log.CmdSno = cmdSno;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                    && _conveyor.GetBuffer(bufferIndex).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-                {
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-        private void StoreOut_A131_CreateEquCmd()
-        {
-            int bufferIndex = 15;
+            int bufferIndex = 5;
             List<string> stn = new List<string>()
             {
-                StnNo.A17_4,
-                StnNo.A19,
+                StnNo.A5,
             };
             if (_conveyor.GetBuffer(bufferIndex).Auto
                 && _conveyor.GetBuffer(bufferIndex).OutMode
@@ -289,25 +414,22 @@ namespace Mirle.ASRS.AWCS.Manager
                 && _conveyor.GetBuffer(bufferIndex).Error == false
                 && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
             {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
+                string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
+                int LoadCategory = _conveyor.GetBuffer(bufferIndex).CmdMode;
 
                 var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
+                log.CmdSno = cmdSno;
+                log.LoadCategory = LoadCategory;
                 _loggerManager.WriteLogTrace(log);
 
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
                 {
-                    string cmdSno = dataObject[0].CmdSno;
+                    cmdSno = dataObject[0].CmdSno;
                     string source = dataObject[0].Loc;
-                    string dest = $"{CranePortNo.A131}";
+                    string dest = $"{CranePortNo.A5}";
 
                     log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
                     log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
                     _loggerManager.WriteLogTrace(log);
 
                     using (var db = _dataAccessManger.GetDB())
@@ -316,8 +438,6 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
                             _loggerManager.WriteLogTrace(log);
                             return;
                         }
@@ -325,8 +445,6 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
                             _loggerManager.WriteLogTrace(log);
                             db.TransactionCtrl2(TransactionTypes.Rollback);
                             return;
@@ -340,8 +458,6 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
                             _loggerManager.WriteLogTrace(log);
                             db.TransactionCtrl2(TransactionTypes.Rollback);
                             return;
@@ -350,16 +466,149 @@ namespace Mirle.ASRS.AWCS.Manager
                 }
             }
         }
-        #endregion A13_1
 
-        private void StoreOut_BQA_EquCmdFinish()
+        private void StoreOut_S301_CreateEquCmd()
+        {
+            int bufferIndex = 7;
+            List<string> stn = new List<string>()
+            {
+                StnNo.A7,
+            };
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).OutMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence == false
+                && _conveyor.GetBuffer(bufferIndex).Error == false
+                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
+            {
+                string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
+                int LoadCategory = _conveyor.GetBuffer(bufferIndex).CmdMode;
+
+                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
+                log.CmdSno = cmdSno;
+                log.LoadCategory = LoadCategory;
+                _loggerManager.WriteLogTrace(log);
+
+                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
+                {
+                    cmdSno = dataObject[0].CmdSno;
+                    string source = dataObject[0].Loc;
+                    string dest = $"{CranePortNo.A7}";
+
+                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreOutEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StoreOut_S401_CreateEquCmd()
+        {
+            int bufferIndex = 1;
+            List<string> stn = new List<string>()
+            {
+                StnNo.A9,
+            };
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).OutMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence == false
+                && _conveyor.GetBuffer(bufferIndex).Error == false
+                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
+            {
+                string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
+                int LoadCategory = _conveyor.GetBuffer(bufferIndex).CmdMode;
+
+                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
+                log.CmdSno = cmdSno;
+                log.LoadCategory = LoadCategory;
+                _loggerManager.WriteLogTrace(log);
+
+                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
+                {
+                    cmdSno = dataObject[0].CmdSno;
+                    string source = dataObject[0].Loc;
+                    string dest = $"{CranePortNo.A9}";
+
+                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreOutEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StoreOut_EquCmdFinish()
         {
             var stn = new List<string>()
             {
-                StnNo.A08,
-                StnNo.A11_1,
-                StnNo.A17_4,
-                StnNo.A19,
+                StnNo.A1,
+                StnNo.A5,
+                StnNo.A7,
+                StnNo.A9,
             };
             if (_dataAccessManger.GetCmdMstByStoreOutFinish(stn, out var dataObject) == GetDataResult.Success)
             {
@@ -408,1300 +657,409 @@ namespace Mirle.ASRS.AWCS.Manager
             }
         }
 
-        #endregion BQA
-
-        #region MFG
-
-        #region A01
-        private void StoreOut_A01_WriteCV()
-        {
-            int bufferIndex = 1;
-            var stn = new List<string>()
-            {
-                StnNo.A01,
-                StnNo.A02_1,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOut(stn, out var dataObject) == GetDataResult.Success)
-            {
-                string cmdSno = dataObject[0].CmdSno;
-                string trayId = dataObject[0].TrayId;
-                int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
-                log.CmdSno = cmdSno;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                    && _conveyor.GetBuffer(bufferIndex).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-                {
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-        private void StoreOut_A01_CreateEquCmd()
-        {
-            int bufferIndex = 1;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A01,
-                StnNo.A02_1
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).OutMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence == false
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(1).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = dataObject[0].Loc;
-                    string dest = $"{CranePortNo.A01}";
-
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutCreateCraneCmd) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreOutEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        #endregion A01
-
-        #region A03
-        private void StoreOut_A03_WriteCV()
-        {
-            int bufferIndex = 10;
-            var stn = new List<string>()
-            {
-                StnNo.A03,
-                StnNo.A05_1,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOut(stn, out var dataObject) == GetDataResult.Success)
-            {
-                string cmdSno = dataObject[0].CmdSno;
-                string trayId = dataObject[0].TrayId;
-                int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
-                log.CmdSno = cmdSno;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                    && _conveyor.GetBuffer(bufferIndex).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-                {
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-        private void StoreOut_A03_CreateEquCmd()
-        {
-            int bufferIndex = 10;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A03,
-                StnNo.A05_1,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).OutMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence == false
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = dataObject[0].Loc;
-                    string dest = $"{CranePortNo.A03}";
-
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutCreateCraneCmd) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreOutEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 2, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        #endregion A03
-
-        #region B01
-        private void StoreOut_B01_WriteCV()
-        {
-            int bufferIndex = 19;
-            var stn = new List<string>()
-            {
-                StnNo.B12_5,
-                StnNo.B14_5,
-                StnNo.B15_4,
-                StnNo.B16_5,
-                StnNo.B18,
-                StnNo.B10,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOut(stn, out var dataObject) == GetDataResult.Success)
-            {
-                string cmdSno = dataObject[0].CmdSno;
-                string trayId = dataObject[0].TrayId;
-                int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
-                log.CmdSno = cmdSno;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                    && _conveyor.GetBuffer(bufferIndex).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-                {
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);//Wait Modify
-                        }
-                    }
-                }
-            }
-        }
-        private void StoreOut_B01_CreateEquCmd()
-        {
-            int bufferIndex = 19;
-            List<string> stn = new List<string>()
-            {
-                    StnNo.B12_5,
-                    StnNo.B14_5,
-                    StnNo.B15_4,
-                    StnNo.B16_5,
-                    StnNo.B18,
-                    StnNo.B10,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).OutMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence == false
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = dataObject[0].Loc;
-                    string dest = $"{CranePortNo.A01}";
-
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutCreateCraneCmd) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreOutEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        #endregion B01
-
-        #region B01_3
-        private void StoreOut_B013_WriteCV()
-        {
-            int bufferIndex = 22;
-            var stn = new List<string>()
-            {
-                StnNo.B12_5,
-                StnNo.B14_5,
-                StnNo.B15_4,
-                StnNo.B16_5,
-                StnNo.B18,
-                StnNo.B10,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOut(stn, out var dataObject) == GetDataResult.Success)
-            {
-                string cmdSno = dataObject[0].CmdSno;
-                string trayId = dataObject[0].TrayId;
-                int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreOut Command");
-                log.CmdSno = cmdSno;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                    && _conveyor.GetBuffer(bufferIndex).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-                {
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);//Wait Modify
-                        }
-                    }
-                }
-            }
-        }
-        private void StoreOut_B013_CreateEquCmd()
-        {
-            int bufferIndex = 22;
-            List<string> stn = new List<string>()
-            {
-                    StnNo.B12_5,
-                    StnNo.B14_5,
-                    StnNo.B15_4,
-                    StnNo.B16_5,
-                    StnNo.B18,
-                    StnNo.B10,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).OutMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence == false
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                log.LoadCategory = loadType;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = dataObject[0].Loc;
-                    string dest = $"{CranePortNo.A01}";
-
-                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Begin Fail");
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutCreateCraneCmd) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreOutEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreOut Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        #endregion B01_3
-
-        private void StoreOut_B02_WriteCV()
-        {
-            int bufferIndex_B012 = 22;
-            int bufferIndex_B015 = 24;
-            int bufferIndex = 25;
-            List<string> stn = new List<string>()
-            {
-                    StnNo.B12_5,
-                    StnNo.B14_5,
-                    StnNo.B15_4,
-                    StnNo.B16_5,
-                    StnNo.B18,
-                    StnNo.B10,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                 && _conveyor.GetBuffer(bufferIndex).OutMode
-                 && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                 && _conveyor.GetBuffer(bufferIndex).Presence == false
-                 && _conveyor.GetBuffer(bufferIndex).Error == false
-                 && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
-            {
-                //B01-2、B01-5輪流搬送
-                if (_storeOut_B02_RGVCmdCreateChange)
-                {
-                    if (_conveyor.GetBuffer(bufferIndex_B012).Auto
-                        && _conveyor.GetBuffer(bufferIndex_B012).InMode
-                        && _conveyor.GetBuffer(bufferIndex_B012).CommandId > 0
-                        && _conveyor.GetBuffer(bufferIndex_B012).Error == false
-                        && _conveyor.GetBuffer(bufferIndex_B012).Ready == Ready.StoreInReady)
-                    {
-                        string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                        int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                        var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut, Tray Not Ready On Position");
-                        log.TrayId = trayId;
-                        log.LoadCategory = loadType;
-                        _loggerManager.WriteLogTrace(log);
-
-                        if (_conveyor.GetBuffer(bufferIndex_B012).Presence && _conveyor.GetBuffer(bufferIndex_B012).Position)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut, Tray Ready On Position");
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-
-                            if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                            {
-                                string cmdSno = dataObject[0].CmdSno;
-
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutWriteCraneCmdToRGV) == ExecuteSQLResult.Success)
-                                    {
-                                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut, Wirte StoreOut Command To Next Buffer");
-                                        log.CmdSno = cmdSno;
-                                        log.TrayId = trayId;
-                                        log.LoadCategory = loadType;
-                                        _loggerManager.WriteLogTrace(log);
-
-                                        _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);//Wait Modify
-                                        _storeOut_B02_RGVCmdCreateChange = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _storeOut_B02_RGVCmdCreateChange = false;
-                    }
-                }
-                else
-                {
-                    if (_conveyor.GetBuffer(bufferIndex_B015).Auto
-                             && _conveyor.GetBuffer(bufferIndex_B015).InMode
-                             && _conveyor.GetBuffer(bufferIndex_B015).CommandId > 0
-                             && _conveyor.GetBuffer(bufferIndex_B015).Error == false
-                             && _conveyor.GetBuffer(bufferIndex_B015).Ready == Ready.StoreInReady)
-                    {
-                        string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                        int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                        var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut, Tray Not Ready On Position");
-                        log.TrayId = trayId;
-                        log.LoadCategory = loadType;
-                        _loggerManager.WriteLogTrace(log);
-
-                        if (_conveyor.GetBuffer(bufferIndex_B015).Presence && _conveyor.GetBuffer(bufferIndex_B015).Position)
-                        {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut, Tray Ready On Position");
-                            log.TrayId = trayId;
-                            log.LoadCategory = loadType;
-                            _loggerManager.WriteLogTrace(log);
-
-                            if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                            {
-                                string cmdSno = dataObject[0].CmdSno;
-
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutWriteCraneCmdToRGV) == ExecuteSQLResult.Success)
-                                    {
-                                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreOut, Wirte StoreOut Command To Next Buffer");
-                                        log.CmdSno = cmdSno;
-                                        log.TrayId = trayId;
-                                        log.LoadCategory = loadType;
-                                        _loggerManager.WriteLogTrace(log);
-
-                                        _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);//Wait Modify
-                                        _storeOut_B02_RGVCmdCreateChange = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _storeOut_B02_RGVCmdCreateChange = true;
-                    }
-                }
-            }
-        }
-
-        private void StoreOut_B012_CreateEquCmd()
-        {
-            int bufferIndex_B02 = 25;
-            int bufferIndex = 21;
-            List<string> stn = new List<string>()
-            {
-                    StnNo.B12_5,
-                    StnNo.B14_5,
-                    StnNo.B15_4,
-                    StnNo.B16_5,
-                    StnNo.B18,
-                    StnNo.B10,
-            };
-            if (_conveyor.GetBuffer(bufferIndex_B02).Auto
-                && _conveyor.GetBuffer(bufferIndex_B02).InMode
-                && _conveyor.GetBuffer(bufferIndex_B02).Presence == false
-                && _conveyor.GetBuffer(bufferIndex_B02).Error == false
-                && _conveyor.GetBuffer(bufferIndex_B02).Ready == Ready.StoreInReady)
-            {
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).Presence
-                    && _conveyor.GetBuffer(bufferIndex).Position
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == _conveyor.GetBuffer(bufferIndex_B02).CommandId)
-                {
-                    string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                    int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                    var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                    log.CmdSno = string.Empty;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                    {
-                        string cmdSno = dataObject[0].CmdSno;
-                        string source = $"{CranePortNo.B01_2}";
-                        string dest = $"{CranePortNo.B02}";
-
-                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command");
-                        log.CmdSno = cmdSno;
-                        log.TrayId = trayId;
-                        log.LoadCategory = loadType;
-                        _loggerManager.WriteLogTrace(log);
-
-                        using (var db = _dataAccessManger.GetDB())
-                        {
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command, Begin Fail");
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-                                return;
-                            }
-                            if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreOutCreateEGVCmd) != ExecuteSQLResult.Success)
-                            {
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command, Update CmdMst Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (InsertStnToStnEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 5, cmdSno, source, dest, 5) == false)
-                            {
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command, Commit Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreOut_B015_CreateEquCmd()
-        {
-            int bufferIndex_B02 = 25;
-            int bufferIndex = 21;
-            List<string> stn = new List<string>()
-            {
-                    StnNo.B12_5,
-                    StnNo.B14_5,
-                    StnNo.B15_4,
-                    StnNo.B16_5,
-                    StnNo.B18,
-                    StnNo.B10,
-            };
-            if (_conveyor.GetBuffer(bufferIndex_B02).Auto
-                && _conveyor.GetBuffer(bufferIndex_B02).InMode
-                && _conveyor.GetBuffer(bufferIndex_B02).Presence == false
-                && _conveyor.GetBuffer(bufferIndex_B02).Error == false
-                && _conveyor.GetBuffer(bufferIndex_B02).Ready == Ready.StoreInReady)
-            {
-                if (_conveyor.GetBuffer(bufferIndex).Auto
-                    && _conveyor.GetBuffer(bufferIndex).OutMode
-                    && _conveyor.GetBuffer(bufferIndex).Presence
-                    && _conveyor.GetBuffer(bufferIndex).Position
-                    && _conveyor.GetBuffer(bufferIndex).Error == false
-                    && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
-                    && _conveyor.GetBuffer(bufferIndex).CommandId == _conveyor.GetBuffer(bufferIndex_B02).CommandId)
-                {
-                    string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                    int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                    var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreOut Command Receive Completed");
-                    log.CmdSno = string.Empty;
-                    log.TrayId = trayId;
-                    log.LoadCategory = loadType;
-                    _loggerManager.WriteLogTrace(log);
-
-                    if (_dataAccessManger.GetCmdMstByStoreOut(stn, trayId, out var dataObject) == GetDataResult.Success)
-                    {
-                        string cmdSno = dataObject[0].CmdSno;
-                        string source = $"{CranePortNo.B01_5}";
-                        string dest = $"{CranePortNo.B02}";
-
-                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command");
-                        log.CmdSno = cmdSno;
-                        log.TrayId = trayId;
-                        log.LoadCategory = loadType;
-                        _loggerManager.WriteLogTrace(log);
-
-                        using (var db = _dataAccessManger.GetDB())
-                        {
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command, Begin Fail");
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-                                return;
-                            }
-                            if (_dataAccessManger.UpdateCmdMst(db, cmdSno, "15") != ExecuteSQLResult.Success)
-                            {
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command, Update CmdMst Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (InsertStnToStnEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 6, cmdSno, source, dest, 5) == false)
-                            {
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreOut Command, Commit Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                log.LoadCategory = loadType;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreOut_MFG_EquCmdFinish()
-        {
-            var stn1 = new List<string>()
-            {
-                StnNo.A01,
-                StnNo.A02_1,
-                StnNo.A03,
-                StnNo.A05_1,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOutFinish(stn1, out var dataObject) == GetDataResult.Success)
-            {
-                foreach (var cmdMst in dataObject.Data)
-                {
-                    if (_dataAccessManger.GetEquCmd(cmdMst.CmdSno, out var equCmd) == GetDataResult.Success)
-                    {
-                        if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-                        {
-                            if (equCmd[0].CompleteCode == "92")
-                            {
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                                    {
-                                        return;
-                                    }
-                                    if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", "13") != ExecuteSQLResult.Success)
-                                    {
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return;
-                                    }
-                                    if (_dataAccessManger.DeleteEquCmd(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-                                    {
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return;
-                                    }
-                                    if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                            else if (equCmd[0].CompleteCode.StartsWith("W"))
-                            {
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (_dataAccessManger.UpdateEquCmdRetry(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            var stn2 = new List<string>()
-            {
-                StnNo.B12_5,
-                StnNo.B14_5,
-                StnNo.B15_4,
-                StnNo.B16_5,
-                StnNo.B18,
-                StnNo.B10,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreOutFinish(stn1, out dataObject) == GetDataResult.Success)
-            {
-                foreach (var cmdMst in dataObject.Data)
-                {
-                    if (_dataAccessManger.GetEquCmd(cmdMst.CmdSno, out var equCmd) == GetDataResult.Success)
-                    {
-                        if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-                        {
-                            if (equCmd[0].CompleteCode == "92")
-                            {
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                                    {
-                                        return;
-                                    }
-                                    if (cmdMst.Trace == "12")
-                                    {
-                                        if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, "13") != ExecuteSQLResult.Success)
-                                        {
-                                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                                            return;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", "16") != ExecuteSQLResult.Success)
-                                        {
-                                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                                            return;
-                                        }
-                                    }
-                                    if (_dataAccessManger.DeleteEquCmd(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-                                    {
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return;
-                                    }
-                                    if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                            else if (equCmd[0].CompleteCode.StartsWith("W"))
-                            {
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (_dataAccessManger.UpdateEquCmdRetry(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        #endregion MFG
-
         #endregion StoreOut
+
+
 
         #region StoreIn
         private void StoreInProcess(object sender, ElapsedEventArgs e)
         {
             _storeInProcess.Stop();
-            if (_isBQA)
-            {
-                StoreIn_A112_WriteCV();//OK
 
-                StoreIn_A12_CreateEquCmd();//OK
+            StoreIn_S101_WriteCV();
 
-                StoreIn_A173_WriteCV();//OK
+            StoreIn_S101_CreateEquCmd();//OK
 
-                StoreIn_A19_WriteCV();//OK
+            StoreIn_S201_WriteCV();//OK
 
-                StoreIn_A13_CreateEquCmd();//OK
+            StoreIn_S201_CreateEquCmd();//OK
 
-                StoreIn_BQA_EquCmdFinish();//OK
-            }
-            else
-            {
-                StoreIn_A022_WriteCV();//OK
+            StoreIn_S301_WriteCV();//OK
 
-                StoreIn_A013_CreateEquCmd();//OK
+            StoreIn_S301_CreateEquCmd();//OK
 
-                StoreIn_A07_WriteCV();//OK
+            StoreIn_S401_WriteCV();//OK
 
-                StoreIn_A032_CreateEquCmd();//OK
+            StoreIn_S401_CreateEquCmd();//OK
 
-                StoreIn_B10_WriteCV();//OK
+            StoreIn_EquCmdFinish();//OK
 
-                StoreIn_B121_WriteCV();//OK
 
-                StoreIn_B141_WriteCV();//OK
-
-                StoreIn_B154_WriteCV();
-
-                StoreIn_B161_WriteCV();//OK
-
-                StoreIn_B18_WriteCV();//OK
-
-                StoreIn_C02_WriteCV();//OK
-                StoreIn_C02_CreateEquCmd();//OK
-
-                StoreIn_C01_CreateEquCmd();//OK
-
-                StoreIn_C013_CreateEquCmd();//OK
-
-                StoreIn_MFG_EquCmdFinish();//OK
-            }
             _storeInProcess.Start();
         }
 
-        #region BQA
-        private void StoreIn_A112_WriteCV()
+
+        private void StoreIn_S101_WriteCV()
         {
-            int bufferIndex = 11;
-            List<string> stn = new List<string>()
+            int bufferIndex = 3;
+            using (var db = _dataAccessManger.GetDB())
             {
-                StnNo.A11_1,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId = _conveyor.GetBuffer(bufferIndex).FosbId;
 
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId = fodbId;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreInstart("A3", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
                 {
                     string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
+                    int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                    int IOType = Convert.ToInt32(dataObject[0].IOType);
 
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
+                    var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Write StoreIn Command");
                     log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId = fodbId;
                     _loggerManager.WriteLogTrace(log);
 
-                    using (var db = _dataAccessManger.GetDB())
+                    //確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
+                    if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady
+                        && _conveyor.GetBuffer(bufferIndex - 2).Switch_Ack == 1)
                     {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV, weight) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId = fodbId;
-                            _loggerManager.WriteLogTrace(log);
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreIn Ready, Can Switchmode");
+                        _loggerManager.WriteLogTrace(log);
 
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.ASRS, loadType);
-                        }
+                        _conveyor.GetBuffer(bufferIndex - 2).Switch_Mode(1);
+
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Switchmode Complete");
+                        _loggerManager.WriteLogTrace(log);
                     }
-                }
-            }
-        }
 
-        private void StoreIn_A12_CreateEquCmd()
-        {
-            int bufferIndex = 14;
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = $"{CranePortNo.A12}";
-                    string dest = $"{dataObject[0].NewLoc}";
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                    && _conveyor.GetBuffer(bufferIndex).InMode
+                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                    && _conveyor.GetBuffer(bufferIndex).Presence == false
+                    && _conveyor.GetBuffer(bufferIndex).Error == false
+                    && _conveyor.GetBuffer(bufferIndex - 2).Ready == Ready.StoreInReady
+                    && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
+                    && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3  //為了不跟盤點命令衝突的條件
+                    && _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3) //為了不跟盤點命令衝突的條件)
                     {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+                        _loggerManager.WriteLogTrace(log);
 
-        private void StoreIn_A173_WriteCV()
-        {
-            int bufferIndex = 21;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A17_4,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                string plant = _conveyor.GetBuffer(bufferIndex).Plant;
-                string fodbId = _conveyor.GetBuffer(bufferIndex).FosbId;
 
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId = fodbId;
-                log.Plant = plant;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId = fodbId;
-                    log.Plant = plant;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId = fodbId;
-                            log.Plant = plant;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.ASRS, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_A19_WriteCV()
-        {
-            int bufferIndex = 24;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A19,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                string plant = _conveyor.GetBuffer(bufferIndex).Plant;
-                string fodbId = _conveyor.GetBuffer(bufferIndex).FosbId;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId = fodbId;
-                log.Plant = plant;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId = fodbId;
-                    log.Plant = plant;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
                         {
                             log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId = fodbId;
-                            log.Plant = plant;
+
                             _loggerManager.WriteLogTrace(log);
 
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.ASRS, loadType);
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode);//寫入命令和模式
+
+                            if (IOType == 1)
+                            {
+                                _conveyor.GetBuffer(4).A4EmptysupplyOn();//請A4補充母托一版
+                            }
                         }
+
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口buffer異常中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口有荷有訊號，請移除荷有");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口有命令號，請確認命令號是否異常殘留");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
                     }
                 }
             }
         }
 
-        private void StoreIn_A13_CreateEquCmd()
+        private void StoreIn_S201_WriteCV()
         {
-            int bufferIndex = 30;
+            int bufferIndex = 6;
+            using (var db = _dataAccessManger.GetDB())
+            {
+
+                if (_dataAccessManger.GetCmdMstByStoreInstart("A6", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                {
+                    string cmdSno = dataObject[0].CmdSno;
+                    int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                    var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Write StoreIn Command");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                    && _conveyor.GetBuffer(bufferIndex).InMode
+                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                    && _conveyor.GetBuffer(bufferIndex).Presence == false
+                    && _conveyor.GetBuffer(bufferIndex).Error == false
+                    && _conveyor.GetBuffer(bufferIndex - 1).Ready == Ready.StoreInReady
+                    && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
+                    && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3) //為了不跟盤點命令衝突的條件)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
+                            log.CmdSno = cmdSno;
+
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode);//寫入命令和模式
+                        }
+
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口異常中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+
+                }
+            }
+        }
+
+
+        private void StoreIn_S301_WriteCV()
+        {
+            int bufferIndex = 8;
+            using (var db = _dataAccessManger.GetDB())
+            {
+
+                if (_dataAccessManger.GetCmdMstByStoreInstart("A8", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                {
+                    string cmdSno = dataObject[0].CmdSno;
+                    int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+
+
+                    var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Write StoreIn Command");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+
+
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                    && _conveyor.GetBuffer(bufferIndex).InMode
+                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                    && _conveyor.GetBuffer(bufferIndex).Presence == false
+                    && _conveyor.GetBuffer(bufferIndex).Error == false
+                    && _conveyor.GetBuffer(bufferIndex - 1).Ready == Ready.StoreInReady
+                    && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
+                    && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3) //為了不跟盤點命令衝突的條件
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
+                            log.CmdSno = cmdSno;
+
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode);//寫入命令和模式
+                        }
+
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口異常中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void StoreIn_S401_WriteCV()
+        {
+            int bufferIndex = 10;
+            using (var db = _dataAccessManger.GetDB())
+            {
+
+
+                if (_dataAccessManger.GetCmdMstByStoreInstart("A10", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                {
+                    string cmdSno = dataObject[0].CmdSno;
+                    int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                    var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Write StoreIn Command");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                    && _conveyor.GetBuffer(bufferIndex).InMode
+                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                    && _conveyor.GetBuffer(bufferIndex).Presence == false
+                    && _conveyor.GetBuffer(bufferIndex).Error == false
+                    && _conveyor.GetBuffer(bufferIndex - 1).Ready == Ready.StoreInReady
+                    && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
+                    && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3) //為了不跟盤點命令衝突的條件
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
+                            log.CmdSno = cmdSno;
+
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode);//寫入命令和模式
+                        }
+
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口異常中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    {
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void StoreIn_S101_CreateEquCmd()
+        {
+            int bufferIndex = 1;
             if (_conveyor.GetBuffer(bufferIndex).Auto
                 && _conveyor.GetBuffer(bufferIndex).InMode
                 && _conveyor.GetBuffer(bufferIndex).CommandId > 0
                 && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
+                && _conveyor.GetBuffer(bufferIndex).Error == false)
             {
-                string trayId = $"{_conveyor.GetBuffer(bufferIndex).CommandId:0000}";
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
+
 
                 var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
                 log.CmdSno = string.Empty;
-                log.TrayId = trayId;
                 _loggerManager.WriteLogTrace(log);
 
-                if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
+                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
                 {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = $"{CranePortNo.A13}";
+
+                    string source = $"{CranePortNo.A1}";
                     string dest = $"{dataObject[0].NewLoc}";
 
                     log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
                     log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
                     _loggerManager.WriteLogTrace(log);
 
                     using (var db = _dataAccessManger.GetDB())
@@ -1710,7 +1068,6 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
                             _loggerManager.WriteLogTrace(log);
                             return;
                         }
@@ -1718,7 +1075,6 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
                             _loggerManager.WriteLogTrace(log);
                             db.TransactionCtrl2(TransactionTypes.Rollback);
                             return;
@@ -1732,8 +1088,8 @@ namespace Mirle.ASRS.AWCS.Manager
                         {
                             log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
                             log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
                             _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
                             return;
                         }
                     }
@@ -1741,14 +1097,197 @@ namespace Mirle.ASRS.AWCS.Manager
             }
         }
 
-        private void StoreIn_BQA_EquCmdFinish()
+        private void StoreIn_S201_CreateEquCmd()
+        {
+            int bufferIndex = 5;
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).InMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence
+                && _conveyor.GetBuffer(bufferIndex).Error == false)
+            {
+
+                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
+                log.CmdSno = string.Empty;
+                _loggerManager.WriteLogTrace(log);
+
+                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
+                {
+                    string source = $"{CranePortNo.A5}";
+                    string dest = $"{dataObject[0].NewLoc}";
+
+                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StoreIn_S301_CreateEquCmd()
+        {
+            int bufferIndex = 7;
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).InMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence
+                && _conveyor.GetBuffer(bufferIndex).Error == false)
+            {
+                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
+
+                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
+                log.CmdSno = string.Empty;
+                _loggerManager.WriteLogTrace(log);
+
+                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
+                {
+                    string source = $"{CranePortNo.A7}";
+                    string dest = $"{dataObject[0].NewLoc}";
+
+                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void StoreIn_S401_CreateEquCmd()
+        {
+            int bufferIndex = 9;
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).InMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence
+                && _conveyor.GetBuffer(bufferIndex).Error == false)
+            {
+                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
+
+                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
+                log.CmdSno = string.Empty;
+                _loggerManager.WriteLogTrace(log);
+
+                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
+                {
+                    string source = $"{CranePortNo.A9}";
+                    string dest = $"{dataObject[0].NewLoc}";
+
+                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        private void StoreIn_EquCmdFinish()
         {
             var stn1 = new List<string>()
             {
-                StnNo.A17_4,
-                StnNo.A19,
-                StnNo.A08,
-                StnNo.A11_1,
+                StnNo.A1,
+                StnNo.A5,
+                StnNo.A7,
+                StnNo.A9,
             };
             if (_dataAccessManger.GetCmdMstByStoreInFinish(stn1, out var dataObject) == GetDataResult.Success)
             {
@@ -1797,1120 +1336,291 @@ namespace Mirle.ASRS.AWCS.Manager
                 }
             }
         }
-        #endregion BQA
-
-        #region MFG
-
-        private void StoreIn_A022_WriteCV()
-        {
-            int bufferIndex = 6;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A02_1,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId_Left = _conveyor.GetBuffer(bufferIndex).FosbId_Left;
-                string fodbId_Right = _conveyor.GetBuffer(bufferIndex).FosbId_Right;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId_Left = fodbId_Left;
-                log.FosbId_Right = fodbId_Right;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId_Left = fodbId_Left;
-                    log.FosbId_Right = fodbId_Right;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId_Left = fodbId_Left;
-                            log.FosbId_Right = fodbId_Right;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_A013_CreateEquCmd()
-        {
-            int bufferIndex = 9;
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = $"{CranePortNo.A01_3}";
-                    string dest = $"{dataObject[0].NewLoc}";
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_A07_WriteCV()
-        {
-            int bufferIndex = 15;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A05_1,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId_Left = _conveyor.GetBuffer(bufferIndex).FosbId_Left;
-                string fodbId_Right = _conveyor.GetBuffer(bufferIndex).FosbId_Right;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId_Left = fodbId_Left;
-                log.FosbId_Right = fodbId_Right;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId_Left = fodbId_Left;
-                    log.FosbId_Right = fodbId_Right;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId_Left = fodbId_Left;
-                            log.FosbId_Right = fodbId_Right;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_A032_CreateEquCmd()
-        {
-            int bufferIndex = 18;
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = $"{CranePortNo.A03_2}";
-                    string dest = $"{dataObject[0].NewLoc}";
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 2, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_B10_WriteCV()
-        {
-            int bufferIndex = 79;
-            List<string> stn = new List<string>()
-            {
-                StnNo.B10,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId_Left = _conveyor.GetBuffer(bufferIndex).FosbId_Left;
-                string fodbId_Right = _conveyor.GetBuffer(bufferIndex).FosbId_Right;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId_Left = fodbId_Left;
-                log.FosbId_Right = fodbId_Right;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId_Left = fodbId_Left;
-                    log.FosbId_Right = fodbId_Right;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId_Left = fodbId_Left;
-                            log.FosbId_Right = fodbId_Right;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_B121_WriteCV()
-        {
-            int bufferIndex = 48;
-            List<string> stn = new List<string>()
-            {
-                StnNo.B12_5,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId_Left = _conveyor.GetBuffer(bufferIndex).FosbId_Left;
-                string fodbId_Right = _conveyor.GetBuffer(bufferIndex).FosbId_Right;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId_Left = fodbId_Left;
-                log.FosbId_Right = fodbId_Right;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId_Left = fodbId_Left;
-                    log.FosbId_Right = fodbId_Right;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId_Left = fodbId_Left;
-                            log.FosbId_Right = fodbId_Right;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_B141_WriteCV()
-        {
-            int bufferIndex = 55;
-            List<string> stn = new List<string>()
-            {
-                StnNo.B14_5,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId_Left = _conveyor.GetBuffer(bufferIndex).FosbId_Left;
-                string fodbId_Right = _conveyor.GetBuffer(bufferIndex).FosbId_Right;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId_Left = fodbId_Left;
-                log.FosbId_Right = fodbId_Right;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId_Left = fodbId_Left;
-                    log.FosbId_Right = fodbId_Right;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId_Left = fodbId_Left;
-                            log.FosbId_Right = fodbId_Right;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_B154_WriteCV()
-        {
-        }
-
-        private void StoreIn_B161_WriteCV()
-        {
-            int bufferIndex = 62;
-            List<string> stn = new List<string>()
-            {
-                StnNo.B16_5,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId_Left = _conveyor.GetBuffer(bufferIndex).FosbId_Left;
-                string fodbId_Right = _conveyor.GetBuffer(bufferIndex).FosbId_Right;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId_Left = fodbId_Left;
-                log.FosbId_Right = fodbId_Right;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId_Left = fodbId_Left;
-                    log.FosbId_Right = fodbId_Right;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId_Left = fodbId_Left;
-                            log.FosbId_Right = fodbId_Right;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_B18_WriteCV()
-        {
-            int bufferIndex = 66;
-            List<string> stn = new List<string>()
-            {
-                StnNo.B18,
-            };
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).ReadNotice > 0
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = _conveyor.GetBuffer(bufferIndex).TrayId;
-                int weight = _conveyor.GetBuffer(bufferIndex).Weight;
-                string fodbId_Left = _conveyor.GetBuffer(bufferIndex).FosbId_Left;
-                string fodbId_Right = _conveyor.GetBuffer(bufferIndex).FosbId_Right;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-                log.TrayId = trayId;
-                log.TrayWeight = weight;
-                log.FosbId_Left = fodbId_Left;
-                log.FosbId_Right = fodbId_Right;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(stn, trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    int loadType = Convert.ToInt32(dataObject[0].LoadType);
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Get StoreIn Command");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    log.TrayWeight = weight;
-                    log.FosbId_Left = fodbId_Left;
-                    log.FosbId_Right = fodbId_Right;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            log.TrayWeight = weight;
-                            log.FosbId_Left = fodbId_Left;
-                            log.FosbId_Right = fodbId_Right;
-                            _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(trayId, Path.NoPath, loadType);
-                        }
-                    }
-                }
-            }
-        }
-
-        #region C02
-        private void StoreIn_C02_WriteCV()
-        {
-            int bufferIndex = 37;
-            int bufferIndex_C012 = 39;
-            int bufferIndex_C015 = 41;
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
-                log.TrayId = trayId;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreIn");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    string rowString = dataObject[0].NewLoc.Substring(0, 2);
-                    if (int.TryParse(rowString, out var row))
-                    {
-                        int craneNo = (row + 1) / 2;
-
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreIn, Got to Crane{craneNo}");
-                        log.CmdSno = cmdSno;
-                        log.TrayId = trayId;
-                        _loggerManager.WriteLogTrace(log);
-
-                        if (craneNo == 1)
-                        {
-                            if (_conveyor.GetBuffer(bufferIndex_C012).Auto
-                                && _conveyor.GetBuffer(bufferIndex_C012).OutMode
-                                && _conveyor.GetBuffer(bufferIndex_C012).CommandId == 0
-                                && _conveyor.GetBuffer(bufferIndex_C012).Presence == false
-                                && _conveyor.GetBuffer(bufferIndex_C012).Error == false
-                                && _conveyor.GetBuffer(bufferIndex_C012).Ready == Ready.StoreOutReady)
-                            {
-                                string source = $"{CranePortNo.C02}";
-                                string dest = $"{CranePortNo.C01_2}";
-
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInTrayOnStation) == ExecuteSQLResult.Success)
-                                    {
-                                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Wirte StoreIn Command To Next Buffer");
-                                        log.CmdSno = cmdSno;
-                                        log.TrayId = trayId;
-                                        log.Source = source;
-                                        log.Dest = dest;
-                                        _loggerManager.WriteLogTrace(log);
-
-                                        _conveyor.GetBuffer(bufferIndex_C012).WriteCommandIdAsync(trayId, loadType);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                            }
-                        }
-                        else if (craneNo == 2)
-                        {
-                            if (_conveyor.GetBuffer(bufferIndex_C015).Auto
-                                  && _conveyor.GetBuffer(bufferIndex_C015).OutMode
-                                  && _conveyor.GetBuffer(bufferIndex_C015).CommandId == 0
-                                  && _conveyor.GetBuffer(bufferIndex_C015).Presence == false
-                                  && _conveyor.GetBuffer(bufferIndex_C015).Error == false
-                                  && _conveyor.GetBuffer(bufferIndex_C015).Ready == Ready.StoreOutReady)
-                            {
-                                string source = $"{CranePortNo.C02}";
-                                string dest = $"{CranePortNo.C01_5}";
-
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInTrayOnStation) == ExecuteSQLResult.Success)
-                                    {
-                                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Wirte StoreIn Command To Next Buffer");
-                                        log.CmdSno = cmdSno;
-                                        log.TrayId = trayId;
-                                        log.Source = source;
-                                        log.Dest = dest;
-                                        _loggerManager.WriteLogTrace(log);
-
-                                        _conveyor.GetBuffer(bufferIndex_C015).WriteCommandIdAsync(trayId, loadType);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                            }
-                        }
-                        else if (craneNo == 3)
-                        {
-                        }
-                        else if (craneNo == 4)
-                        {
-                        }
-                        else
-                        {
-                        }
-                    }
-                    else
-                    {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Please Check Dest Loc");
-                        log.CmdSno = cmdSno;
-                        log.TrayId = trayId;
-                        log.Source = $"{CranePortNo.C02}";
-                        log.Dest = dataObject[0].NewLoc;
-                        _loggerManager.WriteLogTrace(log);
-                    }
-                }
-            }
-
-        }
-        private void StoreIn_C02_CreateEquCmd()
-        {
-            int bufferIndex = 37;
-            int bufferIndex_C012 = 39;
-            int bufferIndex_C015 = 41;
-
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-               && _conveyor.GetBuffer(bufferIndex).InMode
-               && _conveyor.GetBuffer(bufferIndex).Presence
-               && _conveyor.GetBuffer(bufferIndex).Position
-               && _conveyor.GetBuffer(bufferIndex).Error == false
-               && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                if (_conveyor.GetBuffer(bufferIndex_C012).Auto
-                    && _conveyor.GetBuffer(bufferIndex_C012).OutMode
-                    && _conveyor.GetBuffer(bufferIndex_C012).CommandId == _conveyor.GetBuffer(bufferIndex).CommandId
-                    && _conveyor.GetBuffer(bufferIndex_C012).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex_C012).Error == false
-                    && _conveyor.GetBuffer(bufferIndex_C012).Ready == Ready.StoreOutReady)
-                {
-                    string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-
-                    var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn Receive Completed");
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                    {
-                        string cmdSno = dataObject[0].CmdSno;
-                        string source = $"{CranePortNo.C02}";
-                        string dest = $"{CranePortNo.C01_2}";
-
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command");
-                        log.CmdSno = cmdSno;
-                        log.TrayId = trayId;
-                        _loggerManager.WriteLogTrace(log);
-
-                        using (var db = _dataAccessManger.GetDB())
-                        {
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command, Begin Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                _loggerManager.WriteLogTrace(log);
-                                return;
-                            }
-                            if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateEGVCmd) != ExecuteSQLResult.Success)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command, Update CmdMst Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (InsertStnToStnEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 6, cmdSno, source, dest, 5) == false)
-                            {
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command, Commit Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                        }
-                    }
-                }
-                else if (_conveyor.GetBuffer(bufferIndex_C015).Auto
-                    && _conveyor.GetBuffer(bufferIndex_C015).OutMode
-                    && _conveyor.GetBuffer(bufferIndex_C015).CommandId == _conveyor.GetBuffer(bufferIndex).CommandId
-                    && _conveyor.GetBuffer(bufferIndex_C015).Presence == false
-                    && _conveyor.GetBuffer(bufferIndex_C015).Error == false
-                    && _conveyor.GetBuffer(bufferIndex_C015).Ready == Ready.StoreOutReady)
-                {
-                    string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-
-                    var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn Receive Completed");
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                    {
-                        string cmdSno = dataObject[0].CmdSno;
-                        string source = $"{CranePortNo.C02}";
-                        string dest = $"{CranePortNo.C01_5}";
-
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command");
-                        log.CmdSno = cmdSno;
-                        log.TrayId = trayId;
-                        _loggerManager.WriteLogTrace(log);
-
-                        using (var db = _dataAccessManger.GetDB())
-                        {
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command, Begin Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                _loggerManager.WriteLogTrace(log);
-                                return;
-                            }
-                            if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateEGVCmd) != ExecuteSQLResult.Success)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command, Update CmdMst Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (InsertStnToStnEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 6, cmdSno, source, dest, 5) == false)
-                            {
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create RGV StoreIn Command, Commit Fail");
-                                log.CmdSno = cmdSno;
-                                log.TrayId = trayId;
-                                _loggerManager.WriteLogTrace(log);
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        #endregion C02
-
-        private void StoreIn_C01_CreateEquCmd()
-        {
-            int bufferIndex = 40;
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = $"{CranePortNo.C01}";
-                    string dest = $"{dataObject[0].NewLoc}";
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInTrayOnStation) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_C013_CreateEquCmd()
-        {
-            int bufferIndex = 43;
-            if (_conveyor.GetBuffer(bufferIndex).Auto
-                && _conveyor.GetBuffer(bufferIndex).InMode
-                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-                && _conveyor.GetBuffer(bufferIndex).Presence
-                && _conveyor.GetBuffer(bufferIndex).Position
-                && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreInReady)
-            {
-                string trayId = PlcCommandIdToTrayId(_conveyor.GetBuffer(bufferIndex).CommandId);
-                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
-
-                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn, Tray Ready On Position");
-                log.CmdSno = string.Empty;
-                log.TrayId = trayId;
-                _loggerManager.WriteLogTrace(log);
-
-                if (_dataAccessManger.GetCmdMstByStoreIn(trayId, out var dataObject) == GetDataResult.Success)
-                {
-                    string cmdSno = dataObject[0].CmdSno;
-                    string source = $"{CranePortNo.A03_2}";
-                    string dest = $"{dataObject[0].NewLoc}";
-
-                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
-                    log.CmdSno = cmdSno;
-                    log.TrayId = trayId;
-                    _loggerManager.WriteLogTrace(log);
-
-                    using (var db = _dataAccessManger.GetDB())
-                    {
-                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            return;
-                        }
-                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInTrayOnStation) != ExecuteSQLResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 2, cmdSno, source, dest, 5) == false)
-                        {
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
-                            log.CmdSno = cmdSno;
-                            log.TrayId = trayId;
-                            _loggerManager.WriteLogTrace(log);
-                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void StoreIn_MFG_EquCmdFinish()
-        {
-            var stn1 = new List<string>()
-            {
-                StnNo.B10,
-                StnNo.B18,
-                StnNo.B12_5,
-                StnNo.B14_5,
-                StnNo.B15_4,
-                StnNo.B16_5,
-            };
-            if (_dataAccessManger.GetCmdMstByStoreInFinish(stn1, out var dataObject) == GetDataResult.Success)
-            {
-                foreach (var cmdMst in dataObject.Data)
-                {
-                    if (_dataAccessManger.GetEquCmd(cmdMst.CmdSno, out var equCmd) == GetDataResult.Success)
-                    {
-                        if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-                        {
-                            if (equCmd[0].CompleteCode == "92")
-                            {
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                                    {
-                                        return;
-                                    }
-                                    if (cmdMst.Trace == "23")
-                                    {
-                                        if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", "14") != ExecuteSQLResult.Success)
-                                        {
-                                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                                            return;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, Trace.StoreInRGVCmdFinish) != ExecuteSQLResult.Success)
-                                        {
-                                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                                            return;
-                                        }
-                                    }
-                                    if (_dataAccessManger.DeleteEquCmd(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-                                    {
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return;
-                                    }
-                                    if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                            else if (equCmd[0].CompleteCode.StartsWith("W"))
-                            {
-                                using (var db = _dataAccessManger.GetDB())
-                                {
-                                    if (_dataAccessManger.UpdateEquCmdRetry(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-                                    {
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        #endregion MFG
-
         #endregion StoreIn
 
         #region Other
         private void OtherProcess(object sender, ElapsedEventArgs e)
         {
             _otherProcess.Stop();
-            if (_isBQA)
-            {
-                Other_A10_AutomaticDoor();//OK
 
-                Other_A172_WriteCV();
-            }
-            else
-            {
-                Other_A012_AutomaticDoor();//OK
+            EmptyStoreIn_S101_WriteCV();
 
-                Other_A4_AutomaticDoor();//OK
+            EmptyStoreIn_S101_CreateEquCmd();
 
-                Other_B12_WriteCV();
+            EmptyStoreOut_S101_WriteCV();
 
-                Other_B14_WriteCV();
+            EmptyStoreOut_S101_CreateEquCmd();
 
-                Other_B142_WriteCV();
 
-                Other_B16_WriteCV();
-            }
+
+
+            Other_B12_WriteCV();
+
+            Other_B14_WriteCV();
+
+            Other_B142_WriteCV();
+
+            Other_B16_WriteCV();
+
+
+
 
             Other_LocToLoc();
 
             _otherProcess.Start();
         }
 
-        #region BQA
 
-        #region A10
-        private void Other_A10_AutomaticDoor()
+
+        #region MFG
+
+
+        private void EmptyStoreIn_S101_WriteCV()
         {
-            int bufferIndex = 8;
-            if (_dataAccessManger.GetEmpMst("A10", out var dataObject) == GetDataResult.Success)
+            int bufferIndex = 4;
+            List<string> stn = new List<string>()
             {
-                if (dataObject[0].OpenFlag)
+                StnNo.A1,
+            };
+            using (var db = _dataAccessManger.GetDB())
+            {
+                int loadType = 9;
+                if (_conveyor.GetBuffer(bufferIndex).EmptyINReady == 9) //滿九版,滿版訊號為9
                 {
-                    if (_conveyor.GetBuffer(bufferIndex).AutomaticDoor == false)
+                    if (_dataAccessManger.GetCmdMstByStoreInstart("A4", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
                     {
-                        if (_conveyor.GetBuffer(bufferIndex).Presence
-                            && _conveyor.GetBuffer(bufferIndex).Position
-                            && (_conveyor.GetBuffer(bufferIndex - 1).Presence
-                                || _conveyor.GetBuffer(bufferIndex - 2).Presence
-                                || _conveyor.GetBuffer(bufferIndex - 3).Presence
-                                || _conveyor.GetBuffer(bufferIndex - 4).Presence))
+                        string cmdSno = dataObject[0].CmdSno;
+
+                        var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Write StoreIn Command");
+                        log.CmdSno = cmdSno;
+                        _loggerManager.WriteLogTrace(log);
+
+                        //確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
+                        if (_conveyor.GetBuffer(bufferIndex - 3).Ready != Ready.StoreInReady
+                        && _conveyor.GetBuffer(bufferIndex - 3).Switch_Ack == 1)
                         {
-                            _conveyor.GetBuffer(bufferIndex).AutomaticDoorOpendAsync();
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreIn Ready, Can Switchmode");
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex - 3).Switch_Mode(1);
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Switchmode Complete");
+                            _loggerManager.WriteLogTrace(log);
                         }
-                    }
-                    else
-                    {
-                        if (_conveyor.GetBuffer(bufferIndex).Presence == false || _conveyor.GetBuffer(bufferIndex - 1).Presence || _conveyor.GetBuffer(bufferIndex - 2).Presence || _conveyor.GetBuffer(bufferIndex - 3).Presence)
+
+                        if (_conveyor.GetBuffer(bufferIndex).Auto
+                        && _conveyor.GetBuffer(bufferIndex).InMode
+                        && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                        && _conveyor.GetBuffer(bufferIndex).Presence == true
+                        && _conveyor.GetBuffer(bufferIndex).Error == false
+                        && _conveyor.GetBuffer(bufferIndex - 3).Ready == Ready.StoreInReady
+                        && _conveyor.GetBuffer(bufferIndex - 1).TrayType != 3  //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex - 2).TrayType != 3  //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex - 3).TrayType != 3) //為了不跟盤點命令衝突的條件)
                         {
-                            if (true)//3Min
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreIn Command");
+                            _loggerManager.WriteLogTrace(log);
+
+
+                            if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
                             {
-                                _conveyor.GetBuffer(bufferIndex).AutomaticDoorClosedAsync();
+                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte EmptyStoreIn Command To Buffer");
+                                log.CmdSno = cmdSno;
+
+                                _loggerManager.WriteLogTrace(log);
+
+                                _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, loadType);//寫入命令和模式
                             }
 
+                        }
+                    }
+                }
+            }
+        }
+
+        private void EmptyStoreIn_S101_CreateEquCmd()
+        {
+            int bufferIndex = 1;
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).InMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence
+                && _conveyor.GetBuffer(bufferIndex).Error == false)
+            {
+                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
+
+                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready EmptyStoreIn, Tray Ready On Position");
+                log.CmdSno = string.Empty;
+                _loggerManager.WriteLogTrace(log);
+
+                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
+                {
+
+                    string source = $"{CranePortNo.A1}";
+                    string dest = $"{dataObject[0].NewLoc}";
+
+                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void EmptyStoreOut_S101_WriteCV()
+        {
+            int bufferIndex = 4;
+            List<string> stn = new List<string>()
+            {
+                StnNo.A1,
+            };
+            using (var db = _dataAccessManger.GetDB())
+            {
+                string cmdSno = "";
+                int loadType = 4;
+                string LOC = "";
+                if (_conveyor.GetBuffer(bufferIndex).Presence == false) //沒有荷有，無空棧板需要補充
+                {
+                    InsertStoreInCmdMst(db, bufferIndex, "A4", 1, cmdSno, LOC, "S101", 1);
+                    var log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Write EmptyStoreOut Command");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    //確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
+                    if (_conveyor.GetBuffer(bufferIndex - 3).Ready != Ready.StoreInReady
+                        && _conveyor.GetBuffer(bufferIndex - 3).Switch_Ack == 1)
+                    {
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreOut Ready, Can Switchmode");
+                        _loggerManager.WriteLogTrace(log);
+
+                        _conveyor.GetBuffer(bufferIndex - 3).Switch_Mode(2);
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Empty StoreOut Switchmode Complete");
+                        _loggerManager.WriteLogTrace(log);
+                    }
+
+                    if (_conveyor.GetBuffer(bufferIndex - 3).Auto
+                    && _conveyor.GetBuffer(bufferIndex - 3).OutMode
+                    && _conveyor.GetBuffer(bufferIndex - 3).CommandId == 0
+                    && _conveyor.GetBuffer(bufferIndex - 3).Presence == false
+                    && _conveyor.GetBuffer(bufferIndex - 3).Error == false
+                    && _conveyor.GetBuffer(bufferIndex - 3).Ready == Ready.StoreOutReady
+                    && _conveyor.GetBuffer(bufferIndex - 1).TrayType != 3  //為了不跟盤點命令衝突的條件
+                    && _conveyor.GetBuffer(bufferIndex - 2).TrayType != 3  //為了不跟盤點命令衝突的條件
+                    && _conveyor.GetBuffer(bufferIndex - 3).TrayType != 3) //為了不跟盤點命令衝突的條件)
+                    {
+                        log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreOut Command");
+                        _loggerManager.WriteLogTrace(log);
+
+
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte EmptyStoreOut Command To Buffer");
+                            log.CmdSno = cmdSno;
+
+                            _loggerManager.WriteLogTrace(log);
+
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, loadType);//寫入命令和模式
+                            int path = 1;
+                            _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(path);//出庫都要寫入路徑編號，寫入路徑編號根據WMS寫入的棧口作為依據
                         }
 
                     }
                 }
             }
         }
-        #endregion A10
 
-        #region A17-2
-        private void Other_A172_WriteCV()
+        private void EmptyStoreOut_S101_CreateEquCmd()
         {
+            int bufferIndex = 1;
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).InMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence
+                && _conveyor.GetBuffer(bufferIndex).Error == false)
+            {
+                int loadType = _conveyor.GetBuffer(bufferIndex).LoadCategory;
+
+                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready EmptyStoreIn, Tray Ready On Position");
+                log.CmdSno = string.Empty;
+                _loggerManager.WriteLogTrace(log);
+
+                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
+                {
+
+                    string source = $"{CranePortNo.A1}";
+                    string dest = $"{dataObject[0].NewLoc}";
+
+                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
         }
-        #endregion A17-2
 
-        #endregion BQA
-
-        #region MFG
 
         #region A12
         private void Other_A012_AutomaticDoor()
@@ -2973,6 +1683,7 @@ namespace Mirle.ASRS.AWCS.Manager
         #region B14-2
         private void Other_B142_WriteCV()
         {
+            throw new NotImplementedException();
         }
         #endregion B14-2
 
@@ -3050,19 +1761,6 @@ namespace Mirle.ASRS.AWCS.Manager
                     return false;
                 }
 
-                if (int.TryParse(destination.Substring(0, 2), out var tmp))
-                {
-                    if (craneNo != (tmp + 1) / 2)
-                    {
-                        var log = new EquCmdLogTrace(bufferIndex, bufferName, "Check Crane No Fail, Please Check");
-                        log.CommandId = cmdSno;
-                        log.CraneNo = craneNo;
-                        log.Source = source;
-                        log.Destination = destination;
-                        _loggerManager.WriteLogTrace(log);
-                        return false;
-                    }
-
                     if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination) == false)
                     {
                         if (_dataAccessManger.InsertEquCmd(db, craneNo, cmdSno, ((int)EquCmdMode.InMode).ToString(), source, destination, priority) == ExecuteSQLResult.Success)
@@ -3090,17 +1788,8 @@ namespace Mirle.ASRS.AWCS.Manager
                     {
                         return false;
                     }
-                }
-                else
-                {
-                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Get Crane No Fail, Please Check");
-                    log.CommandId = cmdSno;
-                    log.CraneNo = craneNo;
-                    log.Source = source;
-                    log.Destination = destination;
-                    _loggerManager.WriteLogTrace(log);
-                    return false;
-                }
+                
+                
             }
             catch (Exception ex)
             {
@@ -3124,11 +1813,22 @@ namespace Mirle.ASRS.AWCS.Manager
                     return false;
                 }
 
-                if (int.TryParse(source.Substring(0, 2), out var tmp))
+
+                if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.OutMode, source, destination) == false)
                 {
-                    if (craneNo != (tmp + 1) / 2)
+                    if (_dataAccessManger.InsertEquCmd(db, craneNo, cmdSno, ((int)EquCmdMode.OutMode).ToString(), source, destination, priority) == ExecuteSQLResult.Success)
                     {
-                        var log = new EquCmdLogTrace(bufferIndex, bufferName, "Check Crane No Fail, Please Check");
+                        var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert Equ Cmd");
+                        log.CommandId = cmdSno;
+                        log.CraneNo = craneNo;
+                        log.Source = source;
+                        log.Destination = destination;
+                        _loggerManager.WriteLogTrace(log);
+                        return true;
+                    }
+                    else
+                    {
+                        var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert Equ Cmd Fail");
                         log.CommandId = cmdSno;
                         log.CraneNo = craneNo;
                         log.Source = source;
@@ -3136,12 +1836,45 @@ namespace Mirle.ASRS.AWCS.Manager
                         _loggerManager.WriteLogTrace(log);
                         return false;
                     }
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
-                    if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.OutMode, source, destination) == false)
-                    {
-                        if (_dataAccessManger.InsertEquCmd(db, craneNo, cmdSno, ((int)EquCmdMode.OutMode).ToString(), source, destination, priority) == ExecuteSQLResult.Success)
+
+            catch (Exception ex)
+            {
+                _loggerManager.Error(ex);
+                return false;
+            }
+        }
+
+
+        private bool InsertStoreOutCmdMst(DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
+        {
+            try
+            {
+                if (source.Length != 7)
+                {
+                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Check Source Fail, Please Check");
+                    log.CommandId = cmdSno;
+                    log.CraneNo = craneNo;
+                    log.Source = source;
+                    log.Destination = destination;
+                    _loggerManager.WriteLogTrace(log);
+                    return false;
+                }
+
+                if (int.TryParse(source.Substring(0, 2), out var tmp))
+                {
+                    
+
+                   
+                        if (_dataAccessManger.InsertCMD_MST(db, craneNo, cmdSno, ((int)EquCmdMode.OutMode).ToString(), source, destination, priority) == ExecuteSQLResult.Success)
                         {
-                            var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert Equ Cmd");
+                            var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert CMD_MST Cmd");
                             log.CommandId = cmdSno;
                             log.CraneNo = craneNo;
                             log.Source = source;
@@ -3151,7 +1884,7 @@ namespace Mirle.ASRS.AWCS.Manager
                         }
                         else
                         {
-                            var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert Equ Cmd Fail");
+                            var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert CMD_MST Fail");
                             log.CommandId = cmdSno;
                             log.CraneNo = craneNo;
                             log.Source = source;
@@ -3159,15 +1892,77 @@ namespace Mirle.ASRS.AWCS.Manager
                             _loggerManager.WriteLogTrace(log);
                             return false;
                         }
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    
+                   
                 }
                 else
                 {
-                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Get Crane No Fail, Please Check");
+                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Get source Fail, Please Check");
+                    log.CommandId = cmdSno;
+                    log.CraneNo = craneNo;
+                    log.Source = source;
+                    log.Destination = destination;
+                    _loggerManager.WriteLogTrace(log);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggerManager.Error(ex);
+                return false;
+            }
+        }
+
+        private bool InsertStoreInCmdMst(DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
+        {
+            try
+            {
+                if (source.Length != 4)
+                {
+                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Check Source Fail, Please Check");
+                    log.CommandId = cmdSno;
+                    log.CraneNo = craneNo;
+                    log.Source = source;
+                    log.Destination = destination;
+                    _loggerManager.WriteLogTrace(log);
+                    return false;
+                }
+
+                if (int.TryParse(source.Substring(0, 2), out var tmp))
+                {
+
+                    string cmdmode = ((int)EquCmdMode.InMode).ToString();
+                    if (bufferName=="A4")
+                    {
+                        cmdmode = ((int)EquCmdMode.EmptyInReady).ToString();
+                    }
+
+                    if (_dataAccessManger.InsertCMD_MST(db, craneNo, cmdSno,cmdmode, source, destination, priority) == ExecuteSQLResult.Success)
+                    {
+                        var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert CMD_MST Cmd");
+                        log.CommandId = cmdSno;
+                        log.CraneNo = craneNo;
+                        log.Source = source;
+                        log.Destination = destination;
+                        _loggerManager.WriteLogTrace(log);
+                        return true;
+                    }
+                    else
+                    {
+                        var log = new EquCmdLogTrace(bufferIndex, bufferName, "Insert CMD_MST Fail");
+                        log.CommandId = cmdSno;
+                        log.CraneNo = craneNo;
+                        log.Source = source;
+                        log.Destination = destination;
+                        _loggerManager.WriteLogTrace(log);
+                        return false;
+                    }
+
+
+                }
+                else
+                {
+                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Get source Fail, Please Check");
                     log.CommandId = cmdSno;
                     log.CraneNo = craneNo;
                     log.Source = source;
@@ -3288,13 +2083,14 @@ namespace Mirle.ASRS.AWCS.Manager
             }
         }
 
+
         private bool CheckExecutionEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination)
         {
             if (_dataAccessManger.GetEquCmd(cmdSno, out var equCmd) == GetDataResult.Success)
             {
                 if (equCmd[0].CmdSts == CmdSts.Queue.GetHashCode().ToString() || equCmd[0].CmdSts == CmdSts.Transferring.GetHashCode().ToString())
                 {
-                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Exists Command On Other Equ Execute, Please Check");
+                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Exists Command On Equ Execute, Please Check");
                     log.CommandId = cmdSno;
                     log.CraneNo = craneNo;
                     log.Source = source;
@@ -3304,7 +2100,7 @@ namespace Mirle.ASRS.AWCS.Manager
                 }
                 else
                 {
-                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Exists Command On Other Equ, Please Check");
+                    var log = new EquCmdLogTrace(bufferIndex, bufferName, "Exists Command On Equ, Please Check");
                     log.CommandId = cmdSno;
                     log.CraneNo = craneNo;
                     log.Source = source;
@@ -3315,44 +2111,10 @@ namespace Mirle.ASRS.AWCS.Manager
             }
             else
             {
-                bool bolFlag = true;
-                switch (equCmdMode)
-                {
-                    case EquCmdMode.InMode:
-                        bolFlag = CheckExecutionEquCmdByCrane(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination);
-                        break;
-                    case EquCmdMode.OutMode:
-                        bolFlag = CheckExecutionEquCmdByCrane(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.OutMode, source, destination);
-                        break;
-                    case EquCmdMode.LocToLoc:
-                        if (bolFlag)
-                        {
-                            bolFlag = CheckExecutionEquCmdByCrane(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination);
-                        }
-                        if (bolFlag)
-                        {
-                            bolFlag = CheckExecutionEquCmdByCrane(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.OutMode, source, destination);
-                        }
-                        break;
-                    case EquCmdMode.StnToStn:
-                        if (_dataAccessManger.GetEquCmdByLocToLoc(craneNo, out equCmd) == GetDataResult.Success)
-                        {
-                            var log = new EquCmdLogTrace(bufferIndex, bufferName, $"Exists Loc To Loc Execute, Count:{equCmd.Count}");
-                            log.CommandId = cmdSno;
-                            log.CraneNo = craneNo;
-                            log.Source = source;
-                            log.Destination = destination;
-                            _loggerManager.WriteLogTrace(log);
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                }
-                return bolFlag;
+                return false;
             }
         }
+
         private bool CheckExecutionEquCmdByCrane(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination)
         {
             if (equCmdMode == EquCmdMode.InMode)

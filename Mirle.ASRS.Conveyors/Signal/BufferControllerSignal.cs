@@ -14,6 +14,10 @@ namespace Mirle.ASRS.Conveyors.Signal
         public Word InitialNotice { get; protected internal set; }
         public WordBlock CommandData { get; protected internal set; }
 
+        public Word A4Emptysupply { get; protected internal set; }
+
+        public Word Switch_Mode { get; protected internal set; }
+
         public Bit AutomaticDoorOpend { get; protected internal set; }
         public Bit AutomaticDoorClosed { get; protected internal set; }
     }
