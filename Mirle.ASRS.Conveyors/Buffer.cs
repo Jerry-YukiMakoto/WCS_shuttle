@@ -41,6 +41,7 @@ namespace Mirle.ASRS.Conveyors
         public int CommandId => Signal.CommandId.GetValue();
         public int PathNotice => Signal.PathNotice.GetValue();
         public int LoadCategory => Signal.LoadCategory.GetValue();
+        public int CmdMode => Signal.CmdMode.GetValue();
         public int Ready => Signal.Ready.GetValue();
         public int ReadNotice => Signal.ReadNotice.GetValue();
         public int InitialNotice => Signal.InitialNotice.GetValue();
@@ -59,6 +60,12 @@ namespace Mirle.ASRS.Conveyors
         public bool LoadFinish => Signal.StatusSignal.LoadFinish.IsOn();
         public bool UnloadReq => Signal.StatusSignal.UnloadReq.IsOn();
         public bool UnloadFinish => Signal.StatusSignal.UnloadFinish.IsOn();
+
+        public int Switch_Ack => Signal.Switch_Ack.GetValue();
+
+        public int EmptyINReady => Signal.EmptyInReady.GetValue();
+
+        public int A2LV2 => Signal.A2LV2.GetValue();
 
         public int Weight => Signal.DataBuffer.Weight.GetValue();
         public string TrayId => Signal.DataBuffer.TrayId.GetValue().ToASCII();
@@ -223,6 +230,29 @@ namespace Mirle.ASRS.Conveyors
             return Task.Run(() =>
             {
                 Signal.ControllerSignal.AutomaticDoorClosed.SetOn();
+            });
+        }
+        public Task A4EmptysupplyOn()
+        {
+            return Task.Run(() =>
+            {
+                Signal.ControllerSignal.A4Emptysupply.SetValue(1);
+            });
+        }
+
+        public Task Switch_Mode(int mode)
+        {
+            return Task.Run(() =>
+            {
+                Signal.ControllerSignal.Switch_Mode.SetValue(mode);
+            });
+        }
+
+        public Task WritePathChabgeNotice(int path)
+        {
+            return Task.Run(() =>
+            {
+                Signal.ControllerSignal.PathChangeNotice.SetValue(path);
             });
         }
     }

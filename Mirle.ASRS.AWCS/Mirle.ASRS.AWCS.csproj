@@ -79,8 +79,8 @@
     <Compile Include="Manager\CVController.cs" />
     <Compile Include="CVCSHost.cs" />
     <Compile Include="Manager\DataAccessManger.cs" />
-    <Compile Include="Manager\WCSManager.cs" />
     <Compile Include="Manager\LoggerManager.cs" />
+    <Compile Include="Manager\WCSManager.cs" />
     <Compile Include="Model\DataAccess\CmdMst.cs" />
     <Compile Include="Model\DataAccess\CmdSts.cs" />
     <Compile Include="Model\DataAccess\EmpMst.cs" />
@@ -94,6 +94,7 @@
     <Compile Include="Model\PLCDefinitions\CranePortNo.cs" />
     <Compile Include="Model\PLCDefinitions\LoadCategory.cs" />
     <Compile Include="Model\PLCDefinitions\Path.cs" />
+    <Compile Include="Model\PLCDefinitions\PathNotice.cs" />
     <Compile Include="Model\PLCDefinitions\PickingDirection.cs" />
     <Compile Include="Model\PLCDefinitions\Ready.cs" />
     <Compile Include="Model\PLCDefinitions\StnNo.cs" />

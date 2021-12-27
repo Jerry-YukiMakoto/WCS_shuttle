@@ -44,30 +44,32 @@ namespace Mirle.ASRS.AWCS.Manager
             return GetDB().GetData(sql, out dataObject);
         }
 
-        public GetDataResult GetCmdMstByStoreOut(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
+        public GetDataResult GetCmdMstByStoreOut(string stations, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
                 string sql = "SELECT * FROM CMDMST ";
                 sql += $"WHERE CMDMODE IN ('{2}', '{3}') ";
                 sql += $"AND CMDSTS='{0}' ";
-                sql += $"AND STNNO IN (";
-
-                foreach (var stn in stations)
-                {
-                    if (sql.EndsWith(","))
-                    {
-                        sql += $" '{stn}'";
-                    }
-                    else
-                    {
-                        sql += $"'{stn}',";
-                    }
-                }
-                sql += $")";
+                sql += $"AND STNNO = '{stations} '";
                 return db.GetData(sql, out dataObject);
             }
         }
+
+        public GetDataResult GetCmdMstByStoreOutcheck(string stations, out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT COUNT(CmdSno) as COUNT FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{2}') ";
+                sql += $"AND CMDSTS='{0}' ";
+                sql += $"AND STNNO = '{stations} '";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+
+
+
         public GetDataResult GetCmdMstByStoreOut(IEnumerable<string> stations, string trayId, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
@@ -98,42 +100,24 @@ namespace Mirle.ASRS.AWCS.Manager
                 return db.GetData(sql, out dataObject);
             }
         }
-        public GetDataResult GetCmdMstByStoreIn(IEnumerable<string> stations, string trayId, out DataObject<CmdMst> dataObject)
+        public GetDataResult GetCmdMstByStoreInstart(string stations, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
                 string sql = "SELECT * FROM CMDMST ";
                 sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
                 sql += $"AND CMDSTS='{0}' ";
-                sql += $"AND TRAYID='{trayId}' ";
-                sql += $"AND STNNO IN (";
-
-                foreach (var stn in stations)
-                {
-                    if (stations.Last() == stn)
-                    {
-                        sql += $" '{stn}'";
-                    }
-                    else if (sql.EndsWith(","))
-                    {
-                        sql += $" '{stn}',";
-                    }
-                    else
-                    {
-                        sql += $"'{stn}',";
-                    }
-                }
-                sql += $")";
+                sql += $"AND STNNO = '{stations} '";
                 return db.GetData(sql, out dataObject);
             }
         }
-        public GetDataResult GetCmdMstByStoreIn(string trayId, out DataObject<CmdMst> dataObject)
+        public GetDataResult GetCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
                 string sql = "SELECT * FROM CMDMST ";
                 sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
-                sql += $"AND TRAYID='{trayId}' ";
+                sql += $"AND TRAYID='{cmdsno}' ";
                 sql += $"AND TRACE IN ('{21}', '{22}', '{24}', '{26}') ";
                 sql += $"AND CMDSTS='{1}' ";
                 return db.GetData(sql, out dataObject);
@@ -278,6 +262,32 @@ namespace Mirle.ASRS.AWCS.Manager
             sql += $")";
             return db.ExecuteSQL2(sql);
         }
+
+        public ExecuteSQLResult InsertCMD_MST(DB db, int craneNo, string cmdSno, string cmdMode, string source, string destination, int priority)
+        {
+            string sql = "INSERT INTO CMDMST (";
+            sql += "CMDSNO, ";
+            sql += "EQUNO, ";
+            sql += "CMDMODE, ";
+            sql += "CMDSTS, ";
+            sql += "SOURCE, ";
+            sql += "DESTINATION, ";
+            sql += "LOCSIZE, ";
+            sql += "PRIORITY, ";
+            sql += "RCVDT ";
+            sql += ") VALUES (";
+            sql += $"'{cmdSno}', ";
+            sql += $"'{craneNo}', ";
+            sql += $"'{cmdMode}', ";
+            sql += $"'{source}', ";
+            sql += $"'{destination}', ";
+            sql += $"'{0}', ";
+            sql += $"'{priority}', ";
+            sql += $"'{DateTime.Now:yyyy-MM-dd HH:mm:ss}'";
+            sql += $")";
+            return db.ExecuteSQL2(sql);
+        }
+
         public GetDataResult GetEquCmd(string cmdSno, out DataObject<EquCmd> dataObject)
         {
             using (var db = GetDB())

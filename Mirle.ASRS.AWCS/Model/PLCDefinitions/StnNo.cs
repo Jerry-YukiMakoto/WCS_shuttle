@@ -3,10 +3,10 @@
     public struct StnNo
     {
         public const string A08 = "C101";
-        public const string A11_1 = "S101";
-        public const string A12 = "C102";
-        public const string A13_1 = "C103";
-        public const string A17_4 = "AK01";
+        public const string A1 = "S101";
+        public const string A5 = "S201";
+        public const string A7 = "S301";
+        public const string A9 = "S401";
         public const string A19 = "SA19";
         public const string A13 = "C104";
         public const string A01 = "C101";
