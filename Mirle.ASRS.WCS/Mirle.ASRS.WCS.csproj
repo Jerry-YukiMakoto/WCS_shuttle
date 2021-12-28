@@ -81,11 +81,11 @@
     <Compile Include="View\frmCmdMaintance.Designer.cs">
       <DependentUpon>frmCmdMaintance.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\StockerSpeedMaintainView.cs">
+    <Compile Include="View\CraneSpeedMaintainView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="View\StockerSpeedMaintainView.Designer.cs">
-      <DependentUpon>StockerSpeedMaintainView.cs</DependentUpon>
+    <Compile Include="View\CraneSpeedMaintainView.Designer.cs">
+      <DependentUpon>CraneSpeedMaintainView.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

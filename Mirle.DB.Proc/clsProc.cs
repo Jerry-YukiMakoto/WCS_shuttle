@@ -23,7 +23,6 @@ namespace Mirle.DB.Proc
         private Fun.clsSno SNO = new Fun.clsSno();
         private Fun.clsLocMst LocMst = new Fun.clsLocMst();
         private Fun.clsProc proc;
-        private Fun.clsL2LCount L2LCount = new Fun.clsL2LCount();
         private Fun.clsAlarmData alarmData = new Fun.clsAlarmData();
         private Fun.clsCmd_Mst_His CMD_MST_HIS = new Fun.clsCmd_Mst_His();
         private Fun.clsUnitStsLog unitStsLog = new Fun.clsUnitStsLog();

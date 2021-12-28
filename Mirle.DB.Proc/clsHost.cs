@@ -13,10 +13,8 @@ namespace Mirle.DB.Proc
         private readonly clsTask task;
         private readonly clsAlarmData ALARMDATA;
         private readonly clsCmd_Mst_His CMD_MST_HIS;
-        private readonly clsEQ_Alarm EQ_Alarm;
         private readonly clsUnitStsLog unitStsLog;
         private readonly clsUnitModeDef unitModeDef;
-        private readonly clsL2LCount L2LCount;
         private static object _Lock = new object();
         private static bool _IsConn = false;
         public static bool IsConn
@@ -48,7 +46,6 @@ namespace Mirle.DB.Proc
             CMD_MST_HIS = new clsCmd_Mst_His(config);
             unitStsLog = new clsUnitStsLog(config);
             unitModeDef = new clsUnitModeDef(config);
-            L2LCount = new clsL2LCount(config);
         }
 
         public clsProc GetProcess()
@@ -85,10 +82,7 @@ namespace Mirle.DB.Proc
             return CMD_MST_HIS;
         }
 
-        public clsEQ_Alarm GetEQ_Alarm()
-        {
-            return EQ_Alarm;
-        }
+        
 
         public clsUnitStsLog GetUnitStsLog()
         {
@@ -100,10 +94,7 @@ namespace Mirle.DB.Proc
             return unitModeDef;
         }
 
-        public clsL2LCount GetL2LCount()
-        {
-            return L2LCount;
-        }
+       
 
         public List<Element_Port>[] GetLstPort()
         {
