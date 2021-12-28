@@ -73,10 +73,10 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http">
-      <HintPath>..\packages\System.Web.Http.dll</HintPath>
+      <HintPath>..\DLL\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.Owin">
-      <HintPath>..\packages\System.Web.Http.Owin.dll</HintPath>
+      <HintPath>..\DLL\System.Web.Http.Owin.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
