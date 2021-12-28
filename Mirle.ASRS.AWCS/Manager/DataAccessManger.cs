@@ -68,14 +68,23 @@ namespace Mirle.ASRS.AWCS.Manager
         }
 
 
+        public GetDataResult checkCraneNoReapeat( out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT COUNT (*) AS COUNT FROM EQUCMD WHERE CMDSTS IN ('0', '1')";
+                return db.GetData(sql, out dataObject);
+            }
+        }
 
-        public GetDataResult GetCmdMstByStoreOut(IEnumerable<string> stations, string trayId, out DataObject<CmdMst> dataObject)
+
+        public GetDataResult GetCmdMstByStoreOut(IEnumerable<string> stations, string CmdSno, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
                 string sql = "SELECT * FROM CMDMST ";
                 sql += $"WHERE CMDMODE IN ('{2}', '{3}') ";
-                sql += $"AND TRAYID='{trayId}' ";
+                sql += $"AND CmdSno='{CmdSno}' ";
                 sql += $"AND TRACE='{11}' ";
                 sql += $"AND CMDSTS='{1}' ";
                 sql += $"AND STNNO IN (";
@@ -116,12 +125,26 @@ namespace Mirle.ASRS.AWCS.Manager
             {
                 string sql = "SELECT * FROM CMDMST ";
                 sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
-                sql += $"AND TRAYID='{cmdsno}' ";
-                sql += $"AND TRACE IN ('{21}', '{22}', '{24}', '{26}') ";
+                sql += $"AND CmdSno='{cmdsno}' ";
+                sql += $"AND TRACE IN ('{21}') ";
                 sql += $"AND CMDSTS='{1}' ";
                 return db.GetData(sql, out dataObject);
             }
         }
+
+        public GetDataResult GetEmptyCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT * FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{1}') ";
+                sql += $"AND CmdSno='{cmdsno}' ";
+                sql += $"AND TRACE IN ('{41}') ";
+                sql += $"AND CMDSTS='{1}' ";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+
         public GetDataResult GetCmdMstByStoreInFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
@@ -146,14 +169,15 @@ namespace Mirle.ASRS.AWCS.Manager
                 return db.GetData(sql, out dataObject);
             }
         }
-        public GetDataResult GetCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
+
+        public GetDataResult GetEmptyCmdMstByStoreInFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
                 string sql = "SELECT * FROM CMDMST ";
-                sql += $"WHERE CMDMODE IN ('{2}', '{3}') ";
+                sql += $"WHERE CMDMODE IN ('{1}') ";
                 sql += $"AND CMDSTS='{1}' ";
-                sql += $"AND TRACE IN ('{12}', '{15}') ";
+                sql += $"AND TRACE IN ('{43}') ";
                 sql += $"AND STNNO IN (";
                 foreach (var stn in stations)
                 {
@@ -167,6 +191,66 @@ namespace Mirle.ASRS.AWCS.Manager
                     }
                 }
                 sql += $")";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+        public GetDataResult GetCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT * FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{2}', '{3}') ";
+                sql += $"AND CMDSTS='{1}' ";
+                sql += $"AND TRACE IN ('{12}') ";
+                sql += $"AND STNNO IN (";
+                foreach (var stn in stations)
+                {
+                    if (sql.EndsWith(","))
+                    {
+                        sql += $" '{stn}'";
+                    }
+                    else
+                    {
+                        sql += $"'{stn}',";
+                    }
+                }
+                sql += $")";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+
+        public GetDataResult GetEmptyCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT * FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{2}') ";
+                sql += $"AND CMDSTS='{1}' ";
+                sql += $"AND TRACE IN ('{32}') ";
+                sql += $"AND STNNO IN (";
+                foreach (var stn in stations)
+                {
+                    if (sql.EndsWith(","))
+                    {
+                        sql += $" '{stn}'";
+                    }
+                    else
+                    {
+                        sql += $"'{stn}',";
+                    }
+                }
+                sql += $")";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+
+        public GetDataResult GetLocToLoc( out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT * FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{5}') ";
+                sql += $"AND CMDSTS='{0}' ";
                 return db.GetData(sql, out dataObject);
             }
         }
