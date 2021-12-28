@@ -4,7 +4,6 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using WCS_API_Server.Models;
 using Mirle.Structure;
-using Mirle.DB.Object;
 using Mirle.Def;
 using Mirle.DataBase;
 
@@ -34,33 +33,33 @@ namespace WCS_API_Server
             {
                 CmdMstInfo cmd = new CmdMstInfo();
                 string strEM = "";
-                if (Body.priority == "1")
-                {   //更新優先級
-                    if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunUpdatePry(Body.taskNo, Body.priority, ref strEM))
-                        throw new Exception($"<{Body.taskNo}> {strEM}");
-                }
-                else
-                {
-                    cmd.CmdSno = clsDB_Proc.GetDB_Object().GetSNO().FunGetSeqNo(clsEnum.enuSnoType.CMDSNO);
-                    if (string.IsNullOrWhiteSpace(cmd.CmdSno))
-                    {
-                        throw new Exception($"<{Body.taskNo}>取得序號失敗！");
-                    }
-                    #region 填入cmd資訊
-                    cmd.CmdSno = Body.taskNo;
-                    cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
-                    cmd.IoType = Body.bussinessType;
-                    cmd.Loc = Body.locationFrom;
-                    cmd.NewLoc = Body.locationTo;
-                    cmd.Prt = Body.priority;
-                    cmd.CrtDate = Body.deliveryTime;
-                    cmd.Userid = "WMS";
-                    #endregion
+                //if (Body.priority == "1")
+                //{   //更新優先級
+                //    if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunUpdatePry(Body.taskNo, Body.priority, ref strEM))
+                //        throw new Exception($"<{Body.taskNo}> {strEM}");
+                //}
+                //else
+                //{
+                //    cmd.CmdSno = clsDB_Proc.GetDB_Object().GetSNO().FunGetSeqNo(clsEnum.enuSnoType.CMDSNO);
+                //    if (string.IsNullOrWhiteSpace(cmd.CmdSno))
+                //    {
+                //        throw new Exception($"<{Body.taskNo}>取得序號失敗！");
+                //    }
+                //    #region 填入cmd資訊
+                //    cmd.CmdSno = Body.taskNo;
+                //    cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
+                //    cmd.IoType = Body.bussinessType;
+                //    cmd.Loc = Body.locationFrom;
+                //    cmd.NewLoc = Body.locationTo;
+                //    cmd.Prt = Body.priority;
+                //    cmd.CrtDate = Body.deliveryTime;
+                //    cmd.Userid = "WMS";
+                //    #endregion
                     
-                    //寫入DB
-                    if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))
-                        throw new Exception(strEM);
-                }
+                //    //寫入DB
+                //    if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))
+                //        throw new Exception(strEM);
+                //}
                 rMsg.success = true;
                 rMsg.errMsg = "";
                 clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_ADD end!");

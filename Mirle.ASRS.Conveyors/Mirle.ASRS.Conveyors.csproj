@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mirle.ASRS.Converyor</RootNamespace>
     <AssemblyName>Mirle.ASRS.Conveyors</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
@@ -34,9 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mirle, Version=1.3.2.2012, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.1.3.2\lib\net472\Mirle.dll</HintPath>
-    </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.7.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
@@ -90,6 +87,10 @@
     <ProjectReference Include="..\Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj">
       <Project>{10da0e99-fd46-4c3f-a87a-c5b66fcb4a87}</Project>
       <Name>Mirle.MPLC.MCProtocol</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle\Mirle.csproj">
+      <Project>{3b2a6f5e-ce8f-4a70-9080-162b60073c70}</Project>
+      <Name>Mirle</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

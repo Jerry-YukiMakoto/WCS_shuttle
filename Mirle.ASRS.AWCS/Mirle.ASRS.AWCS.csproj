@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mirle.ASRS.AWCS</RootNamespace>
     <AssemblyName>WCS</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
@@ -42,13 +42,6 @@
     </Reference>
     <Reference Include="Config.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=d836a57afd299520, processorArchitecture=MSIL">
       <HintPath>..\packages\Config.Net.4.13.7\lib\net452\Config.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Mirle, Version=1.3.2.2012, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.1.3.2\lib\net472\Mirle.dll</HintPath>
-    </Reference>
-    <Reference Include="Mirle.ASRS.Conveyors, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLL\Mirle.ASRS.Conveyors.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.7.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -138,9 +131,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
+      <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
+      <Name>Mirle.ASRS.Conveyors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj">
       <Project>{10da0e99-fd46-4c3f-a87a-c5b66fcb4a87}</Project>
       <Name>Mirle.MPLC.MCProtocol</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle\Mirle.csproj">
+      <Project>{3b2a6f5e-ce8f-4a70-9080-162b60073c70}</Project>
+      <Name>Mirle</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
