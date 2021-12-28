@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32002.261
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.Conveyors", "Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj", "{20D2F96E-F248-4E52-9F5A-F1CF028F8E98}"
 EndProject
@@ -48,6 +48,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.Def", "Mirle.Def\Mirle.Def.csproj", "{906DA4EE-6B8D-40C7-BD49-A410FEB1D2C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.DB.WMS.Fun", "Mirle.DB.WMS.Fun\Mirle.DB.WMS.Fun.csproj", "{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj", "{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +133,10 @@ Global
 		{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

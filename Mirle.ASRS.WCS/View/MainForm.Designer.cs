@@ -35,12 +35,12 @@
             this.tlpMainSts = new System.Windows.Forms.TableLayoutPanel();
             this.lblTimer = new System.Windows.Forms.Label();
             this.picMirle = new System.Windows.Forms.PictureBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanelConn = new System.Windows.Forms.TableLayoutPanel();
             this.chkOnline = new System.Windows.Forms.CheckBox();
             this.lblDBConn = new System.Windows.Forms.Label();
             this.spcView = new System.Windows.Forms.SplitContainer();
             this.spcMainView = new System.Windows.Forms.SplitContainer();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanelSideBtn = new System.Windows.Forms.TableLayoutPanel();
             this.btnCraneSpeedMaintain = new System.Windows.Forms.Button();
             this.btnCmdMaintain = new System.Windows.Forms.Button();
             this.btnSendAPITest = new System.Windows.Forms.Button();
@@ -55,7 +55,7 @@
             this.splitContainer1.SuspendLayout();
             this.tlpMainSts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picMirle)).BeginInit();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanelConn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spcView)).BeginInit();
             this.spcView.Panel1.SuspendLayout();
             this.spcView.Panel2.SuspendLayout();
@@ -63,7 +63,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.spcMainView)).BeginInit();
             this.spcMainView.Panel2.SuspendLayout();
             this.spcMainView.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanelSideBtn.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCmd.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Grid1)).BeginInit();
@@ -92,30 +92,27 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.spcView);
             this.splitContainer1.Size = new System.Drawing.Size(1561, 749);
-            this.splitContainer1.SplitterDistance = 75;
+            this.splitContainer1.SplitterDistance = 83;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
             // tlpMainSts
             // 
-            this.tlpMainSts.ColumnCount = 7;
-            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tlpMainSts.ColumnCount = 4;
+            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.1643F));
+            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.1643F));
+            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.50709F));
+            this.tlpMainSts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.1643F));
             this.tlpMainSts.Controls.Add(this.lblTimer, 0, 0);
             this.tlpMainSts.Controls.Add(this.picMirle, 0, 0);
-            this.tlpMainSts.Controls.Add(this.tableLayoutPanel2, 6, 0);
+            this.tlpMainSts.Controls.Add(this.tableLayoutPanelConn, 3, 0);
             this.tlpMainSts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpMainSts.Location = new System.Drawing.Point(0, 0);
             this.tlpMainSts.Margin = new System.Windows.Forms.Padding(4);
             this.tlpMainSts.Name = "tlpMainSts";
             this.tlpMainSts.RowCount = 1;
             this.tlpMainSts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpMainSts.Size = new System.Drawing.Size(1561, 75);
+            this.tlpMainSts.Size = new System.Drawing.Size(1561, 83);
             this.tlpMainSts.TabIndex = 0;
             // 
             // lblTimer
@@ -124,10 +121,10 @@
             this.lblTimer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTimer.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTimer.ForeColor = System.Drawing.Color.Black;
-            this.lblTimer.Location = new System.Drawing.Point(227, 0);
+            this.lblTimer.Location = new System.Drawing.Point(225, 0);
             this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(215, 75);
+            this.lblTimer.Size = new System.Drawing.Size(213, 83);
             this.lblTimer.TabIndex = 268;
             this.lblTimer.Text = "yyyy/MM/dd hh:mm:ss";
             this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -139,27 +136,27 @@
             this.picMirle.Location = new System.Drawing.Point(4, 4);
             this.picMirle.Margin = new System.Windows.Forms.Padding(4);
             this.picMirle.Name = "picMirle";
-            this.picMirle.Size = new System.Drawing.Size(215, 67);
+            this.picMirle.Size = new System.Drawing.Size(213, 75);
             this.picMirle.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picMirle.TabIndex = 267;
             this.picMirle.TabStop = false;
             // 
-            // tableLayoutPanel2
+            // tableLayoutPanelConn
             // 
-            this.tableLayoutPanel2.BackColor = System.Drawing.SystemColors.Control;
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.chkOnline, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDBConn, 0, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(1342, 4);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(215, 67);
-            this.tableLayoutPanel2.TabIndex = 0;
+            this.tableLayoutPanelConn.BackColor = System.Drawing.SystemColors.Control;
+            this.tableLayoutPanelConn.ColumnCount = 1;
+            this.tableLayoutPanelConn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelConn.Controls.Add(this.chkOnline, 0, 1);
+            this.tableLayoutPanelConn.Controls.Add(this.lblDBConn, 0, 0);
+            this.tableLayoutPanelConn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanelConn.Location = new System.Drawing.Point(1343, 4);
+            this.tableLayoutPanelConn.Margin = new System.Windows.Forms.Padding(4);
+            this.tableLayoutPanelConn.Name = "tableLayoutPanelConn";
+            this.tableLayoutPanelConn.RowCount = 2;
+            this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelConn.Size = new System.Drawing.Size(214, 75);
+            this.tableLayoutPanelConn.TabIndex = 0;
             // 
             // chkOnline
             // 
@@ -168,10 +165,10 @@
             this.chkOnline.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkOnline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chkOnline.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkOnline.Location = new System.Drawing.Point(4, 37);
+            this.chkOnline.Location = new System.Drawing.Point(4, 41);
             this.chkOnline.Margin = new System.Windows.Forms.Padding(4);
             this.chkOnline.Name = "chkOnline";
-            this.chkOnline.Size = new System.Drawing.Size(207, 26);
+            this.chkOnline.Size = new System.Drawing.Size(206, 30);
             this.chkOnline.TabIndex = 2;
             this.chkOnline.Text = "OnLine";
             this.chkOnline.UseVisualStyleBackColor = true;
@@ -186,7 +183,7 @@
             this.lblDBConn.Location = new System.Drawing.Point(4, 0);
             this.lblDBConn.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblDBConn.Name = "lblDBConn";
-            this.lblDBConn.Size = new System.Drawing.Size(207, 33);
+            this.lblDBConn.Size = new System.Drawing.Size(206, 37);
             this.lblDBConn.TabIndex = 1;
             this.lblDBConn.Text = "DB Sts";
             this.lblDBConn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -207,8 +204,8 @@
             // spcView.Panel2
             // 
             this.spcView.Panel2.Controls.Add(this.tabControl1);
-            this.spcView.Size = new System.Drawing.Size(1561, 669);
-            this.spcView.SplitterDistance = 493;
+            this.spcView.Size = new System.Drawing.Size(1561, 661);
+            this.spcView.SplitterDistance = 487;
             this.spcView.SplitterWidth = 5;
             this.spcView.TabIndex = 0;
             // 
@@ -228,41 +225,41 @@
             // spcMainView.Panel2
             // 
             this.spcMainView.Panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.spcMainView.Size = new System.Drawing.Size(1561, 493);
+            this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanelSideBtn);
+            this.spcMainView.Size = new System.Drawing.Size(1561, 487);
             this.spcMainView.SplitterDistance = 1397;
             this.spcMainView.SplitterWidth = 5;
             this.spcMainView.TabIndex = 0;
             // 
-            // tableLayoutPanel1
+            // tableLayoutPanelSideBtn
             // 
-            this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.Control;
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.btnCraneSpeedMaintain, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.btnCmdMaintain, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.btnSendAPITest, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 6;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(157, 491);
-            this.tableLayoutPanel1.TabIndex = 0;
+            this.tableLayoutPanelSideBtn.BackColor = System.Drawing.SystemColors.Control;
+            this.tableLayoutPanelSideBtn.ColumnCount = 1;
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelSideBtn.Controls.Add(this.btnCraneSpeedMaintain, 0, 3);
+            this.tableLayoutPanelSideBtn.Controls.Add(this.btnCmdMaintain, 0, 2);
+            this.tableLayoutPanelSideBtn.Controls.Add(this.btnSendAPITest, 0, 1);
+            this.tableLayoutPanelSideBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanelSideBtn.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanelSideBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.tableLayoutPanelSideBtn.Name = "tableLayoutPanelSideBtn";
+            this.tableLayoutPanelSideBtn.RowCount = 6;
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(157, 485);
+            this.tableLayoutPanelSideBtn.TabIndex = 0;
             // 
             // btnCraneSpeedMaintain
             // 
             this.btnCraneSpeedMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnCraneSpeedMaintain.Font = new System.Drawing.Font("Times New Roman", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCraneSpeedMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 98);
             this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4);
             this.btnCraneSpeedMaintain.Name = "btnCraneSpeedMaintain";
@@ -275,7 +272,7 @@
             // btnCmdMaintain
             // 
             this.btnCmdMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnCmdMaintain.Font = new System.Drawing.Font("Times New Roman", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCmdMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCmdMaintain.Location = new System.Drawing.Point(4, 41);
             this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
@@ -288,7 +285,7 @@
             // btnSendAPITest
             // 
             this.btnSendAPITest.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnSendAPITest.Font = new System.Drawing.Font("Times New Roman", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSendAPITest.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSendAPITest.Location = new System.Drawing.Point(4, 4);
             this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4);
             this.btnSendAPITest.Name = "btnSendAPITest";
@@ -308,7 +305,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1561, 171);
+            this.tabControl1.Size = new System.Drawing.Size(1561, 169);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPageCmd
@@ -318,7 +315,7 @@
             this.tabPageCmd.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageCmd.Name = "tabPageCmd";
             this.tabPageCmd.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageCmd.Size = new System.Drawing.Size(1553, 142);
+            this.tabPageCmd.Size = new System.Drawing.Size(1553, 140);
             this.tabPageCmd.TabIndex = 0;
             this.tabPageCmd.Text = "即時命令";
             this.tabPageCmd.UseVisualStyleBackColor = true;
@@ -332,7 +329,7 @@
             this.Grid1.Name = "Grid1";
             this.Grid1.RowHeadersWidth = 62;
             this.Grid1.RowTemplate.Height = 24;
-            this.Grid1.Size = new System.Drawing.Size(1545, 134);
+            this.Grid1.Size = new System.Drawing.Size(1545, 132);
             this.Grid1.TabIndex = 0;
             // 
             // tabPagePallet
@@ -342,7 +339,7 @@
             this.tabPagePallet.Margin = new System.Windows.Forms.Padding(4);
             this.tabPagePallet.Name = "tabPagePallet";
             this.tabPagePallet.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPagePallet.Size = new System.Drawing.Size(1553, 142);
+            this.tabPagePallet.Size = new System.Drawing.Size(1553, 140);
             this.tabPagePallet.TabIndex = 1;
             this.tabPagePallet.Text = "母板相關";
             this.tabPagePallet.UseVisualStyleBackColor = true;
@@ -356,7 +353,7 @@
             this.Grid2.Name = "Grid2";
             this.Grid2.RowHeadersWidth = 62;
             this.Grid2.RowTemplate.Height = 24;
-            this.Grid2.Size = new System.Drawing.Size(1545, 134);
+            this.Grid2.Size = new System.Drawing.Size(1545, 132);
             this.Grid2.TabIndex = 0;
             // 
             // MainForm
@@ -372,15 +369,14 @@
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            //this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tlpMainSts.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picMirle)).EndInit();
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
+            this.tableLayoutPanelConn.ResumeLayout(false);
+            this.tableLayoutPanelConn.PerformLayout();
             this.spcView.Panel1.ResumeLayout(false);
             this.spcView.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.spcView)).EndInit();
@@ -388,7 +384,7 @@
             this.spcMainView.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.spcMainView)).EndInit();
             this.spcMainView.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanelSideBtn.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPageCmd.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Grid1)).EndInit();
@@ -407,9 +403,9 @@
         private System.Windows.Forms.DataGridView Grid2;
         private System.Windows.Forms.CheckBox chkOnline;
         private System.Windows.Forms.SplitContainer spcMainView;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelSideBtn;
         private System.Windows.Forms.TableLayoutPanel tlpMainSts;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelConn;
         private System.Windows.Forms.PictureBox picMirle;
         private System.Windows.Forms.Label lblTimer;
         private System.Windows.Forms.Button btnCraneSpeedMaintain;
