@@ -55,7 +55,6 @@
     <Compile Include="clsEQ_Alarm.cs" />
     <Compile Include="clsGetDB.cs" />
     <Compile Include="clsHost.cs" />
-    <Compile Include="clsL2LCount.cs" />
     <Compile Include="clsLocMst.cs" />
     <Compile Include="clsProc.cs" />
     <Compile Include="clsSno.cs" />

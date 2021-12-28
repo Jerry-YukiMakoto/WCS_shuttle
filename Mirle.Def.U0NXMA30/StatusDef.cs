@@ -11,23 +11,23 @@ namespace Mirle.Def.U0NXMA30
         /// <summary>
         /// 搬運結束
         /// </summary>
-        public const string moveTaskFinish = "11";
+        public const string moveTaskFinished = "11";
         /// <summary>
         /// 下達命令
         /// </summary>
-        public const string givingCmd = "12";
+        public const string cmdDelivered = "12";
         /// <summary>
         /// 正常完成
         /// </summary>
-        public const string normalFinish = "13";
+        public const string normalFinished = "13";
         /// <summary>
         /// 強制完成
         /// </summary>
-        public const string forceFinish = "14";
+        public const string forceFinished = "14";
         /// <summary>
         /// 強制取消
         /// </summary>
-        public const string forceCancel = "15";
+        public const string forceCanceled = "15";
         /// <summary>
         /// 任務異常
         /// </summary>

@@ -278,12 +278,12 @@ namespace Mirle.ASRS.WCS.View
                 mainTest = null;
         }
 
-        private StockerSpeedMaintainView StockerSpeed;
+        private CraneSpeedMaintainView StockerSpeed;
         private void btnCraneSpeedMaintain_Click(object sender, EventArgs e)
         {
             if (StockerSpeed == null)
             {
-                StockerSpeed = new StockerSpeedMaintainView();
+                StockerSpeed = new CraneSpeedMaintainView();
                 StockerSpeed.TopMost = true;
                 StockerSpeed.FormClosed += new FormClosedEventHandler(funCraneSpeedMaintain_FormClosed);
                 StockerSpeed.Show();

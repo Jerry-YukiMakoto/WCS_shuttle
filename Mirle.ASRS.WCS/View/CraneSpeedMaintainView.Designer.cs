@@ -1,6 +1,6 @@
 ﻿namespace Mirle.ASRS.WCS.View
 {
-    partial class StockerSpeedMaintainView
+    partial class CraneSpeedMaintainView
     {
         /// <summary>
         /// Required designer variable.

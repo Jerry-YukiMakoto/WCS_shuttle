@@ -96,8 +96,12 @@
     <Compile Include="clsHost.cs" />
     <Compile Include="clsTool.cs" />
     <Compile Include="clsWriLog.cs" />
+    <Compile Include="Functions\StackPalletsOut.cs" />
+    <Compile Include="Functions\StackPalletsIn.cs" />
     <Compile Include="Functions\TaskStateUpdate.cs" />
     <Compile Include="Functions\WcsCancel.cs" />
+    <Compile Include="ReportInfo\StackPalletsOutInfo.cs" />
+    <Compile Include="ReportInfo\StackPalletsInInfo.cs" />
     <Compile Include="View\MainTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
