@@ -13,7 +13,6 @@ namespace Mirle.DB.Proc
         private readonly clsTask task;
         private readonly clsAlarmData ALARMDATA;
         private readonly clsCmd_Mst_His CMD_MST_HIS;
-        private readonly clsEQ_Alarm EQ_Alarm;
         private readonly clsUnitStsLog unitStsLog;
         private readonly clsUnitModeDef unitModeDef;
         private readonly clsL2LCount L2LCount;
@@ -85,10 +84,7 @@ namespace Mirle.DB.Proc
             return CMD_MST_HIS;
         }
 
-        public clsEQ_Alarm GetEQ_Alarm()
-        {
-            return EQ_Alarm;
-        }
+        
 
         public clsUnitStsLog GetUnitStsLog()
         {

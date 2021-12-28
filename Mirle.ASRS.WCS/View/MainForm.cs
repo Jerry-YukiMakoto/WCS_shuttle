@@ -383,12 +383,12 @@ namespace Mirle.ASRS.WCS.View
             
             //clsWmsApi.FunInit(clInitSys.WmsApi_Config);
 
-            bool bFlag;
-            do
-            {
-                bFlag = clsDB_Proc.GetDB_Object().GetProcess().GetDevicePortProc();
-                Task.Delay(500).Wait();
-            } while (!bFlag);
+            //bool bFlag;
+            //do
+            //{
+            //    bFlag = clsDB_Proc.GetDB_Object().GetProcess().GetDevicePortProc();
+            //    Task.Delay(500).Wait();
+            //} while (!bFlag);
 
             
             //CheckPathIsWork.subStart();
