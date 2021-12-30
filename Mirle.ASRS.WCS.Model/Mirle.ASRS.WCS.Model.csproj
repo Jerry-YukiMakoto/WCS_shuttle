@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{95116D24-80F9-4BDE-94CA-7F3567C76CDF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mirle.ASRS.WCS.Model</RootNamespace>
+    <AssemblyName>Mirle.ASRS.WCS.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataAccess\CmdMst.cs" />
+    <Compile Include="DataAccess\CmdSts.cs" />
+    <Compile Include="DataAccess\EmpMst.cs" />
+    <Compile Include="DataAccess\EquCmd.cs" />
+    <Compile Include="DataAccess\EquCmdMode.cs" />
+    <Compile Include="DataAccess\Trace.cs" />
+    <Compile Include="LogTrace\EquCmdLogTrace.cs" />
+    <Compile Include="LogTrace\LogTraceBase.cs" />
+    <Compile Include="LogTrace\StoreInLogTrace.cs" />
+    <Compile Include="LogTrace\StoreOutLogTrace.cs" />
+    <Compile Include="PLCDefinitions\CranePortNo.cs" />
+    <Compile Include="PLCDefinitions\LoadCategory.cs" />
+    <Compile Include="PLCDefinitions\Path.cs" />
+    <Compile Include="PLCDefinitions\PathNotice.cs" />
+    <Compile Include="PLCDefinitions\PickingDirection.cs" />
+    <Compile Include="PLCDefinitions\Ready.cs" />
+    <Compile Include="PLCDefinitions\StnNo.cs" />
+    <Compile Include="PLCDefinitions\TrayType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mirle\Mirle.csproj">
+      <Project>{3b2a6f5e-ce8f-4a70-9080-162b60073c70}</Project>
+      <Name>Mirle</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

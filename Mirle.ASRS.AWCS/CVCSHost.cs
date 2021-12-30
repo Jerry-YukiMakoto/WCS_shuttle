@@ -10,18 +10,18 @@ using System.Windows.Forms;
 using Config.Net;
 
 using Mirle.ASRS.AWCS.Config;
-using Mirle.ASRS.AWCS.Manager;
-using Mirle.ASRS.AWCS.View;
+//using Mirle.ASRS.AWCS.Manager;
+//using Mirle.ASRS.AWCS.View;
 using Mirle.DataBase;
 
 namespace Mirle.ASRS.AWCS
 {
     public class CVCSHost : IDisposable
     {
-        private readonly WCSManager _wcsManager;
-        private readonly CVController _cvController;
-        private readonly LoggerManager _loggerManager;
-        private readonly DataAccessManger _dataAccessManger;
+        //private readonly WCSManager _wcsManager;
+        //private readonly CVController _cvController;
+        //private readonly LoggerManager _loggerManager;
+        //private readonly DataAccessManger _dataAccessManger;
         private readonly Form mainView;
 
         public CVCSHost()
@@ -44,37 +44,38 @@ namespace Mirle.ASRS.AWCS
             {
                 dbOptions.EnableWriteLog();
             }
-            _dataAccessManger = new DataAccessManger(this, dbOptions);
-            _loggerManager = new LoggerManager();
-            _cvController = new CVController(ini.CVCS.MPLCIP, ini.CVCS.MPLCPort, ini.CVCS.SignalGroup, ini.Simulator.Enable);
-            _wcsManager = new WCSManager(this, ini.CVCS.SignalGroup == 0);
+
+            //_dataAccessManger = new DataAccessManger(this, dbOptions);
+            //_loggerManager = new LoggerManager();
+            //_cvController = new CVController(ini.CVCS.MPLCIP, ini.CVCS.MPLCPort, ini.CVCS.SignalGroup, ini.Simulator.Enable);
+            //_wcsManager = new WCSManager(this, ini.CVCS.SignalGroup == 0);
 
            
-                mainView = new BQAMainView(this);
+            //mainView = new BQAMainView(this);
             
 
-            _wcsManager.Start();
+            //_wcsManager.Start();
         }
 
-        public CVController GetCVControllerr()
-        {
-            return _cvController;
-        }
+        //public CVController GetCVControllerr()
+        //{
+        //    return _cvController;
+        //}
 
-        public WCSManager GetWCSManager()
-        {
-            return _wcsManager;
-        }
+        //public WCSManager GetWCSManager()
+        //{
+        //    return _wcsManager;
+        //}
 
-        public LoggerManager GetLoggerManager()
-        {
-            return _loggerManager;
-        }
+        //public LoggerManager GetLoggerManager()
+        //{
+        //    return _loggerManager;
+        //}
 
-        public DataAccessManger GetDataAccessManger()
-        {
-            return _dataAccessManger;
-        }
+        //public DataAccessManger GetDataAccessManger()
+        //{
+        //    return _dataAccessManger;
+        //}
 
         public Form GetMainView()
         {
@@ -83,7 +84,7 @@ namespace Mirle.ASRS.AWCS
 
         public void AppClosing()
         {
-            _wcsManager.Stop();
+            //_wcsManager.Stop();
         }
 
         #region Dispose
@@ -95,9 +96,9 @@ namespace Mirle.ASRS.AWCS
             {
                 if (disposing)
                 {
-                    _cvController.Dispose();
-                    _loggerManager.Dispose();
-                    _wcsManager.Dispose();
+                    //_cvController.Dispose();
+                    //_loggerManager.Dispose();
+                    //_wcsManager.Dispose();
                     mainView.Dispose();
                 }
 

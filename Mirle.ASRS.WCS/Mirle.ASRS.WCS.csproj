@@ -117,6 +117,12 @@
     <Compile Include="Library\clInitSys.cs" />
     <Compile Include="Library\clsTool.cs" />
     <Compile Include="Library\clsWriLog.cs" />
+    <Compile Include="View\BufferView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\BufferView.Designer.cs">
+      <DependentUpon>BufferView.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,6 +143,12 @@
     <Compile Include="View\CraneSpeedMaintainView.Designer.cs">
       <DependentUpon>CraneSpeedMaintainView.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\MainPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\MainPanel.Designer.cs">
+      <DependentUpon>MainPanel.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -150,6 +162,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="View\MainPanel.resx">
+      <DependentUpon>MainPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -165,6 +180,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
+      <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
+      <Name>Mirle.ASRS.Conveyors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.ClearCmd.Proc\Mirle.DB.ClearCmd.Proc.csproj">
       <Project>{31deb747-36ca-4a92-8df1-89eee47a0fa4}</Project>
       <Name>Mirle.DB.ClearCmd.Proc</Name>

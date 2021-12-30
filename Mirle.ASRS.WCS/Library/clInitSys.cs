@@ -8,7 +8,7 @@ using Mirle.Structure;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace Mirle.ASRS.WCS
+namespace Mirle.ASRS.WCS.Library
 {
     public class clInitSys
     {

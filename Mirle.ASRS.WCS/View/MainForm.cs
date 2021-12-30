@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using System.Data;
-using System.Threading.Tasks;
 using Mirle.Grid.U0NXMA30;
-using System.Collections.Generic;
-using Mirle.Def;
-using Mirle.Def.U0NXMA30;
-using Mirle.Structure.Info;
 using Mirle.DB.Object;
 using Mirle.DataBase;
 using WCS_API_Server;
@@ -17,8 +11,7 @@ using Mirle.Logger;
 using WCS_API_Client.View;
 using Mirle.ASRS.Close.Program;
 using System.Threading;
-using Mirle.Structure;
-using WCS_API_Client.ReportInfo;
+using Mirle.ASRS.WCS.Library;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -51,30 +44,14 @@ namespace Mirle.ASRS.WCS.View
             FunEventInit();
             GridInit();
 
-            clsWriLog.Log.FunWriTraceLog_CV("WCS程式已開啟");
+            Library.clsWriLog.Log.FunWriTraceLog_CV("WCS程式已開啟");
             timRead.Enabled = true;
             timer1.Enabled = true;
         }
 
         private void FunEventInit()
         {
-            /*
-            clsMicronStocker.GetStockerById(1).GetCraneById(1).OnStatusChanged += Stocker_OnStatusChanged_1;
-            clsMicronStocker.GetStockerById(2).GetCraneById(1).OnStatusChanged += Stocker_OnStatusChanged_2;
-            clsMicronStocker.GetStockerById(3).GetCraneById(1).OnStatusChanged += Stocker_OnStatusChanged_3;
-            clsMicronStocker.GetStockerById(4).GetCraneById(1).OnStatusChanged += Stocker_OnStatusChanged_4;
-            clsMicronCV.GetConveyorController().GetMainView_Object().GetMonitor().OnStkLabelClick += MainForm_OnStkLabelClick;
-
-            for (int i = 1; i <= Conveyor.U2NMMA30.Signal.SignalMapper.BufferCount; i++)
-            {
-                clsMicronCV.GetConveyorController().GetBuffer(i).OnStatusChanged += Buffer_OnStatusChanged;
-                clsMicronCV.GetConveyorController().GetBuffer(i).OnPresenceChanged += Buffer_OnPresenceChanged;
-                clsMicronCV.GetConveyorController().GetBuffer(i).OnAlarmBitChanged += MainForm_OnAlarmBitChanged;
-                clsMicronCV.GetConveyorController().GetBuffer(i).OnAlarmBitChanged_2 += MainForm_OnAlarmBitChanged_2;
-            }
-
-            stockoutToStnCheck.OnLoadPortDataChanged += StockoutToStnCheck_OnLoadPortDataChanged;
-            */
+            
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -90,7 +67,7 @@ namespace Mirle.ASRS.WCS.View
                 {
                     chkOnline.Checked = false;
                     SpinWait.SpinUntil(() => false, 1000);
-                    clsWriLog.Log.FunWriTraceLog_CV("WCS程式已關閉！");
+                    Library.clsWriLog.Log.FunWriTraceLog_CV("WCS程式已關閉！");
                     throw new Exception();
                 }
             }
@@ -107,9 +84,9 @@ namespace Mirle.ASRS.WCS.View
         private void chkOnline_CheckedChanged(object sender, EventArgs e)
         {
             if (chkOnline.Checked)
-                clsWriLog.Log.FunWriTraceLog_CV("WCS OnLine.");
+                Library.clsWriLog.Log.FunWriTraceLog_CV("WCS OnLine.");
             else
-                clsWriLog.Log.FunWriTraceLog_CV("WCS OffLine.");
+                Library.clsWriLog.Log.FunWriTraceLog_CV("WCS OffLine.");
             /*
             for (int i = 1; i <= 4; i++)
             {
@@ -345,7 +322,7 @@ namespace Mirle.ASRS.WCS.View
             {
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
             finally
             {
@@ -365,7 +342,7 @@ namespace Mirle.ASRS.WCS.View
             {
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
             finally
             {
@@ -456,7 +433,7 @@ namespace Mirle.ASRS.WCS.View
             {
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
             finally
             {
@@ -485,7 +462,7 @@ namespace Mirle.ASRS.WCS.View
             {
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
                 Environment.Exit(0);
             }
         }
@@ -520,7 +497,7 @@ namespace Mirle.ASRS.WCS.View
             {
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
         }
 
