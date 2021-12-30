@@ -49,14 +49,9 @@ namespace Mirle.ASRS.AWCS
             _cvController = new CVController(ini.CVCS.MPLCIP, ini.CVCS.MPLCPort, ini.CVCS.SignalGroup, ini.Simulator.Enable);
             _wcsManager = new WCSManager(this, ini.CVCS.SignalGroup == 0);
 
-            if (ini.CVCS.SignalGroup == 0)
-            {
+           
                 mainView = new BQAMainView(this);
-            }
-            else
-            {
-                mainView = new MFGMainView(this);
-            }
+            
 
             _wcsManager.Start();
         }

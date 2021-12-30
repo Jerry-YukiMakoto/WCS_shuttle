@@ -116,12 +116,6 @@
     <Compile Include="View\MainPanel.Designer.cs">
       <DependentUpon>MainPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\MFGMainView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="View\MFGMainView.Designer.cs">
-      <DependentUpon>MFGMainView.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="View\SimulatorMainView.cs">
       <SubType>Form</SubType>
@@ -162,9 +156,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\MainPanel.resx">
       <DependentUpon>MainPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="View\MFGMainView.resx">
-      <DependentUpon>MFGMainView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\SimulatorMainView.resx">
       <DependentUpon>SimulatorMainView.cs</DependentUpon>

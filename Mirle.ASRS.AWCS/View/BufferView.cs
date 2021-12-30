@@ -39,20 +39,6 @@ namespace Mirle.ASRS.AWCS.View
             Refresh(lblReady, buffer.Ready.ToString());
             Refresh(lblTrayType, buffer.TrayType.ToString());
         }
-        public void Refresh_MFG(Conveyors.Buffer buffer)
-        {
-            Refresh(lblBufferName, buffer.BufferName, buffer.Auto, buffer.Manual, buffer.Error);
-            Refresh(lblCommandId, $"T{buffer.CommandId:D5}");
-            Refresh(lblInitialNotice, buffer.InitialNotice.ToString());
-            Refresh(lblLoadCategory, buffer.LoadCategory.ToString());
-            Refresh(lblPathNotice, buffer.PathNotice.ToString());
-            Refresh(lblPickingDirection, buffer.PickingDirection.ToString());
-            Refresh(lblPosition, buffer.Position.ToColor());
-            Refresh(lblPresence, buffer.Presence.ToColor());
-            Refresh(lblReadNotice, buffer.ReadNotice.ToString());
-            Refresh(lblReady, buffer.Ready.ToString());
-            Refresh(lblTrayType, buffer.TrayType.ToString());
-        }
 
         private void Refresh(Label label, string value)
         {
