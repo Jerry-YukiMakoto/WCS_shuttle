@@ -2010,7 +2010,7 @@ namespace Mirle.ASRS.AWCS.Manager
             }
         }
 
-        //檢查是否有重複的Crane命令，狀態為0和1的命令只能為1個
+        //擋住重複的命令號  //檢查是否有重複的Crane命令，狀態為0和1的命令只能為1個
         private bool CheckExecutionEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination)
         {
             if (_dataAccessManger.GetEquCmd(cmdSno, out var equCmd) == GetDataResult.Success)
