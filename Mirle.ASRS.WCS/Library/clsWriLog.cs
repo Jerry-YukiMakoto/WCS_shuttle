@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Mirle.WriLog;
 
-namespace Mirle.ASRS.WCS
+namespace Mirle.ASRS.WCS.Library
 {
     public class clsWriLog
     {

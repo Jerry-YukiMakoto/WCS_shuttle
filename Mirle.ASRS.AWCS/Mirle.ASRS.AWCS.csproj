@@ -67,29 +67,8 @@
     <Compile Include="Config\IDatabase.cs" />
     <Compile Include="Config\ISimulator.cs" />
     <Compile Include="Config\IWCS.cs" />
-    <Compile Include="Manager\CVController.cs" />
     <Compile Include="CVCSHost.cs" />
-    <Compile Include="Manager\DataAccessManger.cs" />
-    <Compile Include="Manager\LoggerManager.cs" />
-    <Compile Include="Manager\WCSManager.cs" />
-    <Compile Include="Model\DataAccess\CmdMst.cs" />
-    <Compile Include="Model\DataAccess\CmdSts.cs" />
-    <Compile Include="Model\DataAccess\EmpMst.cs" />
-    <Compile Include="Model\DataAccess\EquCmd.cs" />
-    <Compile Include="Model\DataAccess\EquCmdMode.cs" />
-    <Compile Include="Model\DataAccess\Trace.cs" />
-    <Compile Include="Model\LogTrace\EquCmdLogTrace.cs" />
-    <Compile Include="Model\LogTrace\StoreInLogTrace.cs" />
-    <Compile Include="Model\LogTrace\StoreOutLogTrace.cs" />
-    <Compile Include="Model\LogTrace\LogTraceBase.cs" />
-    <Compile Include="Model\PLCDefinitions\CranePortNo.cs" />
-    <Compile Include="Model\PLCDefinitions\LoadCategory.cs" />
-    <Compile Include="Model\PLCDefinitions\Path.cs" />
-    <Compile Include="Model\PLCDefinitions\PathNotice.cs" />
-    <Compile Include="Model\PLCDefinitions\PickingDirection.cs" />
-    <Compile Include="Model\PLCDefinitions\Ready.cs" />
-    <Compile Include="Model\PLCDefinitions\StnNo.cs" />
-    <Compile Include="Model\PLCDefinitions\TrayType.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -98,31 +77,6 @@
     </Compile>
     <Compile Include="Simulator\BufferSimulator.cs" />
     <Compile Include="Simulator\ConveyorSimulator.cs" />
-    <Compile Include="View\BQAMainView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="View\BQAMainView.Designer.cs">
-      <DependentUpon>BQAMainView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\BufferView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="View\BufferView.Designer.cs">
-      <DependentUpon>BufferView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="View\MainPanel.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="View\MainPanel.Designer.cs">
-      <DependentUpon>MainPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="View\SimulatorMainView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="View\SimulatorMainView.Designer.cs">
-      <DependentUpon>SimulatorMainView.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
@@ -150,15 +104,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="View\BQAMainView.resx">
-      <DependentUpon>BQAMainView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="View\MainPanel.resx">
-      <DependentUpon>MainPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="View\SimulatorMainView.resx">
-      <DependentUpon>SimulatorMainView.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

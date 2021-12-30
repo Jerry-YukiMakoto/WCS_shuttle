@@ -52,7 +52,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.DB.WMS.Fun", "Mirle.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj", "{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.CVCSHost", "Mirle.ASRS.CVHost\Mirle.ASRS.CVCSHost.csproj", "{9C53BAD8-AA05-4DA5-862B-455F5997ECF6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.WCS.Controller", "Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj", "{0BBE099E-8F0A-4712-A570-E90DD6EC7267}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.WCS.Model", "Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj", "{95116D24-80F9-4BDE-94CA-7F3567C76CDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -140,10 +142,14 @@ Global
 		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C53BAD8-AA05-4DA5-862B-455F5997ECF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C53BAD8-AA05-4DA5-862B-455F5997ECF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C53BAD8-AA05-4DA5-862B-455F5997ECF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C53BAD8-AA05-4DA5-862B-455F5997ECF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BBE099E-8F0A-4712-A570-E90DD6EC7267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BBE099E-8F0A-4712-A570-E90DD6EC7267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BBE099E-8F0A-4712-A570-E90DD6EC7267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BBE099E-8F0A-4712-A570-E90DD6EC7267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95116D24-80F9-4BDE-94CA-7F3567C76CDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95116D24-80F9-4BDE-94CA-7F3567C76CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95116D24-80F9-4BDE-94CA-7F3567C76CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95116D24-80F9-4BDE-94CA-7F3567C76CDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

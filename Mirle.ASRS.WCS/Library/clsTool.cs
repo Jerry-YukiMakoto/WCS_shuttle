@@ -9,7 +9,7 @@ using System.Data;
 using Mirle.DB.Object;
 using Mirle.DataBase;
 
-namespace Mirle.ASRS.WCS
+namespace Mirle.ASRS.WCS.Library
 {
     public class clsTool
     {
