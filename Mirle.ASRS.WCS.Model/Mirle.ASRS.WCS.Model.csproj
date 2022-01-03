@@ -46,6 +46,8 @@
     <Compile Include="DataAccess\EmpMst.cs" />
     <Compile Include="DataAccess\EquCmd.cs" />
     <Compile Include="DataAccess\EquCmdMode.cs" />
+    <Compile Include="DataAccess\IOType.cs" />
+    <Compile Include="DataAccess\Remark.cs" />
     <Compile Include="DataAccess\Trace.cs" />
     <Compile Include="LogTrace\EquCmdLogTrace.cs" />
     <Compile Include="LogTrace\LogTraceBase.cs" />

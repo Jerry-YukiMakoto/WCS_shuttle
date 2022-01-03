@@ -180,12 +180,12 @@ namespace Mirle.ASRS.Conveyors
         {
             return Task.Run(() =>
             {
-                int[] value = new int[3];
-                value[1] = 1;
-                value[2] = loadCategory;
+                int[] value = new int[2];
+                value[1] = loadCategory;
                 if (int.TryParse(commandId, out value[0]))
                 {
-                    Signal.ControllerSignal.CommandData.SetValue(value);
+                    Signal.ControllerSignal.CommandId.SetValue(value[0]);
+                    Signal.ControllerSignal.LoadCategory.SetValue(value[1]);
                 }
             });
         }
@@ -237,6 +237,13 @@ namespace Mirle.ASRS.Conveyors
             return Task.Run(() =>
             {
                 Signal.ControllerSignal.A4Emptysupply.SetValue(1);
+            });
+        }
+        public Task InitialNoticeTrigger()
+        {
+            return Task.Run(() =>
+            {
+                Signal.ControllerSignal.InitialNotice.SetValue(1);
             });
         }
 

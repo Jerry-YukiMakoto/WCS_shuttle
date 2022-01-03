@@ -137,8 +137,7 @@ namespace Mirle.ASRS.WCS.Controller
                             _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(CmdSno, CmdMode);
 
                             //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-
-                            if (IOType == 7 || IOType == 8 || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出，直接到A3
+                            if (IOType == IOtype.EmptyStroeOut || IOType == IOtype.Cycle || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出，直接到A3
                             {
                                 _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3);
                             }
@@ -149,6 +148,48 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
+                    #region 站口狀態自動確認-Update-CMD-Remark
+                    else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.NotOutMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.NotAutoMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.BufferError);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.CycleOperating);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.PresenceExist);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (CheckEmptyWillBefullOrNot() == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.EmptyWillBefull);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, CmdSno, Remark.NotStoreOutReady);
+                        return;
+                    }
+                    #endregion
                 }
             }
         }
@@ -235,6 +276,43 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
+                    #region 站口狀態自動確認-Update-CMD-Remark
+                    else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotOutMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreOutReady);
+                        return;
+                    }
+                    #endregion
                 }
             }
         }
@@ -254,8 +332,6 @@ namespace Mirle.ASRS.WCS.Controller
                     log.CmdSno = cmdSno;
                     log.LoadCategory = cmdmode;
                     _loggerManager.WriteLogTrace(log);
-
-
 
                     if (_conveyor.GetBuffer(bufferIndex).Auto
                         && _conveyor.GetBuffer(bufferIndex).OutMode
@@ -283,6 +359,43 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
+                    #region 站口狀態自動確認-Update-CMD-Remark
+                    else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotOutMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreOutReady);
+                        return;
+                    }
+                    #endregion
                 }
             }
         }
@@ -330,12 +443,51 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
+                    #region 站口狀態自動確認-Update-CMD-Remark
+                    else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotOutMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreOutReady);
+                        return;
+                    }
+                    #endregion
                 }
             }
         }
         private void StoreOut_S101_CreateEquCmd()
         {
             int bufferIndex = 1;
+            var db1 = _dataAccessManger.GetDB();
+            string cmdSno1 = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
             List<string> stn = new List<string>()
             {
                 StnNo.A1,
@@ -345,7 +497,8 @@ namespace Mirle.ASRS.WCS.Controller
                 && _conveyor.GetBuffer(bufferIndex).CommandId > 0
                 && _conveyor.GetBuffer(bufferIndex).Presence == false
                 && _conveyor.GetBuffer(bufferIndex).Error == false
-                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady)
+                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
+                && CheckEmptyWillBefullOrNot() == false)
             {
                 string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
                 int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
@@ -397,6 +550,39 @@ namespace Mirle.ASRS.WCS.Controller
                     }
                 }
             }
+            #region 站口狀態自動確認-Update-CMD-Remark
+            else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
+            {
+                _dataAccessManger.UpdateCmdMstRemark(db1, cmdSno1, Remark.NotOutMode);
+                return;
+            }
+            else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+            {
+                _dataAccessManger.UpdateCmdMstRemark(db1, cmdSno1, Remark.NotAutoMode);
+                return;
+            }
+            else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+            {
+                _dataAccessManger.UpdateCmdMstRemark(db1, cmdSno1, Remark.BufferError);
+                return;
+            }
+            else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+            {
+                _dataAccessManger.UpdateCmdMstRemark(db1, cmdSno1, Remark.PresenceExist);
+                return;
+            }
+            else if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
+            {
+                _dataAccessManger.UpdateCmdMstRemark(db1, cmdSno1, Remark.NotStoreOutReady);
+                return;
+            }
+            else if (CheckEmptyWillBefullOrNot() == true)//在成立Crane命令時，再次確認滿板條件，如果這時確認快滿板條件符合，要把已經寫入A1的命令號清除，於是要寫入buffer初始的點位
+            {
+                _dataAccessManger.UpdateCmdMstRemark(db1, cmdSno1, Remark.Crane_EmptyWillBefull);
+                _conveyor.GetBuffer(1).InitialNoticeTrigger();//A1初始
+                return;
+            }
+            #endregion
         }
 
 
@@ -718,7 +904,7 @@ namespace Mirle.ASRS.WCS.Controller
                         _loggerManager.WriteLogTrace(log);
                     }
 
-                    if (IOType == 1
+                    if (IOType == IOtype.NormalstorIn
                      && _conveyor.GetBuffer(bufferIndex).Auto
                     && _conveyor.GetBuffer(bufferIndex).InMode
                     && _conveyor.GetBuffer(bufferIndex).CommandId == 0
@@ -743,14 +929,14 @@ namespace Mirle.ASRS.WCS.Controller
 
                             _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode);//寫入命令和模式
 
-                            if (IOType == 1)
+                            if (IOType == IOtype.NormalstorIn)
                             {
                                 _conveyor.GetBuffer(4).A4EmptysupplyOn();//請A4補充母托一版
                             }
                         }
 
                     }
-                    else if (IOType == 6
+                    else if (IOType == IOtype.EmptyStoreIn
                      && _conveyor.GetBuffer(bufferIndex).Auto
                     && _conveyor.GetBuffer(bufferIndex).InMode
                     && _conveyor.GetBuffer(bufferIndex).CommandId == 0
@@ -776,47 +962,45 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
-                    #region 站口狀態自動確認寫log
+                    #region 站口狀態自動確認-Update-CMD-Remark
                     else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotInMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Error == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口buffer異常中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
                         return;
                     }
-                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3)
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口有荷有訊號，請移除荷有");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口有命令號，請確認命令號是否異常殘留");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex + 1).Presence == false)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.A4EmptyisEmpty);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreInReady);
                         return;
                     }
                     #endregion
@@ -852,7 +1036,6 @@ namespace Mirle.ASRS.WCS.Controller
                         log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
                         _loggerManager.WriteLogTrace(log);
 
-
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
                         {
                             log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
@@ -864,41 +1047,43 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
+                    #region 站口狀態自動確認-Update-CMD-Remark
                     else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotInMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Error == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口異常中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
                         return;
                     }
-                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
                         return;
                     }
-                    else if (_conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
                         return;
                     }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreInReady);
+                        return;
+                    }
+                    #endregion
 
                 }
             }
@@ -947,41 +1132,44 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
+                    #region 站口狀態自動確認-Update-CMD-Remark
                     else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotInMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Error == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口異常中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
                         return;
                     }
-                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
                         return;
                     }
-                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
                         return;
                     }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreInReady);
+                        return;
+                    }
+                    #endregion
+
                 }
             }
         }
@@ -1027,41 +1215,44 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
+                    #region 站口狀態自動確認-Update-CMD-Remark
                     else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是入庫模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotInMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口不是自動模式");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
                         return;
                     }
                     else if (_conveyor.GetBuffer(bufferIndex).Error == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口異常中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
                         return;
                     }
-                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
                         return;
                     }
-                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3)
+                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "站口執行盤點中");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
                         return;
                     }
+                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                        return;
+                    }
+                    else if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
+                    {
+                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreInReady);
+                        return;
+                    }
+                    #endregion
+
                 }
             }
         }
@@ -1395,10 +1586,6 @@ namespace Mirle.ASRS.WCS.Controller
         private void EmptyStoreIn_S101_WriteCV()
         {
             int bufferIndex = 4;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A1,
-            };
             using (var db = _dataAccessManger.GetDB())
             {
                 int loadType = 9;
@@ -1449,6 +1636,33 @@ namespace Mirle.ASRS.WCS.Controller
                             }
 
                         }
+                        #region 站口狀態自動確認-Update-CMD-Remark
+                        else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotInMode);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                            return;
+                        }
+                        #endregion
                     }
                 }
             }
@@ -1572,10 +1786,6 @@ namespace Mirle.ASRS.WCS.Controller
         private void EmptyStoreOut_S101_WriteCV()
         {
             int bufferIndex = 1;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A1,
-            };
             using (var db = _dataAccessManger.GetDB())
             {
                 string cmdSno = "";
@@ -1632,6 +1842,34 @@ namespace Mirle.ASRS.WCS.Controller
                             }
 
                         }
+                        #region 站口狀態自動確認-Update-CMD-Remark
+                        else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotOutMode);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
+                            return;
+                        }
+                        else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                        {
+                            _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                            return;
+                        }
+                        #endregion
+
 
                     }
 
@@ -1765,7 +2003,7 @@ namespace Mirle.ASRS.WCS.Controller
                 string dest = $"{dataObject[0].NewLoc}";
                 string cmdSno = $"{dataObject[0].CmdSno}";
 
-                var log = new StoreOutLogTrace(5, "LocToLoc", "Buffer Ready StoreIn");
+                var log = new StoreOutLogTrace(5, "LocToLoc", "LocToLoc Command Received");
                 log.CmdSno = cmdSno;
                 _loggerManager.WriteLogTrace(log);
 

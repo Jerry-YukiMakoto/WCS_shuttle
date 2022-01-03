@@ -265,6 +265,14 @@ namespace Mirle.ASRS.WCS.Controller
             sql += $"AND CMDSTS='{0}' ";
             return db.ExecuteSQL2(sql);
         }
+        public ExecuteSQLResult UpdateCmdMstRemark(DB db, string cmdSno,string REMARK)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
+            sql += $"REMARK='{REMARK}' ";
+            sql += $"WHERE CMDSNO='{cmdSno}' ";
+            return db.ExecuteSQL2(sql);
+        }
         public ExecuteSQLResult UpdateCmdMstTransferring(DB db, string cmdSno, string trace, int trayWeight)
         {
             string sql = "UPDATE CMDMST ";
