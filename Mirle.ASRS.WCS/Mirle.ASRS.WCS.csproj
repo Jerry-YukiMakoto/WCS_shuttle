@@ -143,12 +143,6 @@
     <Compile Include="View\CraneSpeedMaintainView.Designer.cs">
       <DependentUpon>CraneSpeedMaintainView.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\MainPanel.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="View\MainPanel.Designer.cs">
-      <DependentUpon>MainPanel.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -162,9 +156,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="View\MainPanel.resx">
-      <DependentUpon>MainPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -183,6 +174,10 @@
     <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
       <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
       <Name>Mirle.ASRS.Conveyors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
+      <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
+      <Name>Mirle.ASRS.WCS.Controller</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.ClearCmd.Proc\Mirle.DB.ClearCmd.Proc.csproj">
       <Project>{31deb747-36ca-4a92-8df1-89eee47a0fa4}</Project>
@@ -232,6 +227,9 @@
       <Project>{9f191071-9953-42ea-a7db-8e525821462e}</Project>
       <Name>WCS_API_Server</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" />

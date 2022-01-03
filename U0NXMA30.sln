@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle", "Mirle\Mirle.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.MPLC.MCProtocol", "Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj", "{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.AWCS", "Mirle.ASRS.AWCS\Mirle.ASRS.AWCS.csproj", "{AD9182AC-69B7-46B3-A1FF-1101F219D31A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCS_API_Server", "WCS_API_Server\WCS_API_Server.csproj", "{9F191071-9953-42EA-A7DB-8E525821462E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.Structure", "Mirle.Structure\Mirle.Structure.csproj", "{0A0D222E-0C76-4838-A8B1-6CA6F26CB225}"
@@ -50,11 +48,44 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.Def", "Mirle.Def\Mirl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.DB.WMS.Fun", "Mirle.DB.WMS.Fun\Mirle.DB.WMS.Fun.csproj", "{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj", "{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.WCS.Controller", "Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj", "{0BBE099E-8F0A-4712-A570-E90DD6EC7267}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.WCS.Model", "Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj", "{95116D24-80F9-4BDE-94CA-7F3567C76CDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{08D6C32B-6FB2-4B87-96FD-94DD19901C8F}"
+	ProjectSection(SolutionItems) = preProject
+		..\Documents\Remark.xlsx = ..\Documents\Remark.xlsx
+		..\Documents\Trace.xlsx = ..\Documents\Trace.xlsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebAPI Service", "WebAPI Service", "{1C909E7F-D06C-4979-8F67-6F6A50556387}"
+	ProjectSection(SolutionItems) = preProject
+		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021203.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021203.xlsx
+		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021210.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021210.xlsx
+		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schedules", "Schedules", "{2D582D2F-535F-431B-A611-5F85AAAB545C}"
+	ProjectSection(SolutionItems) = preProject
+		..\Documents\Schedules\金頂_自動倉庫工程進度_20211007.pdf = ..\Documents\Schedules\金頂_自動倉庫工程進度_20211007.pdf
+		..\Documents\Schedules\金頂自動倉庫_專案-進度表0720-會議版.xlsx = ..\Documents\Schedules\金頂自動倉庫_專案-進度表0720-會議版.xlsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Meeting Records", "Meeting Records", "{76DE24F1-5BC0-4DCF-9524-C1114F2F30FB}"
+	ProjectSection(SolutionItems) = preProject
+		..\Documents\金頂_ASRS_v5規劃資料20200428.pptx = ..\Documents\金頂_ASRS_v5規劃資料20200428.pptx
+		..\Documents\Meeting Recoords\金頂開發討論.pptx = ..\Documents\Meeting Recoords\金頂開發討論.pptx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "通訊協定", "通訊協定", "{B0F1BD7B-4A17-4254-9152-6DB17F5D76E7}"
+	ProjectSection(SolutionItems) = preProject
+		..\Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx = ..\Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Layout", "Layout", "{124CFB59-D643-4136-87B5-3019B1F4DA40}"
+	ProjectSection(SolutionItems) = preProject
+		..\Documents\1HFFAK01.dwg = ..\Documents\1HFFAK01.dwg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,10 +105,6 @@ Global
 		{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD9182AC-69B7-46B3-A1FF-1101F219D31A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD9182AC-69B7-46B3-A1FF-1101F219D31A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD9182AC-69B7-46B3-A1FF-1101F219D31A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD9182AC-69B7-46B3-A1FF-1101F219D31A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F191071-9953-42EA-A7DB-8E525821462E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F191071-9953-42EA-A7DB-8E525821462E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F191071-9953-42EA-A7DB-8E525821462E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -138,10 +165,6 @@ Global
 		{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD4818FF-FEFA-48F2-A7FE-F1007D3CFBBC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4EABFF9-2F65-4D46-B693-7C99A9AC5200}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0BBE099E-8F0A-4712-A570-E90DD6EC7267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0BBE099E-8F0A-4712-A570-E90DD6EC7267}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BBE099E-8F0A-4712-A570-E90DD6EC7267}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -153,6 +176,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1C909E7F-D06C-4979-8F67-6F6A50556387} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
+		{2D582D2F-535F-431B-A611-5F85AAAB545C} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
+		{76DE24F1-5BC0-4DCF-9524-C1114F2F30FB} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
+		{B0F1BD7B-4A17-4254-9152-6DB17F5D76E7} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
+		{124CFB59-D643-4136-87B5-3019B1F4DA40} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6263D58B-FD44-44E9-9C09-215EAEA0AA01}

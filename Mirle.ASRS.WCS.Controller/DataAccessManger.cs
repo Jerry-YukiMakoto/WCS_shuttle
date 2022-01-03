@@ -7,31 +7,33 @@ using System.Threading.Tasks;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.DataBase;
+using Mirle.Def;
 
 namespace Mirle.ASRS.WCS.Controller
 {
     public class DataAccessManger
     {
-        private readonly DBOptions _dbOptions;
+        private readonly clsDbConfig _dbConfig;
         private readonly LoggerManager _loggerManager;
 
-        public DataAccessManger(CVCSHost host, DBOptions options)
+        public DataAccessManger(clsDbConfig dbConfig)
         {
-            _loggerManager = host.GetLoggerManager();
-            _dbOptions = options;
+            _loggerManager = ControllerReader.GetLoggerManager();
+            _dbConfig = dbConfig;
         }
 
         public DB GetDB()
         {
-            if (_dbOptions.DBType == DBTypes.OracleClient)
+
+            if (_dbConfig.DBType == DBTypes.OracleClient)
             {
-                var db = new OracleClient(_dbOptions);
+                var db = new OracleClient(_dbConfig);
                 db.Connect();
                 return db;
             }
             else
             {
-                var db = new SqlServer(_dbOptions);
+                var db = new SqlServer(_dbConfig);
                 db.Connect();
                 return db;
             }

@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Mirle.ASRS.WCS.Controller;
 
 namespace Mirle.ASRS.WCS.View
 {
     public partial class MainPanel : Form
     {
-        private readonly CVCSHost _host = new CVCSHost();
+        private readonly ControllerReader _host = new ControllerReader();
         public MainPanel()
         {
             InitializeComponent();
@@ -20,14 +21,19 @@ namespace Mirle.ASRS.WCS.View
 
         private void MainPanel_Load(object sender, EventArgs e)
         {
-            var child = _host.GetMainView();
+            MainForm frm = new MainForm();
+            frm.Show();
 
-            child.TopLevel = false;
-            child.FormBorderStyle = FormBorderStyle.None;
-            child.Dock = DockStyle.Fill;
-            child.Parent = splitContainer1.Panel1;
-            splitContainer1.Panel1.Controls.Add(child);
-            child.Show();
+            #region Mark
+            //var child = _host.GetMainView();
+
+            //child.TopLevel = false;
+            //child.FormBorderStyle = FormBorderStyle.None;
+            //child.Dock = DockStyle.Fill;
+            //child.Parent = splitContainer1.Panel1;
+            //splitContainer1.Panel1.Controls.Add(child);
+            //child.Show();
+            #endregion Mark
         }
 
         private void MainPanel_FormClosing(object sender, FormClosingEventArgs e)

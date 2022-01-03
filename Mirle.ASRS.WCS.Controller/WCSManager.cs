@@ -24,14 +24,12 @@ namespace Mirle.ASRS.WCS.Controller
         private readonly Timer _storeInProcess = new Timer();
         private readonly Timer _storeOutProcess = new Timer();
         private readonly Timer _otherProcess = new Timer();
-
-        private bool _storeOut_B02_RGVCmdCreateChange = false;
-
-        public WCSManager(CVCSHost host, bool isBQA)
+        
+        public WCSManager(bool isBQA)
         {
-            _conveyor = host.GetCVControllerr().GetConveryor();
-            _loggerManager = host.GetLoggerManager();
-            _dataAccessManger = host.GetDataAccessManger();
+            _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+            _loggerManager = ControllerReader.GetLoggerManager();
+            _dataAccessManger = ControllerReader.GetDataAccessManger();
             _isBQA = isBQA;
 
             _storeOutProcess.Interval = 500;
