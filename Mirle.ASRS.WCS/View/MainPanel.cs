@@ -24,6 +24,7 @@ namespace Mirle.ASRS.WCS.View
             MainForm frm = new MainForm();
             frm.Show();
 
+            #region Mark
             //var child = _host.GetMainView();
 
             //child.TopLevel = false;
@@ -32,7 +33,7 @@ namespace Mirle.ASRS.WCS.View
             //child.Parent = splitContainer1.Panel1;
             //splitContainer1.Panel1.Controls.Add(child);
             //child.Show();
-            
+            #endregion Mark
         }
 
         private void MainPanel_FormClosing(object sender, FormClosingEventArgs e)
