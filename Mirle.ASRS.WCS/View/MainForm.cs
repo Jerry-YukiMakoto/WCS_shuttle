@@ -12,6 +12,7 @@ using WCS_API_Client.View;
 using Mirle.ASRS.Close.Program;
 using System.Threading;
 using Mirle.ASRS.WCS.Library;
+using Mirle.ASRS.WCS.Controller;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -357,7 +358,14 @@ namespace Mirle.ASRS.WCS.View
         {
             var archive = new AutoArchive();
             archive.Start();
-            
+            ControllerReader.FunGetController(clInitSys.DbConfig, clInitSys.CV_Config);
+
+            _unityContainer = new UnityContainer();
+            _unityContainer.RegisterInstance(new WMSWCSController());
+            _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
+            clearCmd = new DB.ClearCmd.Proc.clsHost();
+
+            #region Mark
             //clsWmsApi.FunInit(clInitSys.WmsApi_Config);
 
             //bool bFlag;
@@ -367,17 +375,13 @@ namespace Mirle.ASRS.WCS.View
             //    Task.Delay(500).Wait();
             //} while (!bFlag);
 
-            
             //CheckPathIsWork.subStart();
-            
+
             //reUpdateTaskCompleteCmd_Proc.subStart();
-            
-            _unityContainer = new UnityContainer();
-            _unityContainer.RegisterInstance(new WMSWCSController());
-            _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
-            clearCmd = new DB.ClearCmd.Proc.clsHost();
+
             //ChangeSubForm(clsMicronCV.GetConveyorController().GetMainView());
             //FunInitStockerStsForm();
+            #endregion Mark
         }
 
         #region Grid顯示

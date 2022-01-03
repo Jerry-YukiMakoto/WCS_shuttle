@@ -37,11 +37,9 @@ namespace Mirle.ASRS.WCS.Library
                    .Build();
 
                 FunDbConfig(lcsini);
-                FunSysConfig(lcsini);
                 FunApiConfig(lcsini);
                 FunDeviceConfig(lcsini);
                 FunPlcConfig(lcsini);
-                //FunLoadCVAlarmIni();
             }
             catch(Exception ex)
             {
@@ -76,10 +74,7 @@ namespace Mirle.ASRS.WCS.Library
             DbConfig_WMS.WriteLog = true;
         }
 
-        private static void FunSysConfig(ASRSINI lcsini)
-        {
-            L2L_MaxCount = lcsini.System_Info.L2L_MaxCount;
-        }
+       
         
 
         private static void FunApiConfig(ASRSINI lcsini)
@@ -134,52 +129,6 @@ namespace Mirle.ASRS.WCS.Library
 
             CV_Config.CycleCount_Max = lcsini.CV.CycleCount_Max;
         }
-
-        
-        //public static void FunLoadCVAlarmIni()
-        //{
-        //    try
-        //    {
-        //        string strFileName = null;
-        //        strFileName = Application.StartupPath + "\\Config\\CVAlarm.ini";
-
-        //        if (!System.IO.File.Exists(strFileName))
-        //        {
-        //            MessageBox.Show("找不到.ini資料，請洽系統管理人員 !!", "MIRLE", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        //            Environment.Exit(0);
-        //        }
-
-        //        string strAppName = "", strKeyName = "";
-        //        string[] bit = new string[32];
-        //        for (int i=1; i <= clsMicronCV.GetBufferCount(); i++)
-        //        {
-        //            strAppName = "A1-" + i.ToString().PadLeft(2, '0');
-                    
-        //            for (int j = 0; j< 32; j++)
-        //            {
-        //                strKeyName = "bit" + j.ToString();
-        //                try
-        //                {
-        //                    bit[j] = funReadParam(strFileName, strAppName, strKeyName);   
-        //                }
-        //                catch
-        //                {
-        //                    bit[j] = "";
-        //                }
-                                            
-        //            }
-        //            clsMicronCV.CV_Alarm.Add(i, bit);
-        //        }
-                 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-        //    }
-        //}
-
 
         /// <summary>
         /// 讀取ini檔的單一欄位
