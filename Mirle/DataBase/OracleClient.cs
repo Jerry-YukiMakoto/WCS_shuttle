@@ -3,7 +3,6 @@ using System.Data;
 using System.Reflection;
 
 using Oracle.ManagedDataAccess.Client;
-using Mirle.Def;
 
 namespace Mirle.DataBase
 {
@@ -13,7 +12,7 @@ namespace Mirle.DataBase
         {
         }
         [Obsolete]
-        public OracleClient(clsDbConfig config) : base(config)
+        public OracleClient(IDBConfig config) : base(config)
         {
         }
 

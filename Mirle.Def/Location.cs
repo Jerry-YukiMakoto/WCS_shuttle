@@ -1,4 +1,4 @@
-﻿using Mirle.Route;
+﻿using Mirle.DRCS;
 
 namespace Mirle.Def
 {
@@ -35,13 +35,13 @@ namespace Mirle.Def
             }
         }
 
-        public static void AddPath_Double(RouteController routeService, Location loc1, Location loc2)
+        public static void AddPath_Double(RouteService routeService, Location loc1, Location loc2)
         {
             routeService.AddPath(loc1, loc2);
             routeService.AddPath(loc2, loc1);
         }
 
-        public static void AddPath_Single(RouteController routeService, Location loc1, Location loc2)
+        public static void AddPath_Single(RouteService routeService, Location loc1, Location loc2)
         {
             routeService.AddPath(loc1, loc2);
         }

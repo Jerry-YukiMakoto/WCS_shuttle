@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using Mirle.Def;
 
 namespace Mirle.DataBase
 {
@@ -12,7 +11,7 @@ namespace Mirle.DataBase
         }
 
         [Obsolete]
-        public SqlServer(clsDbConfig config) : base(config)
+        public SqlServer(IDBConfig config) : base(config)
         {
         }
 

@@ -39,12 +39,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        public GetDataResult GetEmpMst(string stn, out DataObject<EmpMst> dataObject)
-        {
-            string sql = "";
-            return GetDB().GetData(sql, out dataObject);
-        }
-
+        #region 改寫至DB.Proc & DB.Fun完成
         public GetDataResult GetCmdMstByStoreOut(string stations, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
@@ -69,6 +64,32 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
+        public GetDataResult GetCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT * FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
+                sql += $"AND CmdSno='{cmdsno}' ";
+                sql += $"AND TRACE IN ('{21}') ";
+                sql += $"AND CMDSTS='{1}' ";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+
+        public GetDataResult GetCmdMstByStoreInstart(string stations, out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT * FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
+                sql += $"AND CMDSTS='{0}' ";
+                sql += $"AND STNNO = '{stations} '";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+
+        #endregion 改寫至DB.Proc & DB.Fun完成
 
         public GetDataResult checkCraneNoReapeat( out DataObject<CmdMst> dataObject)
         {
@@ -110,29 +131,8 @@ namespace Mirle.ASRS.WCS.Controller
                 return db.GetData(sql, out dataObject);
             }
         }
-        public GetDataResult GetCmdMstByStoreInstart(string stations, out DataObject<CmdMst> dataObject)
-        {
-            using (var db = GetDB())
-            {
-                string sql = "SELECT * FROM CMDMST ";
-                sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
-                sql += $"AND CMDSTS='{0}' ";
-                sql += $"AND STNNO = '{stations} '";
-                return db.GetData(sql, out dataObject);
-            }
-        }
-        public GetDataResult GetCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
-        {
-            using (var db = GetDB())
-            {
-                string sql = "SELECT * FROM CMDMST ";
-                sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
-                sql += $"AND CmdSno='{cmdsno}' ";
-                sql += $"AND TRACE IN ('{21}') ";
-                sql += $"AND CMDSTS='{1}' ";
-                return db.GetData(sql, out dataObject);
-            }
-        }
+        
+        
 
         public GetDataResult GetEmptyCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
         {

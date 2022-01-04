@@ -64,6 +64,10 @@
     <Compile Include="clsPortDef.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
+      <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
+      <Name>Mirle.ASRS.WCS.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.WMS.Proc\Mirle.DB.WMS.Proc.csproj">
       <Project>{553bd8cf-f4c1-4b39-97ab-42cc2f7c8187}</Project>
       <Name>Mirle.DB.WMS.Proc</Name>
@@ -88,14 +92,15 @@
       <Project>{0a0d222e-0c76-4838-a8b1-6ca6f26cb225}</Project>
       <Name>Mirle.Structure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Mirle\Mirle.csproj">
+      <Project>{3b2a6f5e-ce8f-4a70-9080-162b60073c70}</Project>
+      <Name>Mirle</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Mirle">
-      <Version>1.3.2</Version>
-    </PackageReference>
     <PackageReference Include="Mirle.MPLC.MCProtocol">
       <Version>1.0.2</Version>
     </PackageReference>

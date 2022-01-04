@@ -3,6 +3,7 @@ using Mirle.Def;
 using System.Data;
 using Mirle.Structure;
 using Mirle.DataBase;
+using Mirle.ASRS.WCS.Model.DataAccess;
 
 namespace Mirle.DB.Fun
 {
@@ -10,6 +11,45 @@ namespace Mirle.DB.Fun
     {
         private clsTool tool = new clsTool();
 
+        public GetDataResult GetCmdMstByStoreOut(string stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND STNNO = '{stations} '";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByStoreOutcheck(string stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT COUNT(CmdSno) as COUNT FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND STNNO = '{stations} '";
+            return db.GetData(sql, out dataObject);
+            
+        }
+
+        public GetDataResult GetCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}', '{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND CmdSno='{cmdsno}' ";
+            sql += $"AND TRACE IN ('{21}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByStoreInstart(string stations, out DataObject<CmdMst> dataObject, SqlServer db) 
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}', '{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND STNNO = '{stations} '";
+            return db.GetData(sql, out dataObject);
+        }
+
+        #region Micron Fun
         public int FunGetFinishCommand(ref DataTable dtTmp, SqlServer db)
         {
             try
@@ -869,5 +909,7 @@ namespace Mirle.DB.Fun
                 return false;
             }
         }
+
+        #endregion
     }
 }
