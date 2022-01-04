@@ -80,7 +80,7 @@ namespace Mirle.ASRS.WCS.Controller
         }
 
 
-        public GetDataResult GetCmdMstByStoreOut(IEnumerable<string> stations, string CmdSno, out DataObject<CmdMst> dataObject)
+        public GetDataResult GetCmdMstByStoreOut(string stations, string CmdSno, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
@@ -89,24 +89,7 @@ namespace Mirle.ASRS.WCS.Controller
                 sql += $"AND CmdSno='{CmdSno}' ";
                 sql += $"AND TRACE='{11}' ";
                 sql += $"AND CMDSTS='{1}' ";
-                sql += $"AND STNNO IN (";
-
-                foreach (var stn in stations)
-                {
-                    if (stations.Last() == stn)
-                    {
-                        sql += $" '{stn}'";
-                    }
-                    else if (sql.EndsWith(","))
-                    {
-                        sql += $" '{stn}',";
-                    }
-                    else
-                    {
-                        sql += $"'{stn}',";
-                    }
-                }
-                sql += $")";
+                sql += $"AND STNNO = '{stations} '";
                 return db.GetData(sql, out dataObject);
             }
         }

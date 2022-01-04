@@ -14,14 +14,10 @@ namespace Mirle.ASRS.Conveyors
         private readonly bool[] _alarmBit = new bool[16];
 
         private bool _onIniatlNotice = false;
-        private bool _onAutomaticDoor = false;
-        private bool _onReadNotice = false;
 
         public delegate void AlarmEventHandler(object sender, AlarmEventArgs e);
         public delegate void BufferEventHandler(object sender, BufferEventArgs e);
         public delegate void InitialNoticeEventHandler(object sender, BufferEventArgs e);
-        public delegate void AutomaticDoorEventHandler(object sender, BufferEventArgs e);
-        public delegate void ReadNoticeEventHandler(object sender, ReadNoticeEventArgs e);
 
         public event AlarmEventHandler OnAlarmTrigger;
         public event AlarmEventHandler OnAlarmClear;
@@ -29,9 +25,6 @@ namespace Mirle.ASRS.Conveyors
         public event BufferEventHandler OnBufferPathNoticeChange;
         public event InitialNoticeEventHandler OnIniatlNotice;
         public event InitialNoticeEventHandler OnIniatlNoticeComplete;
-        public event AutomaticDoorEventHandler OnAutomaticDoorOpend;
-        public event AutomaticDoorEventHandler OnAutomaticDoorClose;
-        public event ReadNoticeEventHandler OnReadNotice;
 
         public BufferSignal Signal { get; }
 
@@ -52,29 +45,12 @@ namespace Mirle.ASRS.Conveyors
         public bool Manual => Signal.StatusSignal.Auto.IsOff() && Signal.StatusSignal.Manual.IsOn();
         public bool Presence => Signal.StatusSignal.Presence.IsOn();
         public bool Position => Signal.StatusSignal.Position.IsOn();
-        public bool Finish => Signal.StatusSignal.Finish.IsOn();
         public int PickingDirection => Signal.PickingDirection.GetValue();
         public int TrayType => Signal.TrayType.GetValue();
-        public bool AutomaticDoor => Signal.StatusSignal.AutomaticDoor.IsOn();
-        public bool LoadReq => Signal.StatusSignal.LoadReq.IsOn();
-        public bool LoadFinish => Signal.StatusSignal.LoadFinish.IsOn();
-        public bool UnloadReq => Signal.StatusSignal.UnloadReq.IsOn();
-        public bool UnloadFinish => Signal.StatusSignal.UnloadFinish.IsOn();
-
         public int Switch_Ack => Signal.Switch_Ack.GetValue();
-
         public int EmptyINReady => Signal.EmptyInReady.GetValue();
-
         public int A2LV2 => Signal.A2LV2.GetValue();
 
-        public int Weight => Signal.DataBuffer.Weight.GetValue();
-        public string TrayId => Signal.DataBuffer.TrayId.GetValue().ToASCII();
-        public string FosbId => Signal.DataBuffer.FosbId.GetValue().ToASCII();
-        public string Plant => Signal.DataBuffer.Plant.GetValue().ToASCII();
-        public string Plant_Left => Signal.DataBuffer.Plant_Left.GetValue().ToASCII();
-        public string Plant_Right => Signal.DataBuffer.Plant_Right.GetValue().ToASCII();
-        public string FosbId_Left => Signal.DataBuffer.FosbId_Left.GetValue().ToASCII();
-        public string FosbId_Right => Signal.DataBuffer.FosbId_Right.GetValue().ToASCII();
 
         public Buffer(BufferSignal signal)
         {
@@ -83,52 +59,39 @@ namespace Mirle.ASRS.Conveyors
 
         protected internal virtual void Refresh()
         {
-            if (Signal.PathNotice.GetValue() > 0 && Signal.PathNotice.GetValue() == Signal.ControllerSignal.PathNotice.GetValue()
-                && Signal.LoadCategory.GetValue() > 0 && Signal.LoadCategory.GetValue() == Signal.ControllerSignal.LoadCategory.GetValue()
-                && Signal.CommandId.GetValue() > 0 && Signal.CommandId.GetValue() == Signal.ControllerSignal.CommandId.GetValue())
+            if (Signal.CmdMode.GetValue() > 0 && Signal.CmdMode.GetValue() == Signal.ControllerSignal.LoadCategory.GetValue()
+                )
             {
-                Signal.ControllerSignal.CommandData.Clear();
+                Signal.ControllerSignal.LoadCategory.Clear();
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
-            else if (Signal.LoadCategory.GetValue() > 0 && Signal.LoadCategory.GetValue() == Signal.ControllerSignal.LoadCategory.GetValue()
-                && Signal.CommandId.GetValue() > 0 && Signal.CommandId.GetValue() == Signal.ControllerSignal.CommandId.GetValue())
+            else if (Signal.CommandId.GetValue() > 0 && Signal.CommandId.GetValue() == Signal.ControllerSignal.CommandId.GetValue())
             {
-                Signal.ControllerSignal.CommandData.Clear();
+                Signal.ControllerSignal.CommandId.Clear();
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
-            if (Signal.PathNotice.GetValue() > 0 && Signal.PathNotice.GetValue() == Signal.ControllerSignal.PathNotice.GetValue())
+            if (Signal.ControllerSignal.PathChangeNotice.GetValue() > 0)
             {
-                Signal.ControllerSignal.PathNotice.SetValue(0);
+                Signal.ControllerSignal.PathChangeNotice.SetValue(0);
                 OnBufferPathNoticeChange?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
-            CheckReadNotice();
-            CheckAutomaticDoor();
+            if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)
+            {
+                Signal.ControllerSignal.A4Emptysupply.SetValue(0);
+                OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
+            }
+
+            if (Signal.ControllerSignal.Switch_Mode.GetValue() > 0)
+            {
+                Signal.ControllerSignal.Switch_Mode.SetValue(0);
+                OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
+            }
             CheckIniatlNotice();
             CheckAlarmBit();
         }
 
-        private void CheckReadNotice()
-        {
-            if (_onReadNotice == false && Signal.ReadNotice.GetValue() == 1)
-            {
-                _onReadNotice = true;
-                int weight = Signal.DataBuffer.Weight.GetValue();
-                string trayId = Signal.DataBuffer.TrayId.GetValue().ToASCII();
-                string fosbId = Signal.DataBuffer.FosbId.GetValue().ToASCII();
-                string fosbId_Left = Signal.DataBuffer.FosbId_Left.GetValue().ToASCII();
-                string fosbId_Right = Signal.DataBuffer.FosbId_Right.GetValue().ToASCII();
-                string plant = Signal.DataBuffer.Plant.GetValue().ToASCII();
-                string plant_Left = Signal.DataBuffer.Plant_Left.GetValue().ToASCII();
-                string plant_Right = Signal.DataBuffer.Plant_Right.GetValue().ToASCII();
-                OnReadNotice?.Invoke(this, new ReadNoticeEventArgs(Signal.BufferIndex, Signal.BufferName, weight, trayId, fosbId, fosbId_Left, fosbId_Right, plant, plant_Left, plant_Right));
-            }
-            else if (_onReadNotice == true && Signal.ReadNotice.GetValue() == 0)
-            {
-                _onReadNotice = false;
-            }
-        }
         private void CheckAlarmBit()
         {
             for (int i = 0; i < 15; i++)
@@ -163,75 +126,26 @@ namespace Mirle.ASRS.Conveyors
                 OnIniatlNoticeComplete?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
         }
-        private void CheckAutomaticDoor()
-        {
-            if (_onAutomaticDoor == false && Signal.StatusSignal.AutomaticDoor.IsOn())
-            {
-                _onAutomaticDoor = true;
-                OnAutomaticDoorOpend?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
-            }
-            else if (_onAutomaticDoor == true && Signal.StatusSignal.AutomaticDoor.IsOff())
-            {
-                _onAutomaticDoor = false;
-                OnAutomaticDoorClose?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
-            }
-        }
-        public Task WriteCommandIdAsync(string commandId, int loadCategory)
+
+        public Task<bool> WriteCommandIdAsync(string commandId, int loadCategory)
         {
             return Task.Run(() =>
             {
                 int[] value = new int[2];
                 value[1] = loadCategory;
-                if (int.TryParse(commandId, out value[0]))
-                {
-                    Signal.ControllerSignal.CommandId.SetValue(value[0]);
-                    Signal.ControllerSignal.LoadCategory.SetValue(value[1]);
+            int.TryParse(commandId, out value[0]);
+                if(Signal.ControllerSignal.CommandId.SetValue(value[0])==true)
+                 {
+                    return Signal.ControllerSignal.LoadCategory.SetValue(value[1]);
                 }
-            });
-        }
+                else
+                {
+                    return Signal.ControllerSignal.CommandId.SetValue(value[0]);
+                }
 
-        public Task WriteCommandIdAsync(string commandId, int path, int loadCategory)
-        {
-            return Task.Run(() =>
-            {
-                int[] value = new int[3];
-                value[1] = path;
-                value[2] = loadCategory;
-                if (int.TryParse(commandId, out value[0]))
-                {
-                    Signal.ControllerSignal.CommandData.SetValue(value);
-                }
             });
         }
-        public Task WritePathNoticeAsync(int path)
-        {
-            return Task.Run(() =>
-            {
-                Signal.ControllerSignal.PathNotice.SetValue(path);
-                Signal.ControllerSignal.PathChangeNotice.SetValue(1);
-            });
-        }
-        public Task WriteNoticeInitalAsync()
-        {
-            return Task.Run(() =>
-            {
-                Signal.ControllerSignal.InitialNotice.SetValue(1);
-            });
-        }
-        public Task AutomaticDoorOpendAsync()
-        {
-            return Task.Run(() =>
-            {
-                Signal.ControllerSignal.AutomaticDoorOpend.SetOn();
-            });
-        }
-        public Task AutomaticDoorClosedAsync()
-        {
-            return Task.Run(() =>
-            {
-                Signal.ControllerSignal.AutomaticDoorClosed.SetOn();
-            });
-        }
+        
         public Task A4EmptysupplyOn()
         {
             return Task.Run(() =>
@@ -255,11 +169,11 @@ namespace Mirle.ASRS.Conveyors
             });
         }
 
-        public Task WritePathChabgeNotice(int path)
+        public Task<bool> WritePathChabgeNotice(int path)
         {
             return Task.Run(() =>
             {
-                Signal.ControllerSignal.PathChangeNotice.SetValue(path);
+                return Signal.ControllerSignal.PathChangeNotice.SetValue(path);
             });
         }
     }

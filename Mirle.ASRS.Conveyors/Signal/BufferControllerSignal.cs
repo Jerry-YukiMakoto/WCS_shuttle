@@ -18,7 +18,5 @@ namespace Mirle.ASRS.Conveyors.Signal
 
         public Word Switch_Mode { get; protected internal set; }
 
-        public Bit AutomaticDoorOpend { get; protected internal set; }
-        public Bit AutomaticDoorClosed { get; protected internal set; }
     }
 }

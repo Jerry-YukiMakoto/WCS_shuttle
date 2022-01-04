@@ -52,17 +52,9 @@ namespace Mirle.ASRS.WCS.Controller
                 _plcHost.Start();
             }
 
-            _converyor.OnSystemAlarmClear += Converyor_OnSystemAlarmClear;
-            _converyor.OnSystemAlarmTrigger += Converyor_OnSystemAlarmTrigger;
             foreach (var buffer in _converyor.Buffers)
             {
-                buffer.OnAlarmClear += Buffer_OnAlarmClear;
-                buffer.OnAlarmTrigger += Buffer_OnAlarmTrigger;
-                buffer.OnAutomaticDoorClose += Buffer_OnAutomaticDoorClose;
-                buffer.OnAutomaticDoorOpend += Buffer_OnAutomaticDoorOpend;
                 buffer.OnIniatlNotice += Buffer_OnIniatlNotice;
-                buffer.OnIniatlNoticeComplete += Buffer_OnIniatlNoticeComplete;
-                buffer.OnReadNotice += Buffer_OnReadNotice;
             }
 
             _converyor.Start();
@@ -72,53 +64,24 @@ namespace Mirle.ASRS.WCS.Controller
         {
             if (signalGroup == 0)
             {
-                yield return new BlockInfo(new DDeviceRange("D1001", "D1310"), "Read", 0);
-                yield return new BlockInfo(new DDeviceRange("D2001", "D2102"), "DataBuffer", 1);
-                yield return new BlockInfo(new DDeviceRange("D3001", "D3310"), "Write", 2);
+                yield return new BlockInfo(new DDeviceRange("D101", "D210"), "Read", 0);
+                yield return new BlockInfo(new DDeviceRange("D3101", "D3210"), "Write", 1);
             }
             else
             {
-                yield return new BlockInfo(new DDeviceRange("D1001", "D1310"), "Read", 0);
-                yield return new BlockInfo(new DDeviceRange("D2001", "D2102"), "DataBuffer", 1);
-                yield return new BlockInfo(new DDeviceRange("D3001", "D3310"), "Write", 2);
+                yield return new BlockInfo(new DDeviceRange("D101", "D210"), "Read", 0);
+                yield return new BlockInfo(new DDeviceRange("D3101", "D3210"), "Write", 1);
             }
         }
 
-        private void Converyor_OnSystemAlarmTrigger(object sender, AlarmEventArgs e)
-        {
-        }
 
-        private void Converyor_OnSystemAlarmClear(object sender, AlarmEventArgs e)
-        {
-        }
 
-        private void Buffer_OnReadNotice(object sender, ReadNoticeEventArgs e)
-        {
-        }
-
-        private void Buffer_OnIniatlNoticeComplete(object sender, BufferEventArgs e)
-        {
-        }
 
         private void Buffer_OnIniatlNotice(object sender, BufferEventArgs e)
         {
         }
 
-        private void Buffer_OnAutomaticDoorOpend(object sender, BufferEventArgs e)
-        {
-        }
-
-        private void Buffer_OnAutomaticDoorClose(object sender, BufferEventArgs e)
-        {
-        }
-
-        private void Buffer_OnAlarmTrigger(object sender, AlarmEventArgs e)
-        {
-        }
-
-        private void Buffer_OnAlarmClear(object sender, AlarmEventArgs e)
-        {
-        }
+      
 
         public Conveyor GetConveryor()
         {
