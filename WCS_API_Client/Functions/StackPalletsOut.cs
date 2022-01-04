@@ -8,7 +8,7 @@ using WCS_API_Client.ReportInfo;
 
 namespace WCS_API_Client.Functions
 {
-    internal class StackPalletsOut
+    public class StackPalletsOut
     {
         private WebApiConfig _config = new WebApiConfig();
         public StackPalletsOut(WebApiConfig Config)
