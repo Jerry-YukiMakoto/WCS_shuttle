@@ -11,7 +11,7 @@ namespace Mirle.WebAPI.U2NMMA30
     {
         private WebApiConfig _config = new WebApiConfig();
         private TaskStateUpdate taskStateUpdate;
-        private WcsCancel wcsCancel;
+        
 
         public clsHost(WebApiConfig Config)
         {
@@ -23,10 +23,7 @@ namespace Mirle.WebAPI.U2NMMA30
         {
             return taskStateUpdate;
         }
-        public WcsCancel GetWcsCancel()
-        {
-            return wcsCancel;
-        }
+       
         
      }
 }
