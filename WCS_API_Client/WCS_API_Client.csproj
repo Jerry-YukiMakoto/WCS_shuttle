@@ -98,8 +98,9 @@
     <Compile Include="clsWriLog.cs" />
     <Compile Include="Functions\StackPalletsOut.cs" />
     <Compile Include="Functions\StackPalletsIn.cs" />
+    <Compile Include="Functions\DisplayTaskStatus.cs" />
     <Compile Include="Functions\TaskStateUpdate.cs" />
-    <Compile Include="Functions\WcsCancel.cs" />
+    <Compile Include="ReportInfo\DisplayTaskStatusInfo.cs" />
     <Compile Include="ReportInfo\StackPalletsOutInfo.cs" />
     <Compile Include="ReportInfo\StackPalletsInInfo.cs" />
     <Compile Include="View\MainTestForm.cs">
@@ -111,7 +112,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportInfo\TaskStateUpdateInfo.cs" />
     <Compile Include="ReportInfo\ReturnMsgInfo.cs" />
-    <Compile Include="ReportInfo\WcsCancelInfo.cs" />
     <Compile Include="View\TaskStateUpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
