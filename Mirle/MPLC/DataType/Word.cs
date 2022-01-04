@@ -1,4 +1,5 @@
-﻿namespace Mirle.MPLC.DataType
+﻿using System;
+namespace Mirle.MPLC.DataType
 {
     public sealed class Word : IDataType
     {
@@ -27,14 +28,23 @@
             }
         }
 
-        public void SetValue(int data)
+        public bool SetValue(int data)
         {
             if (_mplc is null || string.IsNullOrWhiteSpace(Address))
             {
+                return false;
             }
             else
             {
-                _mplc.WriteWord(Address, data);
+                try
+                {
+                    _mplc.WriteWord(Address, data);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
             }
         }
 

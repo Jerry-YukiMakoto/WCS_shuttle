@@ -85,7 +85,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
 
-                if (_dataAccessManger.GetCmdMstByStoreOut("A1", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A3, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string CmdSno = dataObject[0].CmdSno;
                     int IOType = Convert.ToInt32(dataObject[0].IOType);
@@ -125,24 +125,59 @@ namespace Mirle.ASRS.WCS.Controller
                         _loggerManager.WriteLogTrace(log);
 
 
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Begin Fail");
+                            return;
+                        }
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, CmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
                         {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd Success");
                             log.CmdSno = CmdSno;
                             log.LoadCategory = CmdMode;
                             _loggerManager.WriteLogTrace(log);
 
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(CmdSno, CmdMode);
 
-                            //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                            if (IOType == IOtype.EmptyStroeOut || IOType == IOtype.Cycle || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出，直接到A3
+                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(CmdSno, CmdMode);//待增加rollback功能
+                        }
+                        else
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
+                            log.CmdSno = CmdSno;
+                            log.LoadCategory = CmdMode;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+
+                        //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
+                        if (IOType == IOtype.Cycle || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出，直接到A3
                             {
-                                _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3);
+                                if(_conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result !=true)
+                                {
+                                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "WritePLC Path2_toA3 Fail");
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
                             }
                             else
                             {
-                                _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2);
+                                if (_conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2).Result != true)
+                                {
+                                    log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "WritePLC Path1_toA2 Fail");
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
                             }
+                        
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
                         }
 
                     }
@@ -195,7 +230,7 @@ namespace Mirle.ASRS.WCS.Controller
         //判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1
         private int LastCargoOrNot()
         {
-            if (_dataAccessManger.GetCmdMstByStoreOutcheck("A1", out var dataObject) == GetDataResult.Success)
+            if (_dataAccessManger.GetCmdMstByStoreOutcheck(StnNo.A3, out var dataObject) == GetDataResult.Success)
             {
                 int COUNT = Convert.ToInt32(dataObject[0].COUNT);
 
@@ -236,7 +271,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
 
-                if (_dataAccessManger.GetCmdMstByStoreOut("A5", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A6, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string cmdSno = dataObject[0].CmdSno;
                     int cmdmode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -321,7 +356,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
 
-                if (_dataAccessManger.GetCmdMstByStoreOut("A7", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A8, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string cmdSno = dataObject[0].CmdSno;
                     int cmdmode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -404,7 +439,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
 
-                if (_dataAccessManger.GetCmdMstByStoreOut("A9", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A10, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string cmdSno = dataObject[0].CmdSno;
                     int cmdmode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -486,17 +521,13 @@ namespace Mirle.ASRS.WCS.Controller
             int bufferIndex = 1;
             var db1 = _dataAccessManger.GetDB();
             string cmdSno1 = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
-            List<string> stn = new List<string>()
-            {
-                StnNo.A1,
-            };
             if (_conveyor.GetBuffer(bufferIndex).Auto
                 && _conveyor.GetBuffer(bufferIndex).OutMode
                 && _conveyor.GetBuffer(bufferIndex).CommandId > 0
                 && _conveyor.GetBuffer(bufferIndex).Presence == false
                 && _conveyor.GetBuffer(bufferIndex).Error == false
                 && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
-                && CheckEmptyWillBefullOrNot() == false)
+                && CheckEmptyWillBefullOrNot() == false)//檢查一樓buffer是否整體滿九版空棧板了
             {
                 string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
                 int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
@@ -506,7 +537,7 @@ namespace Mirle.ASRS.WCS.Controller
                 log.LoadCategory = CmdMode;
                 _loggerManager.WriteLogTrace(log);
 
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A3, cmdSno, out var dataObject) == GetDataResult.Success)
                 {
                     string source = dataObject[0].Loc;
                     string dest = $"{CranePortNo.A1}";
@@ -587,10 +618,6 @@ namespace Mirle.ASRS.WCS.Controller
         private void StoreOut_S201_CreateEquCmd()
         {
             int bufferIndex = 5;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A5,
-            };
             if (_conveyor.GetBuffer(bufferIndex).Auto
                 && _conveyor.GetBuffer(bufferIndex).OutMode
                 && _conveyor.GetBuffer(bufferIndex).CommandId > 0
@@ -606,7 +633,7 @@ namespace Mirle.ASRS.WCS.Controller
                 log.LoadCategory = LoadCategory;
                 _loggerManager.WriteLogTrace(log);
 
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A6, cmdSno, out var dataObject) == GetDataResult.Success)
                 {
                     cmdSno = dataObject[0].CmdSno;
                     string source = dataObject[0].Loc;
@@ -654,10 +681,6 @@ namespace Mirle.ASRS.WCS.Controller
         private void StoreOut_S301_CreateEquCmd()
         {
             int bufferIndex = 7;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A7,
-            };
             if (_conveyor.GetBuffer(bufferIndex).Auto
                 && _conveyor.GetBuffer(bufferIndex).OutMode
                 && _conveyor.GetBuffer(bufferIndex).CommandId > 0
@@ -673,7 +696,7 @@ namespace Mirle.ASRS.WCS.Controller
                 log.LoadCategory = LoadCategory;
                 _loggerManager.WriteLogTrace(log);
 
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A8, cmdSno, out var dataObject) == GetDataResult.Success)
                 {
                     cmdSno = dataObject[0].CmdSno;
                     string source = dataObject[0].Loc;
@@ -721,10 +744,6 @@ namespace Mirle.ASRS.WCS.Controller
         private void StoreOut_S401_CreateEquCmd()
         {
             int bufferIndex = 1;
-            List<string> stn = new List<string>()
-            {
-                StnNo.A9,
-            };
             if (_conveyor.GetBuffer(bufferIndex).Auto
                 && _conveyor.GetBuffer(bufferIndex).OutMode
                 && _conveyor.GetBuffer(bufferIndex).CommandId > 0
@@ -740,7 +759,7 @@ namespace Mirle.ASRS.WCS.Controller
                 log.LoadCategory = LoadCategory;
                 _loggerManager.WriteLogTrace(log);
 
-                if (_dataAccessManger.GetCmdMstByStoreOut(stn, cmdSno, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A10, cmdSno, out var dataObject) == GetDataResult.Success)
                 {
                     cmdSno = dataObject[0].CmdSno;
                     string source = dataObject[0].Loc;
@@ -789,10 +808,10 @@ namespace Mirle.ASRS.WCS.Controller
         {
             var stn = new List<string>()
             {
-                StnNo.A1,
-                StnNo.A5,
-                StnNo.A7,
-                StnNo.A9,
+                StnNo.A3,
+                StnNo.A6,
+                StnNo.A8,
+                StnNo.A10,
             };
             if (_dataAccessManger.GetCmdMstByStoreOutFinish(stn, out var dataObject) == GetDataResult.Success)
             {
@@ -850,7 +869,7 @@ namespace Mirle.ASRS.WCS.Controller
         {
             _storeInProcess.Stop();
 
-            StoreIn_S101_WriteCV();
+            StoreIn_S101_WriteCV();//OK
 
             StoreIn_S101_CreateEquCmd();//OK
 
@@ -879,7 +898,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
 
-                if (_dataAccessManger.GetCmdMstByStoreInstart("A3", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                if (_dataAccessManger.GetCmdMstByStoreInstart(StnNo.A3, out var dataObject) == GetDataResult.Success) //讀取CMD_MST
                 {
                     string cmdSno = dataObject[0].CmdSno;
                     int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -934,8 +953,8 @@ namespace Mirle.ASRS.WCS.Controller
                         }
 
                     }
-                    else if (IOType == IOtype.EmptyStoreIn
-                     && _conveyor.GetBuffer(bufferIndex).Auto
+                    else if (IOType == IOtype.NormalstorIn
+                    && _conveyor.GetBuffer(bufferIndex).Auto
                     && _conveyor.GetBuffer(bufferIndex).InMode
                     && _conveyor.GetBuffer(bufferIndex).CommandId == 0
                     && _conveyor.GetBuffer(bufferIndex).Presence == false
@@ -1012,7 +1031,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
 
-                if (_dataAccessManger.GetCmdMstByStoreInstart("A6", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                if (_dataAccessManger.GetCmdMstByStoreInstart(StnNo.A6, out var dataObject) == GetDataResult.Success) //讀取CMD_MST
                 {
                     string cmdSno = dataObject[0].CmdSno;
                     int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -1094,7 +1113,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
 
-                if (_dataAccessManger.GetCmdMstByStoreInstart("A8", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                if (_dataAccessManger.GetCmdMstByStoreInstart(StnNo.A8, out var dataObject) == GetDataResult.Success) //讀取CMD_MST
                 {
                     string cmdSno = dataObject[0].CmdSno;
                     int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -1179,7 +1198,7 @@ namespace Mirle.ASRS.WCS.Controller
             {
 
 
-                if (_dataAccessManger.GetCmdMstByStoreInstart("A10", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                if (_dataAccessManger.GetCmdMstByStoreInstart(StnNo.A10, out var dataObject) == GetDataResult.Success) //讀取CMD_MST
                 {
                     string cmdSno = dataObject[0].CmdSno;
                     int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -1275,7 +1294,16 @@ namespace Mirle.ASRS.WCS.Controller
                 {
 
                     string source = $"{CranePortNo.A1}";
-                    string dest = $"{dataObject[0].NewLoc}";
+                    string IOType = dataObject[0].IOType;
+                    string dest = "";
+                    if (IOType == IOtype.Cycle.ToString())
+                    {
+                        dest = $"{dataObject[0].Loc}";
+                    }
+                    else
+                    {
+                        dest = $"{dataObject[0].NewLoc}";
+                    }
 
                     log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
                     log.CmdSno = cmdSno;
@@ -1334,7 +1362,16 @@ namespace Mirle.ASRS.WCS.Controller
                 if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
                 {
                     string source = $"{CranePortNo.A5}";
-                    string dest = $"{dataObject[0].NewLoc}";
+                    string IOType = dataObject[0].IOType;
+                    string dest = "";
+                    if (IOType == IOtype.Cycle.ToString())
+                    {
+                        dest = $"{dataObject[0].Loc}";
+                    }
+                    else
+                    {
+                        dest = $"{dataObject[0].NewLoc}";
+                    }
 
                     log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
                     log.CmdSno = cmdSno;
@@ -1394,7 +1431,16 @@ namespace Mirle.ASRS.WCS.Controller
                 if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
                 {
                     string source = $"{CranePortNo.A7}";
-                    string dest = $"{dataObject[0].NewLoc}";
+                    string IOType = dataObject[0].IOType;
+                    string dest = "";
+                    if (IOType == IOtype.Cycle.ToString())
+                    {
+                        dest = $"{dataObject[0].Loc}";
+                    }
+                    else
+                    {
+                        dest = $"{dataObject[0].NewLoc}";
+                    }
 
                     log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
                     log.CmdSno = cmdSno;
@@ -1454,7 +1500,16 @@ namespace Mirle.ASRS.WCS.Controller
                 if (_dataAccessManger.GetCmdMstByStoreIn(cmdSno, out var dataObject) == GetDataResult.Success)
                 {
                     string source = $"{CranePortNo.A9}";
-                    string dest = $"{dataObject[0].NewLoc}";
+                    string IOType = dataObject[0].IOType;
+                    string dest = "";
+                    if (IOType == IOtype.Cycle.ToString())
+                    {
+                        dest = $"{dataObject[0].Loc}";
+                    }
+                    else
+                    {
+                        dest = $"{dataObject[0].NewLoc}";
+                    }
 
                     log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
                     log.CmdSno = cmdSno;
@@ -1503,10 +1558,10 @@ namespace Mirle.ASRS.WCS.Controller
         {
             var stn1 = new List<string>()
             {
-                StnNo.A1,
-                StnNo.A5,
-                StnNo.A7,
-                StnNo.A9,
+                StnNo.A3,
+                StnNo.A6,
+                StnNo.A8,
+                StnNo.A10,
             };
             if (_dataAccessManger.GetCmdMstByStoreInFinish(stn1, out var dataObject) == GetDataResult.Success)
             {
@@ -1586,10 +1641,10 @@ namespace Mirle.ASRS.WCS.Controller
             int bufferIndex = 4;
             using (var db = _dataAccessManger.GetDB())
             {
-                int loadType = 9;
+                int loadType = 1;
                 if (_conveyor.GetBuffer(bufferIndex).EmptyINReady == 9) //滿九版,滿版訊號為9
                 {
-                    if (_dataAccessManger.GetCmdMstByStoreInstart("A4", out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                    if (_dataAccessManger.GetCmdMstByStoreInstart(StnNo.A4, out var dataObject) == GetDataResult.Success) //讀取CMD_MST
                     {
                         string cmdSno = dataObject[0].CmdSno;
 
@@ -1615,9 +1670,9 @@ namespace Mirle.ASRS.WCS.Controller
                         && _conveyor.GetBuffer(bufferIndex).Presence == true
                         && _conveyor.GetBuffer(bufferIndex).Error == false
                         && _conveyor.GetBuffer(bufferIndex - 3).Ready == Ready.StoreInReady
-                        && _conveyor.GetBuffer(bufferIndex - 1).TrayType != 3  //為了不跟盤點命令衝突的條件
-                        && _conveyor.GetBuffer(bufferIndex - 2).TrayType != 3  //為了不跟盤點命令衝突的條件
-                        && _conveyor.GetBuffer(bufferIndex - 3).TrayType != 3) //為了不跟盤點命令衝突的條件)
+                        && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3  //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3  //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex - 3).CmdMode != 3) //為了不跟盤點命令衝突的條件)
                         {
                             log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreIn Command");
                             _loggerManager.WriteLogTrace(log);
@@ -1650,7 +1705,7 @@ namespace Mirle.ASRS.WCS.Controller
                             _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
                             return;
                         }
-                        else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
+                        else if (_conveyor.GetBuffer(bufferIndex-3).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
                         {
                             _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
                             return;
@@ -1731,7 +1786,7 @@ namespace Mirle.ASRS.WCS.Controller
         {
             var stn1 = new List<string>()
             {
-                StnNo.A1,
+                StnNo.A4,
             };
             if (_dataAccessManger.GetEmptyCmdMstByStoreInFinish(stn1, out var dataObject) == GetDataResult.Success)
             {
@@ -1787,11 +1842,10 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = _dataAccessManger.GetDB())
             {
                 string cmdSno = "";
-                int loadType = 4;
-                string LOC = "";
+                int loadType = 2;
                 if (_conveyor.GetBuffer(bufferIndex+3).Presence == false) //沒有荷有，無空棧板需要補充
                 {
-                    if (_dataAccessManger.GetCmdMstByStoreOut("A1", out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                    if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A4, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                     {
                         cmdSno = dataObject[0].CmdSno;
                         int cmdmode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -1819,9 +1873,9 @@ namespace Mirle.ASRS.WCS.Controller
                         && _conveyor.GetBuffer(bufferIndex).Presence == false
                         && _conveyor.GetBuffer(bufferIndex).Error == false
                         && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
-                        && _conveyor.GetBuffer(bufferIndex+1).TrayType != 3  //為了不跟盤點命令衝突的條件
-                        && _conveyor.GetBuffer(bufferIndex+2).TrayType != 3  //為了不跟盤點命令衝突的條件
-                        && _conveyor.GetBuffer(bufferIndex).TrayType != 3) //為了不跟盤點命令衝突的條件)
+                        && _conveyor.GetBuffer(bufferIndex+1).CmdMode != 3  //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex+2).CmdMode != 3  //為了不跟盤點命令衝突的條件
+                        && _conveyor.GetBuffer(bufferIndex).CmdMode != 3) //為了不跟盤點命令衝突的條件)
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreOut Command");
                             _loggerManager.WriteLogTrace(log);
@@ -1835,8 +1889,7 @@ namespace Mirle.ASRS.WCS.Controller
                                 _loggerManager.WriteLogTrace(log);
 
                                 _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, loadType);//寫入命令和模式
-                                int path = 3;
-                                _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(path);//出庫都要寫入路徑編號，寫入路徑編號根據WMS寫入的棧口作為依據
+                                _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path3_toA4);//出庫都要寫入路徑編號，寫入路徑編號根據WMS寫入的棧口作為依據
                             }
 
                         }
@@ -1856,7 +1909,7 @@ namespace Mirle.ASRS.WCS.Controller
                             _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
                             return;
                         }
-                        else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
+                        else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)
                         {
                             _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
                             return;
@@ -1891,10 +1944,10 @@ namespace Mirle.ASRS.WCS.Controller
                 _loggerManager.WriteLogTrace(log);
 
                 string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
-                if (_dataAccessManger.GetCmdMstByStoreOut(cmdSno, out var dataObject) == GetDataResult.Success)
+                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A4, cmdSno, out var dataObject) == GetDataResult.Success)
                 {
 
-                    string source = $"{dataObject[0].NewLoc}";
+                    string source = $"{dataObject[0].Loc}";
                     string dest =  $"{CranePortNo.A1}";
 
                     log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
@@ -1941,7 +1994,7 @@ namespace Mirle.ASRS.WCS.Controller
         {
             var stn = new List<string>()
             {
-                StnNo.A1,
+                StnNo.A4,
             };
             if (_dataAccessManger.GetEmptyCmdMstByStoreOutFinish(stn, out var dataObject) == GetDataResult.Success)
             {
