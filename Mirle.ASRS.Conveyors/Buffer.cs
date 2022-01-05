@@ -133,7 +133,7 @@ namespace Mirle.ASRS.Conveyors
             {
                 int[] value = new int[2];
                 value[1] = loadCategory;
-            int.TryParse(commandId, out value[0]);
+                int.TryParse(commandId, out value[0]);
                 if(Signal.ControllerSignal.CommandId.SetValue(value[0])==true)
                  {
                     return Signal.ControllerSignal.LoadCategory.SetValue(value[1]);
@@ -146,26 +146,26 @@ namespace Mirle.ASRS.Conveyors
             });
         }
         
-        public Task A4EmptysupplyOn()
+        public Task<bool> A4EmptysupplyOn()
         {
             return Task.Run(() =>
             {
-                Signal.ControllerSignal.A4Emptysupply.SetValue(1);
+                return Signal.ControllerSignal.A4Emptysupply.SetValue(1);
             });
         }
-        public Task InitialNoticeTrigger()
+        public Task<bool> InitialNoticeTrigger()
         {
             return Task.Run(() =>
             {
-                Signal.ControllerSignal.InitialNotice.SetValue(1);
+                return Signal.ControllerSignal.InitialNotice.SetValue(1);
             });
         }
 
-        public Task Switch_Mode(int mode)
+        public Task<bool> Switch_Mode(int mode)
         {
             return Task.Run(() =>
             {
-                Signal.ControllerSignal.Switch_Mode.SetValue(mode);
+                return Signal.ControllerSignal.Switch_Mode.SetValue(mode);
             });
         }
 

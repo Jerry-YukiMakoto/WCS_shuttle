@@ -258,17 +258,6 @@ namespace Mirle.ASRS.WCS.Controller
             sql += $"WHERE CMDSNO='{cmdSno}' ";
             return db.ExecuteSQL2(sql);
         }
-        public ExecuteSQLResult UpdateCmdMstTransferring(DB db, string cmdSno, string trace, int trayWeight)
-        {
-            string sql = "UPDATE CMDMST ";
-            sql += $"SET CMDSTS='{1}', ";
-            sql += $"TRACE='{trace}', ";
-            sql += $"TRAYWEIGHT='{trayWeight}', ";
-            sql += $"EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
-            sql += $"WHERE CMDSNO='{cmdSno}' ";
-            sql += $"AND CMDSTS='{0}' ";
-            return db.ExecuteSQL2(sql);
-        }
 
         public ExecuteSQLResult UpdateCmdMst(DB db, string cmdSno, string trace)
         {
@@ -339,30 +328,6 @@ namespace Mirle.ASRS.WCS.Controller
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult InsertCMD_MST(DB db, int craneNo, string cmdSno, string cmdMode, string source, string destination, int priority)
-        {
-            string sql = "INSERT INTO CMDMST (";
-            sql += "CMDSNO, ";
-            sql += "EQUNO, ";
-            sql += "CMDMODE, ";
-            sql += "CMDSTS, ";
-            sql += "SOURCE, ";
-            sql += "DESTINATION, ";
-            sql += "LOCSIZE, ";
-            sql += "PRIORITY, ";
-            sql += "RCVDT ";
-            sql += ") VALUES (";
-            sql += $"'{cmdSno}', ";
-            sql += $"'{craneNo}', ";
-            sql += $"'{cmdMode}', ";
-            sql += $"'{source}', ";
-            sql += $"'{destination}', ";
-            sql += $"'{0}', ";
-            sql += $"'{priority}', ";
-            sql += $"'{DateTime.Now:yyyy-MM-dd HH:mm:ss}'";
-            sql += $")";
-            return db.ExecuteSQL2(sql);
-        }
 
         public GetDataResult GetEquCmd(string cmdSno, out DataObject<EquCmd> dataObject)
         {
@@ -370,38 +335,6 @@ namespace Mirle.ASRS.WCS.Controller
             {
                 string sql = "SELECT * FROM EQUCMD ";
                 sql += $"WHERE CMDSNO='{cmdSno}' ";
-                return db.GetData(sql, out dataObject);
-            }
-        }
-        public GetDataResult GetEquCmdByOutMode(int craneNo, string destination, out DataObject<EquCmd> dataObject)
-        {
-            using (var db = GetDB())
-            {
-                string sql = "SELECT * FROM EQUCMD ";
-                sql += $"WHERE EQUNO='{craneNo}' ";
-                sql += $"AND CMDMODE IN ('{EquCmdMode.OutMode}', '{EquCmdMode.StnToStn}') ";
-                sql += $"AND DESTINATION='{destination}'";
-                return db.GetData(sql, out dataObject);
-            }
-        }
-        public GetDataResult GetEquCmdByInMode(int craneNo, string source, out DataObject<EquCmd> dataObject)
-        {
-            using (var db = GetDB())
-            {
-                string sql = "SELECT * FROM EQUCMD ";
-                sql += $"WHERE EQUNO='{craneNo}' ";
-                sql += $"AND CMDMODE IN ('{EquCmdMode.InMode}', '{EquCmdMode.StnToStn}') ";
-                sql += $"AND SOURCE='{source}'";
-                return db.GetData(sql, out dataObject);
-            }
-        }
-        public GetDataResult GetEquCmdByLocToLoc(int craneNo, out DataObject<EquCmd> dataObject)
-        {
-            using (var db = GetDB())
-            {
-                string sql = "SELECT * FROM EQUCMD ";
-                sql += $"WHERE EQUNO='{craneNo}' ";
-                sql += $"AND CMDMODE ='{EquCmdMode.LocToLoc}' ";
                 return db.GetData(sql, out dataObject);
             }
         }
