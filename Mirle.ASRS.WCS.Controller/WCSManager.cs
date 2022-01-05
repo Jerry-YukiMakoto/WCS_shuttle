@@ -128,6 +128,7 @@ namespace Mirle.ASRS.WCS.Controller
                         if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Begin Fail");
+                            log.CmdSno = CmdSno;
                             return;
                         }
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, CmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
@@ -136,9 +137,6 @@ namespace Mirle.ASRS.WCS.Controller
                             log.CmdSno = CmdSno;
                             log.LoadCategory = CmdMode;
                             _loggerManager.WriteLogTrace(log);
-
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(CmdSno, CmdMode);//待增加rollback功能
                         }
                         else
                         {
@@ -149,7 +147,13 @@ namespace Mirle.ASRS.WCS.Controller
                             db.TransactionCtrl2(TransactionTypes.Rollback);
                             return;
                         }
-
+                        if(_conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(CmdSno, CmdMode).Result != true)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "WritePLC Command-mode Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
                         //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
                         if (IOType == IOtype.Cycle || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出，直接到A3
                             {
@@ -227,7 +231,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        //判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1
+        #region//判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1
         private int LastCargoOrNot()
         {
             if (_dataAccessManger.GetCmdMstByStoreOutcheck(StnNo.A3, out var dataObject) == GetDataResult.Success)
@@ -249,8 +253,9 @@ namespace Mirle.ASRS.WCS.Controller
             }
 
         }
+        #endregion
 
-        //根據判斷去決定一樓空棧板總數是否滿了，去擋下出庫命令
+        #region//根據判斷去決定一樓空棧板總數是否滿了，去擋下出庫命令
         private bool CheckEmptyWillBefullOrNot()
         {
 
@@ -264,6 +269,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
 
         }
+        #endregion
 
         private void StoreOut_S201_WriteCV()
         {
@@ -297,15 +303,40 @@ namespace Mirle.ASRS.WCS.Controller
                         log.LoadCategory = cmdmode;
                         _loggerManager.WriteLogTrace(log);
 
-
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Begin Fail");
+                            log.CmdSno = cmdSno;
+                            return;
+                        }
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
                         {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd Success");
                             log.CmdSno = cmdSno;
                             log.LoadCategory = cmdmode;
                             _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode);
+                        }
+                        else
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if(_conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode).Result!=true)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "WritePLC Command-mode Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
                         }
 
                     }
@@ -380,15 +411,40 @@ namespace Mirle.ASRS.WCS.Controller
                         log.LoadCategory = cmdmode;
                         _loggerManager.WriteLogTrace(log);
 
-
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Begin Fail");
+                            log.CmdSno = cmdSno;
+                            return;
+                        }
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
                         {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd Success");
                             log.CmdSno = cmdSno;
                             log.LoadCategory = cmdmode;
                             _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode);
+                        }
+                        else
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (_conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode).Result != true)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "WritePLC Command-mode Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
                         }
 
                     }
@@ -464,17 +520,41 @@ namespace Mirle.ASRS.WCS.Controller
                         log.LoadCategory = cmdmode;
                         _loggerManager.WriteLogTrace(log);
 
-
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Begin Fail");
+                            log.CmdSno = cmdSno;
+                            return;
+                        }
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreOutWriteCraneCmdToCV) == ExecuteSQLResult.Success)
                         {
-                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreOut Command To Buffer");
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd Success");
                             log.CmdSno = cmdSno;
                             log.LoadCategory = cmdmode;
                             _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode);
                         }
-
+                        else
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (_conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, cmdmode).Result != true)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "WritePLC Command-mode Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
                     }
                     #region 站口狀態自動確認-Update-CMD-Remark
                     else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
@@ -936,7 +1016,12 @@ namespace Mirle.ASRS.WCS.Controller
                         log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
                         _loggerManager.WriteLogTrace(log);
 
-
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
                         {
                             log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte StoreIn Command To Buffer");
@@ -951,6 +1036,21 @@ namespace Mirle.ASRS.WCS.Controller
                                 _conveyor.GetBuffer(4).A4EmptysupplyOn();//請A4補充母托一版
                             }
                         }
+                        else
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
 
                     }
                     else if (IOType == IOtype.NormalstorIn
@@ -964,18 +1064,42 @@ namespace Mirle.ASRS.WCS.Controller
                     && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3  //為了不跟盤點命令衝突的條件
                     && _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3 )  //為了不跟盤點命令衝突的條件
                     {
-                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive Normal-EmptyStoreIn Command");
+                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
                         _loggerManager.WriteLogTrace(log);
 
-
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
                         if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
                         {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Wirte Normal-EmptyStoreIn Command To Buffer");
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Update cmd Success");
                             log.CmdSno = cmdSno;
-
                             _loggerManager.WriteLogTrace(log);
-
-                            _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode);//寫入命令和模式
+                        }
+                        else
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (_conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result!=true)//寫入命令和模式
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "WritePLC Command-mode Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
                         }
 
                     }
