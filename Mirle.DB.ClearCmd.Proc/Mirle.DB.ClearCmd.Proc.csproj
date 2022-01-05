@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsDelCmdMst_His_Proc.cs" />
-    <Compile Include="clsDelHisTask_Proc.cs" />
+    <Compile Include="clsDelHisEquCmd_Proc.cs" />
     <Compile Include="clsHost.cs" />
     <Compile Include="clsMoveCmdInHistory_Proc.cs" />
     <Compile Include="clsWriLog.cs" />

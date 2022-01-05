@@ -4,6 +4,7 @@ using Mirle.Def;
 using Mirle.Structure;
 using Mirle.DataBase;
 using Mirle.ASRS.WCS.Model.DataAccess;
+using System.Collections.Generic;
 
 namespace Mirle.DB.Proc
 {
@@ -47,6 +48,34 @@ namespace Mirle.DB.Proc
             }
         }
 
+        public GetDataResult GetCmdMstByStoreOut(string stations, string CmdSno, out DataObject<CmdMst> dataObject)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        return CMD_MST.GetCmdMstByStoreOut(stations, CmdSno, out dataObject, db);
+                    }
+                    else
+                    {
+                        dataObject = new DataObject<CmdMst>();
+                        return GetDataResult.Initial;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                dataObject = new DataObject<CmdMst>();
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return GetDataResult.Exception;
+            }
+        }
+
         public GetDataResult GetCmdMstByStoreOutcheck(string stations, out DataObject<CmdMst> dataObject)
         {
             try
@@ -57,6 +86,34 @@ namespace Mirle.DB.Proc
                     if (iRet == DBResult.Success)
                     {
                         return CMD_MST.GetCmdMstByStoreOutcheck(stations, out dataObject, db);
+                    }
+                    else
+                    {
+                        dataObject = new DataObject<CmdMst>();
+                        return GetDataResult.Initial;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                dataObject = new DataObject<CmdMst>();
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return GetDataResult.Exception;
+            }
+        }
+
+        public GetDataResult GetCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        return CMD_MST.GetCmdMstByStoreOutFinish(stations, out dataObject, db);
                     }
                     else
                     {
@@ -131,8 +188,7 @@ namespace Mirle.DB.Proc
             }
         }
 
-        #region Old Ver.
-        public bool FunGetCommand(string sCmdSno, ref CmdMstInfo cmd)
+        public GetDataResult GetCmdMstByStoreInFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
         {
             try
             {
@@ -141,198 +197,28 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return CMD_MST.FunGetCommand(sCmdSno, ref cmd, ref iRet, db);
+                        return CMD_MST.GetCmdMstByStoreInFinish(stations, out dataObject, db);
                     }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunGetCommand_ForPickupQuery(string sCmdSno, ref CmdMstInfo cmd)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunGetCommand_ForPickupQuery(sCmdSno, ref cmd, db);
-                    }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public int FunGetCommand_byBoxID(string sBoxID, ref CmdMstInfo cmd)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunGetCommand_byBoxID(sBoxID, ref cmd, db);
-                    }
-
-                    return iRet;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-       
-
-        public int FunGetCmdMst_Grid(ref DataTable dtTmp)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunGetCmdMst_Grid(ref dtTmp, db);
-                    }
-                    else return iRet;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public int FunCheckHasCommand(string sLoc, ref CmdMstInfo cmd)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunCheckHasCommand(sLoc, ref cmd, db);
-                    }
-                    else return iRet;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public int FunCheckHasCommand(string sLoc, string sCmdSts, ref DataTable dtTmp)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunCheckHasCommand(sLoc, sCmdSts, ref dtTmp, db);
-                    }
-                    else return iRet;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public bool FunUpdateStnNo(string sCmdSno, string sStnNo, string sRemark)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success) return CMD_MST.FunUpdateStnNo(sCmdSno, sStnNo, sRemark, db);
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdatePry(string sBoxID, string Pry, ref string strEM)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                        return CMD_MST.FunUpdatePry(sBoxID, Pry, ref strEM, db);
                     else
                     {
-                        strEM = "開啟資料庫失敗！";
-                        return false;
+                        dataObject = new DataObject<CmdMst>();
+                        return GetDataResult.Initial;
                     }
                 }
             }
             catch (Exception ex)
             {
+                dataObject = new DataObject<CmdMst>();
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return GetDataResult.Exception;
             }
         }
 
-        public bool FunUpdateCmdSts(string sCmdSno, string sCmdSts, string sRemark)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success) return CMD_MST.FunUpdateCmdSts(sCmdSno, sCmdSts, sRemark, db);
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
+        
 
-        public bool FunUpdateRemark(string sCmdSno, string sRemark)
+        public GetDataResult GetLocToLoc(out DataObject<CmdMst> dataObject)
         {
             try
             {
@@ -341,20 +227,26 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return CMD_MST.FunUpdateRemark(sCmdSno, sRemark, db);
+                        return CMD_MST.GetLocToLoc(out dataObject, db);
                     }
-                    else return false;
+                    else
+                    {
+                        dataObject = new DataObject<CmdMst>();
+                        return GetDataResult.Initial;
+                    }
                 }
             }
             catch (Exception ex)
             {
+                dataObject = new DataObject<CmdMst>();
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return GetDataResult.Exception;
             }
         }
 
-        public bool FunUpdateCurLoc(string sCmdSno, string sCurDeviceID, string sCurLoc)
+        public GetDataResult GetEmptyCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
         {
             try
             {
@@ -363,20 +255,26 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return CMD_MST.FunUpdateCurLoc(sCmdSno, sCurDeviceID, sCurLoc, db);
+                        return CMD_MST.GetEmptyCmdMstByStoreIn(cmdsno, out dataObject, db);
                     }
-                    else return false;
+                    else
+                    {
+                        dataObject = new DataObject<CmdMst>();
+                        return GetDataResult.Initial;
+                    }
                 }
             }
             catch (Exception ex)
             {
+                dataObject = new DataObject<CmdMst>();
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return GetDataResult.Exception;
             }
         }
 
-        public bool FunUpdateCurLocAndCancelBatch(string sCmdSno, string sCurDeviceID, string sCurLoc)
+        public GetDataResult GetEmptyCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
         {
             try
             {
@@ -385,106 +283,158 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return CMD_MST.FunUpdateCurLocAndCancelBatch(sCmdSno, sCurDeviceID, sCurLoc, db);
+                        return CMD_MST.GetEmptyCmdMstByStoreOutFinish(stations, out dataObject, db);
                     }
-                    else return false;
+                    else
+                    {
+                        dataObject = new DataObject<CmdMst>();
+                        return GetDataResult.Initial;
+                    }
                 }
             }
             catch (Exception ex)
             {
+                dataObject = new DataObject<CmdMst>();
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return GetDataResult.Exception;
             }
         }
 
-        public bool FunCancelBatch(string sCmdMode, string BatchID)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunCancelBatch(sCmdMode, BatchID, db);
-                    }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
+        //public ExecuteSQLResult UpdateCmdMstTransferring(string cmdSno, string trace)
+        //{
+        //    try
+        //    {
+        //        using (var db = clsGetDB.GetDB(_config))
+        //        {
+        //            int iRet = clsGetDB.FunDbOpen(db);
+        //            if (iRet == DBResult.Success)
+        //            {
+        //                return CMD_MST.UpdateCmdMstTransferring(cmdSno, trace, db);
+        //            }
+        //            else
+        //            {
+        //                return ExecuteSQLResult.Initial;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+        //        return ExecuteSQLResult.Exception;
+        //    }
+        //}
 
-        public bool FunCancelBatch(string sCmdSno)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunCancelBatch(sCmdSno, db);
-                    }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
+        //public ExecuteSQLResult UpdateCmdMstRemark(string cmdSno, string REMARK)
+        //{
+        //    try
+        //    {
+        //        using (var db = clsGetDB.GetDB(_config))
+        //        {
+        //            int iRet = clsGetDB.FunDbOpen(db);
+        //            if (iRet == DBResult.Success)
+        //            {
+        //                return CMD_MST.UpdateCmdMstRemark(cmdSno, REMARK, db);
+        //            }
+        //            else
+        //            {
+        //                return ExecuteSQLResult.Initial;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+        //        return ExecuteSQLResult.Exception;
+        //    }
+            
+        //}
 
-        public bool FunUpdateNeedL2L(string sCmdSno, clsEnum.NeedL2L ans)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunUpdateNeedL2L(sCmdSno, ans, db);
-                    }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
+        //public ExecuteSQLResult UpdateCmdMstTransferring(string cmdSno, string trace, int trayWeight)
+        //{
+        //    try
+        //    {
+        //        using (var db = clsGetDB.GetDB(_config))
+        //        {
+        //            int iRet = clsGetDB.FunDbOpen(db);
+        //            if (iRet == DBResult.Success)
+        //            {
+        //                return CMD_MST.UpdateCmdMstTransferring(cmdSno, trace, trayWeight, db);
+        //            }
+        //            else
+        //            {
+        //                return ExecuteSQLResult.Initial;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+        //        return ExecuteSQLResult.Exception;
+        //    }
+            
+        //}
 
-        public bool FunUpdateStnNo_ForCycleRun()
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunUpdateStnNo_ForCycleRun(db);
-                    }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
+        //public ExecuteSQLResult UpdateCmdMst(string cmdSno, string trace)
+        //{
+        //    try
+        //    {
+        //        using (var db = clsGetDB.GetDB(_config))
+        //        {
+        //            int iRet = clsGetDB.FunDbOpen(db);
+        //            if (iRet == DBResult.Success)
+        //            {
+        //                return CMD_MST.UpdateCmdMst(cmdSno, trace, db);
+        //            }
+        //            else
+        //            {
+        //                return ExecuteSQLResult.Initial;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+        //        return ExecuteSQLResult.Exception;
+        //    }
+            
+        //}
+
+        //public ExecuteSQLResult UpdateCmdMst(string cmdSno, string cmdSts, string trace)
+        //{
+        //    try
+        //    {
+        //        using (var db = clsGetDB.GetDB(_config))
+        //        {
+        //            int iRet = clsGetDB.FunDbOpen(db);
+        //            if (iRet == DBResult.Success)
+        //            {
+        //                return CMD_MST.UpdateCmdMst(cmdSno, cmdSts, trace, db);
+        //            }
+        //            else
+        //            {
+        //                return ExecuteSQLResult.Initial;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+        //        return ExecuteSQLResult.Exception;
+        //    }
+            
+        //}
 
         public bool FunInsCmdMst(CmdMstInfo stuCmdMst, ref string strErrMsg)
         {
@@ -508,6 +458,30 @@ namespace Mirle.DB.Proc
             }
         }
 
+        
+        #region Old Ver.
+
+        public int FunGetCmdMst_Grid(ref DataTable dtTmp)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        return CMD_MST.FunGetCmdMst_Grid(ref dtTmp, db);
+                    }
+                    else return iRet;
+                }
+            }
+            catch (Exception ex)
+            {
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                return DBResult.Exception;
+            }
+        }
 
 
         public bool FunMoveFinishCmdToHistory_Proc()

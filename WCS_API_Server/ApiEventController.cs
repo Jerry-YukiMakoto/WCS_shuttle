@@ -6,6 +6,7 @@ using WCS_API_Server.Models;
 using Mirle.Structure;
 using Mirle.Def;
 using Mirle.DataBase;
+using Mirle.DB.Object;
 
 namespace WCS_API_Server
 {
@@ -33,33 +34,27 @@ namespace WCS_API_Server
             {
                 CmdMstInfo cmd = new CmdMstInfo();
                 string strEM = "";
-                //if (Body.priority == "1")
-                //{   //更新優先級
-                //    if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunUpdatePry(Body.taskNo, Body.priority, ref strEM))
-                //        throw new Exception($"<{Body.taskNo}> {strEM}");
-                //}
-                //else
-                //{
-                //    cmd.CmdSno = clsDB_Proc.GetDB_Object().GetSNO().FunGetSeqNo(clsEnum.enuSnoType.CMDSNO);
-                //    if (string.IsNullOrWhiteSpace(cmd.CmdSno))
-                //    {
-                //        throw new Exception($"<{Body.taskNo}>取得序號失敗！");
-                //    }
-                //    #region 填入cmd資訊
-                //    cmd.CmdSno = Body.taskNo;
-                //    cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
-                //    cmd.IoType = Body.bussinessType;
-                //    cmd.Loc = Body.locationFrom;
-                //    cmd.NewLoc = Body.locationTo;
-                //    cmd.Prt = Body.priority;
-                //    cmd.CrtDate = Body.deliveryTime;
-                //    cmd.Userid = "WMS";
-                //    #endregion
-                    
-                //    //寫入DB
-                //    if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))
-                //        throw new Exception(strEM);
-                //}
+                
+                cmd.CmdSno = clsDB_Proc.GetDB_Object().GetSNO().FunGetSeqNo(clsEnum.enuSnoType.CMDSNO);
+                if (string.IsNullOrWhiteSpace(cmd.CmdSno))
+                {
+                    throw new Exception($"<{Body.taskNo}>取得序號失敗！");
+                }
+                #region 填入cmd資訊
+                cmd.CmdSno = Body.taskNo;
+                cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
+                cmd.IoType = Body.bussinessType;
+                cmd.Loc = Body.locationFrom;
+                cmd.NewLoc = Body.locationTo;
+                cmd.Prt = Body.priority;
+                cmd.CrtDate = Body.deliveryTime;
+                cmd.Userid = "WMS";
+                #endregion
+
+                //寫入DB
+                if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))
+                    throw new Exception(strEM);
+                
                 rMsg.success = true;
                 rMsg.errMsg = "";
                 clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_ADD end!");
@@ -99,8 +94,8 @@ namespace WCS_API_Server
             {
                 
                 string strEM = "";
-                //if (!clsDB_Proc.GetDB_Object().GetProcess().FunMoveTaskForceClear(Body.taskNo, ref strEM))
-                //    throw new Exception(strEM);
+                if (!clsDB_Proc.GetDB_Object().GetProcess().FunMoveTaskForceClear(Body.taskNo, ref strEM))
+                    throw new Exception(strEM);
                 rMsg.success = true;
                 rMsg.errMsg = "";
                 clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_FORCE_CLEAR end!");

@@ -315,7 +315,7 @@ namespace Mirle.ASRS.WCS.View
                 #region 需再修改
                  if (DB.Proc.clsHost.IsConn)
                 {
-                    clsDB_Proc.GetDB_Object().GetTask().FunCheckTaskCmdFinish();
+                    //clsDB_Proc.GetDB_Object().GetTask().FunCheckTaskCmdFinish();
                 }
                 #endregion
             }

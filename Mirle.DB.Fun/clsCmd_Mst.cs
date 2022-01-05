@@ -4,6 +4,7 @@ using System.Data;
 using Mirle.Structure;
 using Mirle.DataBase;
 using Mirle.ASRS.WCS.Model.DataAccess;
+using System.Collections.Generic;
 
 namespace Mirle.DB.Fun
 {
@@ -20,6 +21,17 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
+        public GetDataResult GetCmdMstByStoreOut(string stations, string CmdSno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND CmdSno='{CmdSno}' ";
+            sql += $"AND TRACE='{11}' ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND STNNO = '{stations} '";
+            return db.GetData(sql, out dataObject);
+        }
+
         public GetDataResult GetCmdMstByStoreOutcheck(string stations, out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT COUNT(CmdSno) as COUNT FROM CMDMST ";
@@ -28,6 +40,28 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO = '{stations} '";
             return db.GetData(sql, out dataObject);
             
+        }
+
+        public GetDataResult GetCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND TRACE IN ('{12}') ";
+            sql += $"AND STNNO IN (";
+            foreach (var stn in stations)
+            {
+                if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}'";
+                }
+                else
+                {
+                    sql += $"'{stn}',";
+                }
+            }
+            sql += $")";
+            return db.GetData(sql, out dataObject);
         }
 
         public GetDataResult GetCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db)
@@ -48,6 +82,215 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO = '{stations} '";
             return db.GetData(sql, out dataObject);
         }
+
+        public GetDataResult GetCmdMstByStoreInFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
+            sql += $"AND CMDSTS='{1}' ";
+            sql += $"AND TRACE IN ('{23}', '{25}') ";
+            sql += $"AND STNNO IN (";
+            foreach (var stn in stations)
+            {
+                if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}'";
+                }
+                else
+                {
+                    sql += $"'{stn}',";
+                }
+            }
+            sql += $")";
+            return db.GetData(sql, out dataObject);
+        }
+
+        
+
+        public GetDataResult GetLocToLoc(out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.L2L}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetEmptyCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}') ";
+            sql += $"AND CmdSno='{cmdsno}' ";
+            sql += $"AND TRACE IN ('{41}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetEmptyCmdMstByStoreInFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND TRACE IN ('{43}') ";
+            sql += $"AND STNNO IN (";
+            foreach (var stn in stations)
+            {
+                if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}'";
+                }
+                else
+                {
+                    sql += $"'{stn}',";
+                }
+            }
+            sql += $")";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetEmptyCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}') ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND TRACE IN ('{32}') ";
+            sql += $"AND STNNO IN (";
+            foreach (var stn in stations)
+            {
+                if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}'";
+                }
+                else
+                {
+                    sql += $"'{stn}',";
+                }
+            }
+            sql += $")";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTransferring(string cmdSno, string trace, SqlServer db)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET CMDSTS='{clsConstValue.CmdSts.strCmd_Running}', ";
+            sql += $"TRACE='{trace}', ";
+            sql += $"EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
+            sql += $"WHERE CMDSNO='{cmdSno}' ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstRemark(string cmdSno, string REMARK, SqlServer db)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
+            sql += $"REMARK='{REMARK}' ";
+            sql += $"WHERE CMDSNO='{cmdSno}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTransferring(string cmdSno, string trace, int trayWeight, SqlServer db)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET CMDSTS='{clsConstValue.CmdSts.strCmd_Running}', ";
+            sql += $"TRACE='{trace}', ";
+            sql += $"TRAYWEIGHT='{trayWeight}', ";
+            sql += $"EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
+            sql += $"WHERE CMDSNO='{cmdSno}' ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMst(string cmdSno, string trace, SqlServer db)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET TRACE='{trace}' ";
+            sql += $"WHERE CMDSNO='{cmdSno}' ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMst(string cmdSno, string cmdSts, string trace, SqlServer db)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET TRACE='{trace}', ";
+            sql += $"CMDSTS='{cmdSts}' ";
+            sql += $"WHERE CMDSNO='{cmdSno}' ";
+            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public bool FunGetCommand_byTaskNo(string taskNo, ref CmdMstInfo cmd, SqlServer db)
+        {
+            DataTable dtTmp = new DataTable();
+            try
+            {
+                string strEM = "";
+                string strSql = "select * from CMD_MST where TaskNo= '" + taskNo + "' ";
+                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
+                if (iRet == DBResult.Success)
+                {
+                    cmd = tool.GetCommand(dtTmp);
+                    return true;
+                }
+                else
+                {
+                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return false;
+            }
+            finally
+            {
+                dtTmp = null;
+            }
+        }
+
+        public bool FunInsCmdMst(CmdMstInfo stuCmdMst, ref string strErrMsg, SqlServer db)
+        {
+            string sSQL = "";
+            try
+            {
+                sSQL = "INSERT INTO CMD_MST (CMDSNO, CmdSts, PRT, Cmd_Abnormal, StnNo, CmdMode, Iotype, Loc, NewLoc,";
+                sSQL += "CrtDate, ExpDate, EndDate, UserID, EquNO, taskNo) values(";
+                sSQL += "'" + stuCmdMst.CmdSno + "', ";
+                sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', ";
+                sSQL += "'" + stuCmdMst.Prt + "', 'NA', ";
+                sSQL += "'" + stuCmdMst.StnNo + "', ";
+                sSQL += "'" + stuCmdMst.CmdMode + "', ";
+                sSQL += "'" + stuCmdMst.IoType + "', ";
+                sSQL += "'" + stuCmdMst.Loc + "', ";
+                sSQL += "'" + stuCmdMst.NewLoc + "', ";
+                sSQL += "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '', '', 'WCS', ";
+                sSQL += "'" + stuCmdMst.EquNo + "', ";
+                sSQL += "'" + stuCmdMst.taskNo + "')";
+
+                if (db.ExecuteSQL(sSQL, ref strErrMsg) == DBResult.Success)
+                {
+                    clsWriLog.Log.FunWriTraceLog_CV(sSQL);
+                    return true;
+                }
+                else
+                {
+                    clsWriLog.Log.FunWriTraceLog_CV(sSQL + " => " + strErrMsg);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                return false;
+            }
+        }
+
+        
 
         #region Micron Fun
         public int FunGetFinishCommand(ref DataTable dtTmp, SqlServer db)
@@ -103,124 +346,6 @@ namespace Mirle.DB.Fun
             }
         }
 
-        public bool FunGetCommand_ForPickupQuery(string sCmdSno, ref CmdMstInfo cmd, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strEM = "";
-                string strSql = "select * from CMD_MST where CmdSno = '" + sCmdSno + "' ";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if (iRet == DBResult.Success)
-                {
-                    cmd = tool.GetCommand(dtTmp);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    if(iRet == DBResult.NoDataSelect)
-                    {
-                        cmd = new CmdMstInfo(); dtTmp = new DataTable();
-                        strSql = "select * from CMD_MST_His where CmdSno = '" + sCmdSno + "' ";
-                        strSql += " order by HisDT desc";
-                        iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                        if (iRet == DBResult.Success)
-                        {
-                            cmd = tool.GetCommand(dtTmp);
-                            return true;
-                        }
-                        else
-                        {
-                            clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                            return false;
-                        }
-                    }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
-
-        public bool FunGetCommand_byJobId(string jobId, ref CmdMstInfo cmd, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strEM = "";
-                string strSql = "select * from CMD_MST where JobID = '" + jobId + "' ";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if (iRet == DBResult.Success)
-                {
-                    cmd = tool.GetCommand(dtTmp);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
-
-        public int FunGetCommand_byBoxID(string sBoxID, ref CmdMstInfo cmd, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strEM = "";
-                string strSql = "select * from CMD_MST where BoxId = '" + sBoxID + "' ";
-                //strSql += $" and CmdMode = '{clsConstValue.CmdMode.StockOut}' and StnNo <> '' ";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if (iRet == DBResult.Success)
-                {
-                    cmd = tool.GetCommand(dtTmp);
-                }
-                else
-                {
-                    if (iRet != DBResult.NoDataSelect)
-                        clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                }
-
-                return iRet;
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
-
-        
-        
-
         public int FunGetCmdMst_Grid(ref DataTable dtTmp, SqlServer db)
         {
             try
@@ -245,89 +370,6 @@ namespace Mirle.DB.Fun
             }
         }
 
-        
-
-        public int FunCheckHasCommand(string sLoc, ref CmdMstInfo cmd, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strEM = "";
-                string strSql = $"select * from CMD_MST where Loc = '{sLoc}' or NewLoc = '{sLoc}' ";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if (iRet == DBResult.Success)
-                {
-                    cmd = tool.GetCommand(dtTmp);
-                }
-                else
-                {
-                    if (iRet != DBResult.NoDataSelect)
-                    {
-                        clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
-                    }
-                }
-
-                return iRet;
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return DBResult.Exception;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
-
-        public int FunCheckHasCommand(string sLoc, string sCmdSts, ref DataTable dtTmp, SqlServer db)
-        {
-            try
-            {
-                string strEM = "";
-                string strSql = $"select * from CMD_MST where Loc = '{sLoc}' or NewLoc = '{sLoc}' ";
-                strSql += $" and CmdSts = '{sCmdSts}' ";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
-                }
-
-                return iRet;
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public int FunCheckHasCommand(int iStockerID, SqlServer db)
-        {
-            DataTable dtTmp = new DataTable();
-            try
-            {
-                string strSql = $"select * from CMD_MST where CurDeviceID = '{iStockerID}' or EquNO = '{iStockerID}' ";
-                string strEM = "";
-                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
-                if (iRet == DBResult.Exception)
-                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
-
-                return iRet;
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return DBResult.Exception;
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
 
         public bool FunUpdateRemark(string sCmdSno, string sRemark, SqlServer db)
         {
@@ -344,492 +386,6 @@ namespace Mirle.DB.Fun
                 else
                 {
                     clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateStnNo(string sCmdSno, string sStnNo, string sRemark, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set StnNo = '" + sStnNo + $"', Remark = N'{sRemark}' ";
-                strSql += ", ExpDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdatePry(string sBoxID, string Pry, ref string strEM, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set PRT = '" + Pry + "' ";
-                strSql += $" where BoxId = '{sBoxID}' ";
-
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateCmdSts(string sCmdSno, string sCmdSts, string sRemark, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set Remark = N'" + sRemark + $"', CmdSts = '{sCmdSts}' ";
-
-                if(sCmdSts == clsConstValue.CmdSts.strCmd_Initial)
-                {
-                    strSql += ", CurLoc = '', CurDeviceID = '' ";
-                }
-
-                if (sCmdSts == clsConstValue.CmdSts.strCmd_Cancel || sCmdSts == clsConstValue.CmdSts.strCmd_Finished)
-                {
-                    strSql += ", EndDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                }
-                else
-                {
-                    strSql += ", ExpDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                }
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateCmdSts(string sCmdSno, string sCmdSts, string sStnNo, string sRemark, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set Remark = N'" + sRemark + $"', CmdSts = '{sCmdSts}' ";
-                strSql += $", StnNo = '{sStnNo}' ";
-
-                if (sCmdSts == clsConstValue.CmdSts.strCmd_Initial)
-                {
-                    strSql += ", CurLoc = '', CurDeviceID = '' ";
-                }
-
-                if (sCmdSts == clsConstValue.CmdSts.strCmd_Cancel || sCmdSts == clsConstValue.CmdSts.strCmd_Finished)
-                {
-                    strSql += ", EndDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                }
-                else
-                {
-                    strSql += ", ExpDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                }
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateCmdSts(string sCmdSno, string sCmdSts, clsEnum.Cmd_Abnormal abnormal, string sRemark, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set Remark = N'" + sRemark + $"', CmdSts = '{sCmdSts}' ";
-                strSql += $", Cmd_Abnormal = '{abnormal.ToString()}' ";
-
-                if (sCmdSts == clsConstValue.CmdSts.strCmd_Cancel || sCmdSts == clsConstValue.CmdSts.strCmd_Finished)
-                {
-                    strSql += ", EndDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                }
-                else
-                {
-                    strSql += ", ExpDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-                }
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateNewLocForL2L(string sCmdSno, string sNewLoc, SqlServer db)
-        {
-            try
-            {
-                string strSql = $"update CMD_MST set NewLoc = '{sNewLoc}' where CmdSno = '{sCmdSno}' ";
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateLoc(string sCmdSno, string sLoc, string EquNO, SqlServer db)
-        {
-            try
-            {
-                string strSql = $"update CMD_MST set Loc = '{sLoc}', EquNO = '{EquNO}' where CmdSno = '{sCmdSno}' ";
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateCurLoc(string sCmdSno, string sCurDeviceID, string sCurLoc, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set CurDeviceID = '" + sCurDeviceID + $"', CurLoc = '{sCurLoc}', " +
-                    $"CmdSts = '{clsConstValue.CmdSts.strCmd_Running}' ";
-
-                strSql += ", ExpDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateCurLocAndCancelBatch(string sCmdSno, string sCurDeviceID, string sCurLoc, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set CurDeviceID = '" + sCurDeviceID + $"', CurLoc = '{sCurLoc}', " +
-                    $"CmdSts = '{clsConstValue.CmdSts.strCmd_Running}' " + ", BatchId = '' ";
-
-                strSql += ", ExpDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateCmd_ForTeachCmd(string sCmdSno, string sLoc, string sNewLoc, SqlServer db)
-        {
-            try
-            {
-                string strSql = $"update CMD_MST set Loc = '{sLoc}', NewLoc = '{sNewLoc}' ";
-                strSql += $", CmdSts = '{clsConstValue.CmdSts.strCmd_Initial}', " +
-                    $"CrtDate = '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}', ExpDate = '', EndDate= '' ";
-                strSql += $", CurLoc = '', CurDeviceID = '' where CmdSno = '{sCmdSno}'";
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateCurLocForS2S(string sCmdSno, string sCurDeviceID, string sCurLoc, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set CurDeviceID = '" + sCurDeviceID + $"', CurLoc = '{sCurLoc}', " +
-                    $"CmdSts = '{clsConstValue.CmdSts.strCmd_Finished}' ";
-
-                strSql += ", ExpDate = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' ";
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunCancelBatch(string sCmdMode, string BatchID, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set BatchID = '' ";
-
-                strSql += $" where CmdMode = '{sCmdMode}' and BatchID = '{BatchID}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunCancelBatch(string sCmdSno, SqlServer db)
-        {
-            try
-            {
-                string strSql = "update CMD_MST set BatchID = '' ";
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateNeedL2L(string sCmdSno, clsEnum.NeedL2L ans, SqlServer db)
-        {
-            try
-            {
-                string strSql = $"update CMD_MST set NeedShelfToShelf = '{ans.ToString()}' ";
-
-                strSql += $" where CmdSno = '{sCmdSno}' ";
-
-                string strEM = "";
-                if (db.ExecuteSQL(strSql, ref strEM) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(strSql + " => " + strEM);
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunUpdateStnNo_ForCycleRun(SqlServer db)
-        {
-            string strEM = "";
-            string strSql = $"update CMD_MST set StnNo = '1,2,3' where CmdMode = '{clsConstValue.CmdMode.StockOut}'";
-            int iRet = db.ExecuteSQL(strSql, ref strEM);
-            if (iRet == DBResult.Success) return true;
-            else
-            {
-                if(iRet != DBResult.NoDataUpdate)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
-                }
-                return false;
-            }
-        }
-
-        public bool FunInsCmdMst(CmdMstInfo stuCmdMst, ref string strErrMsg, SqlServer db)
-        {
-            string sSQL = "";
-            try
-            {
-                sSQL = "INSERT INTO CMD_MST (CMDSNO, CmdSts, PRT, Cmd_Abnormal, StnNo, CmdMode, Iotype, Loc, NewLoc,";
-                sSQL += "CrtDate, ExpDate, EndDate, UserID, EquNO, taskNo) values(";
-                sSQL += "'" + stuCmdMst.CmdSno + "', ";
-                sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', ";
-                sSQL += "'" + stuCmdMst.Prt + "', 'NA', ";
-                sSQL += "'" + stuCmdMst.StnNo + "', ";
-                sSQL += "'" + stuCmdMst.CmdMode + "', ";
-                sSQL += "'" + stuCmdMst.IoType + "', ";
-                sSQL += "'" + stuCmdMst.Loc + "', ";
-                sSQL += "'" + stuCmdMst.NewLoc + "', ";
-                sSQL += "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '', '', 'WCS', ";
-                sSQL += "'" + stuCmdMst.EquNo + "', ";
-                sSQL += "'" + stuCmdMst.taskNo + "')";
-
-                if (db.ExecuteSQL(sSQL, ref strErrMsg) == DBResult.Success)
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(sSQL);
-                    return true;
-                }
-                else
-                {
-                    clsWriLog.Log.FunWriTraceLog_CV(sSQL + " => " + strErrMsg);
                     return false;
                 }
             }

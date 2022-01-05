@@ -6,11 +6,11 @@ using Mirle.DB.Object;
 
 namespace Mirle.DB.ClearCmd.Proc
 {
-    public class clsDelHisTask_Proc
+    public class clsDelHisEquCmd_Proc
     {
         private System.Timers.Timer timRead = new System.Timers.Timer();
         private string strLastExportTime = string.Empty;
-        public clsDelHisTask_Proc()
+        public clsDelHisEquCmd_Proc()
         {
             timRead.Elapsed += new System.Timers.ElapsedEventHandler(timRead_Elapsed);
             timRead.Enabled = false; timRead.Interval = 1000;
@@ -32,7 +32,7 @@ namespace Mirle.DB.ClearCmd.Proc
                 {
                     if (DB.Proc.clsHost.IsConn)
                     {
-                        if (clsDB_Proc.GetDB_Object().GetTask().FunDelHisTask(180))
+                        if (clsDB_Proc.GetDB_Object().GetEqu_Cmd().FunDelHisEquCmd(180))
                         {
                             strLastExportTime = strNowTime;
                         }

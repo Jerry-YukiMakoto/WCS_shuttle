@@ -19,7 +19,7 @@ namespace Mirle.DB.Proc
     {
         private clsPortDef PortDef = new clsPortDef();
         private Fun.clsCmd_Mst CMD_MST = new Fun.clsCmd_Mst();
-        private Fun.clsTask TaskTable = new Fun.clsTask();
+        private Fun.clsEqu_Cmd EQU_CMD = new Fun.clsEqu_Cmd();
         private Fun.clsSno SNO = new Fun.clsSno();
         private Fun.clsLocMst LocMst = new Fun.clsLocMst();
         private Fun.clsProc proc;
@@ -48,6 +48,89 @@ namespace Mirle.DB.Proc
         public Fun.clsProc GetFunProcess()
         {
             return proc;
+        }
+
+        public bool FunMoveTaskForceClear(string taskNo, ref string strEM)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        CmdMstInfo cmd = new CmdMstInfo();
+                        if (CMD_MST.FunGetCommand_byTaskNo(taskNo, ref cmd, db))
+                        {
+                            if (cmd.CmdSts == clsConstValue.CmdSts.strCmd_Running)
+                            {
+                                strEM = "Error: 命令已開始執行，無法取消！";
+                                return false;
+                            }
+
+                            int iRet_Task = EQU_CMD.CheckHasEquCmd(cmd.CmdSno, db);
+                            if (iRet_Task == DBResult.Exception)
+                            {
+                                strEM = "取得Task命令失敗！";
+                                return false;
+                            }
+
+                            
+
+                            if (iRet_Task == DBResult.Success) EQU_CMD.FunInsertHisEquCmd(cmd.CmdSno, db);
+
+                            if (db.TransactionCtrl(TransactionTypes.Begin) != DBResult.Success)
+                            {
+                                strEM = "Error: Begin失敗！";
+                                if (strEM != cmd.Remark)
+                                {
+                                    CMD_MST.FunUpdateRemark(cmd.CmdSno, strEM, db);
+                                }
+
+                                return false;
+                            }
+
+                            if (CMD_MST.UpdateCmdMst(cmd.CmdSno, clsConstValue.CmdSts.strCmd_Cancel, "WMS命令取消", db) == ExecuteSQLResult.Initial)
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            if (iRet_Task == DBResult.Success)
+                            {
+                                if (EQU_CMD.DeleteEquCmd(cmd.CmdSno, db) == ExecuteSQLResult.Initial)
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+
+                            
+
+                            db.TransactionCtrl(TransactionTypes.Commit);
+                            return true;
+                        }
+                        else
+                        {
+                            strEM = $"<taskNo> {taskNo} => 取得命令資料失敗！";
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        strEM = "Error: 開啟DB失敗！";
+                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                strEM = ex.Message;
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                return false;
+            }
         }
 
     }
