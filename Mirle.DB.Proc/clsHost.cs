@@ -34,10 +34,10 @@ namespace Mirle.DB.Proc
             DBType = DBTypes.SQLite
         };
 
-        public clsHost(clsDbConfig config, clsDbConfig config_WMS, string DB_Name_Sqlite, OEEParamConfig config_OEEParam)
+        public clsHost(clsDbConfig config, clsDbConfig config_WMS, string DB_Name_Sqlite)
         {
             _config_Sqlite.DbName = DB_Name_Sqlite;
-            Process = new clsProc(config, config_WMS, _config_Sqlite, config_OEEParam);
+            Process = new clsProc(config, config_WMS, _config_Sqlite);
             CMD_MST = new clsCmd_Mst(config);
             SNO = new clsSno(config);
             LocMst = new clsLocMst(config);

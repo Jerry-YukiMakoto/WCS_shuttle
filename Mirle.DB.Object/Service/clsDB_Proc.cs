@@ -11,9 +11,9 @@ namespace Mirle.DB.Object
     public class clsDB_Proc
     {
         private static Proc.clsHost wcs;
-        public static void Initial(clsDbConfig dbConfig, clsDbConfig dbConfig_WMS, OEEParamConfig config_OEEParam)
+        public static void Initial(clsDbConfig dbConfig, clsDbConfig dbConfig_WMS)
         {
-            wcs = new Proc.clsHost(dbConfig, dbConfig_WMS, Application.StartupPath + "\\Sqlite\\LCSCODE.DB", config_OEEParam);
+            wcs = new Proc.clsHost(dbConfig, dbConfig_WMS, Application.StartupPath + "\\Sqlite\\LCSCODE.DB");
         }
 
         public static Proc.clsHost GetDB_Object()

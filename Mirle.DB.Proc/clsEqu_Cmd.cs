@@ -11,6 +11,7 @@ namespace Mirle.DB.Proc
     public class clsEqu_Cmd
     {
         private Fun.clsEqu_Cmd EQU_CMD = new Fun.clsEqu_Cmd();
+        private Fun.clsCmd_Mst CMD_MST = new Fun.clsCmd_Mst();
         private clsSno sno;
         private Fun.clsProc proc;
         private clsDbConfig _config = new clsDbConfig();
@@ -51,84 +52,75 @@ namespace Mirle.DB.Proc
             }
         }
 
-        //public ExecuteSQLResult DeleteEquCmd(string cmdSno)
-        //{
-        //    try
-        //    {
-        //        using (var db = clsGetDB.GetDB(_config))
-        //        {
-        //            int iRet = clsGetDB.FunDbOpen(db);
-        //            if (iRet == DBResult.Success)
-        //            {
-        //                return EQU_CMD.DeleteEquCmd(cmdSno, db);
-        //            }
-        //            else
-        //            {
-        //                return ExecuteSQLResult.Initial;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-        //        return ExecuteSQLResult.Exception;
-        //    }
+        public void FunCheckEquCmdFinish()
+        {
+            DataTable dtTmp = new DataTable();
+            var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        iRet = EQU_CMD.GetFinishCommand(ref dtTmp, db);
+                        if (iRet == DBResult.Success)
+                        {
+                            for (int i = 0; i < dtTmp.Rows.Count; i++)
+                            {
+                                string sDeviceID = Convert.ToString(dtTmp.Rows[i]["DeviceID"]);
+                                string sCmdSno = Convert.ToString(dtTmp.Rows[i]["CMDSNO"]);
+                                string strCompleteCode = Convert.ToString(dtTmp.Rows[i]["CompleteCode"]);
+                                string sTaskMode = Convert.ToString(dtTmp.Rows[i]["TransferMode"]);
+                                string sFinishLoc = Convert.ToString(dtTmp.Rows[i]["FinishLocation"]);
+                                int iMode = int.Parse(sTaskMode);
+                                string sSource = Convert.ToString(dtTmp.Rows[i]["Source"]);
+                                int.TryParse(sSource, out int iSource);
+                                string sDestination = Convert.ToString(dtTmp.Rows[i]["Destination"]);
+                                int.TryParse(sDestination, out int iDest);
 
-        //}
+                                if (iMode == (int)clsEnum.TaskMode.Move)
+                                {
+                                    EQU_CMD.FunInsertHisEquCmd(sCmdSno, db);
+                                    EQU_CMD.DeleteEquCmd(sCmdSno, db);
+                                    continue;
+                                }
 
-        //public ExecuteSQLResult UpdateEquCmdRetry(string cmdSno)
-        //{
-        //    try
-        //    {
-        //        using (var db = clsGetDB.GetDB(_config))
-        //        {
-        //            int iRet = clsGetDB.FunDbOpen(db);
-        //            if (iRet == DBResult.Success)
-        //            {
-        //                return EQU_CMD.UpdateEquCmdRetry(cmdSno, db);
-        //            }
-        //            else
-        //            {
-        //                return ExecuteSQLResult.Initial;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-        //        return ExecuteSQLResult.Exception;
-        //    }
-        //}
+                                //clsEnum.LocType locType_Dest;
+                                //clsEnum.LocType locType_Source;
+                                //if (iSource > 100) locType_Source = clsEnum.LocType.Shelf;
+                                //else locType_Source = clsEnum.LocType.Port;
 
-        //public ExecuteSQLResult InsertEquCmd(int craneNo, string cmdSno, string cmdMode, string source, string destination, int priority)
-        //{
-        //    try
-        //    {
-        //        using (var db = clsGetDB.GetDB(_config))
-        //        {
-        //            int iRet = clsGetDB.FunDbOpen(db);
-        //            if (iRet == DBResult.Success)
-        //            {
-        //                return EQU_CMD.InsertEquCmd(craneNo, cmdSno, cmdMode, source, destination, priority, db);
-        //            }
-        //            else
-        //            {
-        //                return ExecuteSQLResult.Initial;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-        //        return ExecuteSQLResult.Exception;
-        //    }
-        //}
+                                //if (iDest > 100) locType_Dest = clsEnum.LocType.Shelf;
+                                //else locType_Dest = clsEnum.LocType.Port;
+
+                                CmdMstInfo cmd = new CmdMstInfo();
+                                if (CMD_MST.FunGetCommand(sCmdSno, ref cmd, ref iRet, db) == false)
+                                {
+                                    if (iRet == DBResult.NoDataSelect)
+                                    {
+                                        if (EQU_CMD.FunInsertHisEquCmd(sCmdSno, db))
+                                        {
+                                            EQU_CMD.DeleteEquCmd(sCmdSno, db);
+                                        }
+                                    }
+
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+            }
+            finally
+            {
+                dtTmp = null;
+            }
+        }
 
         public GetDataResult GetEquCmd(string cmdSno, out DataObject<EquCmd> dataObject)
         {

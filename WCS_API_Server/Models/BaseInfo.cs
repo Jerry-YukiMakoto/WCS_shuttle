@@ -10,6 +10,7 @@ namespace WCS_API_Server.Models
     {
         public string lineId { get; set; } //線別
         public string taskNo { get; set; } //任務號
-        
+        public string palletNo { get; set; } //棧板號
+
     }
 }

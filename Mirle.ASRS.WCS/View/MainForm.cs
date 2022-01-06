@@ -312,12 +312,10 @@ namespace Mirle.ASRS.WCS.View
             timRead.Enabled = false;
             try
             {
-                #region 需再修改
                  if (DB.Proc.clsHost.IsConn)
                 {
-                    //clsDB_Proc.GetDB_Object().GetTask().FunCheckTaskCmdFinish();
+                    clsDB_Proc.GetDB_Object().GetEqu_Cmd().FunCheckEquCmdFinish();
                 }
-                #endregion
             }
             catch (Exception ex)
             {
@@ -358,6 +356,7 @@ namespace Mirle.ASRS.WCS.View
         {
             var archive = new AutoArchive();
             archive.Start();
+            clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS); //原DataAccessController功能
             ControllerReader.FunGetController(clInitSys.DbConfig, clInitSys.CV_Config);
 
             _unityContainer = new UnityContainer();
@@ -416,9 +415,9 @@ namespace Mirle.ASRS.WCS.View
                         {
                             oGrid.Rows.Add();
                             oGrid.Rows[oGrid.RowCount - 1].HeaderCell.Value = Convert.ToString(oGrid.RowCount);
-                            oGrid[ColumnDef.CMD_MST.CmdSno.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CmdSno"]);
+                            oGrid[ColumnDef.CMD_MST.CmdSno.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CMDSNO"]);
                             oGrid[ColumnDef.CMD_MST.taskNo.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["taskNo"]);
-                            oGrid[ColumnDef.CMD_MST.CmdSts.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CmdSts"]);
+                            oGrid[ColumnDef.CMD_MST.CmdSts.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CMDSTS"]);
                             oGrid[ColumnDef.CMD_MST.PRT.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["PRT"]);
                             oGrid[ColumnDef.CMD_MST.CmdMode.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CmdMode"]);
                             oGrid[ColumnDef.CMD_MST.StnNo.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["StnNo"]);
