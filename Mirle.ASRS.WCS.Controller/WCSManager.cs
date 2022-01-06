@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
-
 using Mirle.ASRS.WCS.Model.DataAccess;
 using Mirle.ASRS.WCS.Model.LogTrace;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.Conveyors;
 using Mirle.DataBase;
+using Mirle.DB.Object;
 
 namespace Mirle.ASRS.WCS.Controller
 {
@@ -84,8 +79,8 @@ namespace Mirle.ASRS.WCS.Controller
             int CmdMode = 0;
             using (var db = _dataAccessManger.GetDB())
             {
-
-                if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A3, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
+                if(clsDB_Proc.GetDB_Object().GetCmd_Mst().GetCmdMstByStoreOut(StnNo.A3, out var dataObject) == GetDataResult.Success) 
+                //if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A3, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string CmdSno = dataObject[0].CmdSno;
                     int IOType = Convert.ToInt32(dataObject[0].IOType);
@@ -133,6 +128,7 @@ namespace Mirle.ASRS.WCS.Controller
                         log.LoadCategory = CmdMode;
                         _loggerManager.WriteLogTrace(log);
 
+                        
                         if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                         {
                             log = new StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Begin Fail");
@@ -285,7 +281,6 @@ namespace Mirle.ASRS.WCS.Controller
             int bufferIndex = 5; //A5
             using (var db = _dataAccessManger.GetDB())
             {
-
                 if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A6, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string cmdSno = dataObject[0].CmdSno;
@@ -393,7 +388,7 @@ namespace Mirle.ASRS.WCS.Controller
             int bufferIndex = 7; //A7
             using (var db = _dataAccessManger.GetDB())
             {
-
+                //if(clsDB_Proc.GetDB_Object().GetCmd_Mst().GetCmdMstByStoreOut(StnNo.A8, out var dataObject) == GetDataResult.Success)
                 if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A8, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string cmdSno = dataObject[0].CmdSno;
@@ -501,7 +496,6 @@ namespace Mirle.ASRS.WCS.Controller
             int bufferIndex = 9; //A9
             using (var db = _dataAccessManger.GetDB())
             {
-
                 if (_dataAccessManger.GetCmdMstByStoreOut(StnNo.A10, out var dataObject) == GetDataResult.Success) //讀取CMD_MST 
                 {
                     string cmdSno = dataObject[0].CmdSno;
@@ -964,8 +958,6 @@ namespace Mirle.ASRS.WCS.Controller
         }
 
         #endregion StoreOut
-
-
 
         #region StoreIn
         private void StoreInProcess(object sender, ElapsedEventArgs e)
@@ -2423,7 +2415,7 @@ namespace Mirle.ASRS.WCS.Controller
 
         #endregion other
 
-        private bool InsertStnToStnEquCmd(DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
+        private bool InsertStnToStnEquCmd(DataBase.DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
         {
             try
             {
@@ -2462,7 +2454,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        private bool InsertStoreInEquCmd(DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
+        private bool InsertStoreInEquCmd(DataBase.DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
         {
             try
             {
@@ -2514,7 +2506,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        private bool InsertStoreOutEquCmd(DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
+        private bool InsertStoreOutEquCmd(DataBase.DB db, int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority)
         {
             try
             {
@@ -2567,7 +2559,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        private bool InsertLocToLocEquCmd(DB db, int CmdType, string IoType, int craneNo, string cmdSno, string source, string destination, int priority)
+        private bool InsertLocToLocEquCmd(DataBase.DB db, int CmdType, string IoType, int craneNo, string cmdSno, string source, string destination, int priority)
         {
             try
             {

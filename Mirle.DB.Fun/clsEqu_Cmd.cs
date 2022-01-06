@@ -65,7 +65,7 @@ namespace Mirle.DB.Fun
         {
             string sql = "INSERT INTO EQUCMD (";
             sql += "CMDSNO, ";
-            sql += "EQUNO, ";
+            sql += "DeviceID, ";
             sql += "CMDMODE, ";
             sql += "CMDSTS, ";
             sql += "SOURCE, ";
@@ -93,10 +93,32 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
+        public int GetFinishCommand(ref DataTable dtTmp, SqlServer db)
+        {
+            try
+            {
+                string strSql = "select * from EQUCMD where TaskState > " + ((int)clsEnum.TaskState.Transferring).ToString();
+                string strEM = "";
+                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
+                if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
+                {
+                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
+                }
+
+                return iRet;
+            }
+            catch (Exception ex)
+            {
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                return DBResult.Exception;
+            }
+        }
+
         public GetDataResult GetEquCmdByOutMode(int craneNo, string destination, out DataObject<EquCmd> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM EQUCMD ";
-            sql += $"WHERE EQUNO='{craneNo}' ";
+            sql += $"WHERE DeviceID='{craneNo}' ";
             sql += $"AND CMDMODE IN ('{EquCmdMode.OutMode}', '{EquCmdMode.StnToStn}') ";
             sql += $"AND DESTINATION='{destination}'";
             return db.GetData(sql, out dataObject);
@@ -105,7 +127,7 @@ namespace Mirle.DB.Fun
         public GetDataResult GetEquCmdByInMode(int craneNo, string source, out DataObject<EquCmd> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM EQUCMD ";
-            sql += $"WHERE EQUNO='{craneNo}' ";
+            sql += $"WHERE DeviceID='{craneNo}' ";
             sql += $"AND CMDMODE IN ('{EquCmdMode.InMode}', '{EquCmdMode.StnToStn}') ";
             sql += $"AND SOURCE='{source}'";
             return db.GetData(sql, out dataObject);
@@ -114,7 +136,7 @@ namespace Mirle.DB.Fun
         public GetDataResult GetEquCmdByLocToLoc(int craneNo, out DataObject<EquCmd> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM EQUCMD ";
-            sql += $"WHERE EQUNO='{craneNo}' ";
+            sql += $"WHERE DeviceID='{craneNo}' ";
             sql += $"AND CMDMODE ='{EquCmdMode.LocToLoc}' ";
             return db.GetData(sql, out dataObject);
         }

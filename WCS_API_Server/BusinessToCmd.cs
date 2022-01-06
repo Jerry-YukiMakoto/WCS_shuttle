@@ -7,7 +7,7 @@ namespace WCS_API_Server
     {
         public static string ConvertToCmd(string businessType)
         {
-            string cvtCmd = "";
+            string cvtCmd;
           
             switch (businessType)
             {

@@ -22,7 +22,7 @@ namespace Mirle.ASRS.WCS.Controller
             _dbConfig = dbConfig;
         }
 
-        public DB GetDB()
+        public DataBase.DB GetDB()
         {
 
             if (_dbConfig.DBType == DBTypes.OracleClient)
@@ -236,7 +236,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
         
-        public ExecuteSQLResult UpdateCmdMstTransferring(DB db, string cmdSno, string trace)
+        public ExecuteSQLResult UpdateCmdMstTransferring(DataBase.DB db, string cmdSno, string trace)
         {
             string sql = "UPDATE CMDMST ";
             sql += $"SET CMDSTS='{1}', ";
@@ -247,7 +247,7 @@ namespace Mirle.ASRS.WCS.Controller
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult UpdateCmdMstRemark(DB db, string cmdSno, string REMARK)
+        public ExecuteSQLResult UpdateCmdMstRemark(DataBase.DB db, string cmdSno, string REMARK)
         {
             string sql = "UPDATE CMDMST ";
             sql += $"SET EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
@@ -255,7 +255,7 @@ namespace Mirle.ASRS.WCS.Controller
             sql += $"WHERE CMDSNO='{cmdSno}' ";
             return db.ExecuteSQL2(sql);
         }
-        public ExecuteSQLResult UpdateCmdMstTransferring(DB db, string cmdSno, string trace, int trayWeight)
+        public ExecuteSQLResult UpdateCmdMstTransferring(DataBase.DB db, string cmdSno, string trace, int trayWeight)
         {
             string sql = "UPDATE CMDMST ";
             sql += $"SET CMDSTS='{1}', ";
@@ -267,7 +267,7 @@ namespace Mirle.ASRS.WCS.Controller
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult UpdateCmdMst(DB db, string cmdSno, string trace)
+        public ExecuteSQLResult UpdateCmdMst(DataBase.DB db, string cmdSno, string trace)
         {
             string sql = "UPDATE CMDMST ";
             sql += $"SET TRACE='{trace}' ";
@@ -276,7 +276,7 @@ namespace Mirle.ASRS.WCS.Controller
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult UpdateCmdMst(DB db, string cmdSno, string cmdSts, string trace)
+        public ExecuteSQLResult UpdateCmdMst(DataBase.DB db, string cmdSno, string cmdSts, string trace)
         {
             string sql = "UPDATE CMDMST ";
             sql += $"SET TRACE='{trace}', ";
@@ -286,7 +286,7 @@ namespace Mirle.ASRS.WCS.Controller
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult DeleteEquCmd(DB db, string cmdSno)
+        public ExecuteSQLResult DeleteEquCmd(DataBase.DB db, string cmdSno)
         {
             string sql = "UPDATE EQUCMD ";
             sql += $"SET RENEWFLAG='{"F"}' ";
@@ -296,7 +296,7 @@ namespace Mirle.ASRS.WCS.Controller
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult UpdateEquCmdRetry(DB db, string cmdSno)
+        public ExecuteSQLResult UpdateEquCmdRetry(DataBase.DB db, string cmdSno)
         {
             string sql = "UPDATE EQUCMD ";
             sql += $"SET CMDSTS='{0}' ";
@@ -304,7 +304,7 @@ namespace Mirle.ASRS.WCS.Controller
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult InsertEquCmd(DB db, int craneNo, string cmdSno, string cmdMode, string source, string destination, int priority)
+        public ExecuteSQLResult InsertEquCmd(DataBase.DB db, int craneNo, string cmdSno, string cmdMode, string source, string destination, int priority)
         {
             string sql = "INSERT INTO EQUCMD (";
             sql += "CMDSNO, ";

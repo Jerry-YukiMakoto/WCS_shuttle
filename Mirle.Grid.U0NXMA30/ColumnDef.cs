@@ -11,7 +11,7 @@ namespace Mirle.Grid.U0NXMA30
         public class CMD_MST
         {
             public static readonly ColumnInfo CmdSno = new ColumnInfo { Index = 0, Name = "任務號", Width = 68 };
-            public static readonly ColumnInfo taskNo = new ColumnInfo { Index = 1, Name = "taskNo", Width = 200 };
+            public static readonly ColumnInfo taskNo = new ColumnInfo { Index = 1, Name = "TaskNo", Width = 200 };
             public static readonly ColumnInfo CmdSts = new ColumnInfo { Index = 2, Name = "狀態", Width = 60 };
             public static readonly ColumnInfo PRT = new ColumnInfo { Index = 3, Name = "優先權", Width = 68 };
             public static readonly ColumnInfo CmdMode = new ColumnInfo { Index = 4, Name = "模式", Width = 60 };

@@ -32,6 +32,7 @@ namespace WCS_API_Server
             
             try
             {
+                #region 填入cmd資訊
                 CmdMstInfo cmd = new CmdMstInfo();
                 string strEM = "";
                 
@@ -40,8 +41,7 @@ namespace WCS_API_Server
                 {
                     throw new Exception($"<{Body.taskNo}>取得序號失敗！");
                 }
-                #region 填入cmd資訊
-                cmd.CmdSno = Body.taskNo;
+               
                 cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
                 cmd.IoType = Body.bussinessType;
                 cmd.Loc = Body.locationFrom;

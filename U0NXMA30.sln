@@ -60,10 +60,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebAPI Service", "WebAPI Service", "{1C909E7F-D06C-4979-8F67-6F6A50556387}"
 	ProjectSection(SolutionItems) = preProject
-		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021203.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021203.xlsx
-		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021210.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021210.xlsx
 		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx
 		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx
+		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schedules", "Schedules", "{2D582D2F-535F-431B-A611-5F85AAAB545C}"

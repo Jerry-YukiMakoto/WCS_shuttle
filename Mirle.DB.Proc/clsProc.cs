@@ -35,13 +35,11 @@ namespace Mirle.DB.Proc
         private clsDbConfig _config = new clsDbConfig();
         private clsDbConfig _config_WMS = new clsDbConfig();
         private clsDbConfig _config_Sqlite = new clsDbConfig();
-        private static OEEParamConfig _config_OEEParam = new OEEParamConfig();
-        public clsProc(clsDbConfig config, clsDbConfig config_WMS, clsDbConfig config_Sqlite, OEEParamConfig config_OEEParam)
+        public clsProc(clsDbConfig config, clsDbConfig config_WMS, clsDbConfig config_Sqlite)
         {
             _config = config;
             _config_WMS = config_WMS;
             _config_Sqlite = config_Sqlite;
-            _config_OEEParam = config_OEEParam;
             proc = new Fun.clsProc(_config_WMS);
         }
 
