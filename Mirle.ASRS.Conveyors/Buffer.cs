@@ -32,7 +32,7 @@ namespace Mirle.ASRS.Conveyors
         public string BufferName => Signal.BufferName;
 
         public int CommandId => Signal.CommandId.GetValue();
-        public int PathNotice => Signal.PathNotice.GetValue();
+        public int PathNotice => Signal.PathChangeNotice.GetValue();
         public int LoadCategory => Signal.LoadCategory.GetValue();
         public int CmdMode => Signal.CmdMode.GetValue();
         public int Ready => Signal.Ready.GetValue();
@@ -59,6 +59,8 @@ namespace Mirle.ASRS.Conveyors
 
         protected internal virtual void Refresh()
         {
+            string exmessage = "";
+
             if (Signal.CmdMode.GetValue() > 0 && Signal.CmdMode.GetValue() == Signal.ControllerSignal.LoadCategory.GetValue()
                 )
             {
@@ -71,21 +73,21 @@ namespace Mirle.ASRS.Conveyors
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
-            if (Signal.ControllerSignal.PathChangeNotice.GetValue() > 0)
+            if (Signal.PathChangeNotice.GetValue() > 0 &&  Signal.PathChangeNotice.GetValue()==Signal.ControllerSignal.PathChangeNotice.GetValue())
             {
-                Signal.ControllerSignal.PathChangeNotice.SetValue(0);
+                Signal.ControllerSignal.PathChangeNotice.SetValue(0,ref exmessage);
                 OnBufferPathNoticeChange?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
             if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)
             {
-                Signal.ControllerSignal.A4Emptysupply.SetValue(0);
+                Signal.ControllerSignal.A4Emptysupply.SetValue(0,ref exmessage);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
-            if (Signal.ControllerSignal.Switch_Mode.GetValue() > 0)
+            if (/*放站口模式入出來決定Signal.PathChangeNotice.GetValue() > 0*/Signal.ControllerSignal.Switch_Mode.GetValue() > 0)
             {
-                Signal.ControllerSignal.Switch_Mode.SetValue(0);
+                Signal.ControllerSignal.Switch_Mode.SetValue(0,ref exmessage);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
             CheckIniatlNotice();
@@ -114,6 +116,7 @@ namespace Mirle.ASRS.Conveyors
         }
         private void CheckIniatlNotice()
         {
+            string exmessage = "";
             if (_onIniatlNotice == false && Signal.ControllerSignal.InitialNotice.GetValue() == 1)
             {
                 _onIniatlNotice = true;
@@ -122,58 +125,63 @@ namespace Mirle.ASRS.Conveyors
             else if (_onIniatlNotice == true && Signal.ControllerSignal.InitialNotice.GetValue() == 1 && Signal.InitialNotice.GetValue() == 1)
             {
                 _onIniatlNotice = false;
-                Signal.ControllerSignal.InitialNotice.SetValue(0);
+                Signal.ControllerSignal.InitialNotice.SetValue(0,ref exmessage);
                 OnIniatlNoticeComplete?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
         }
 
-        public Task<bool> WriteCommandIdAsync(string commandId, int loadCategory)
+        public Task<(bool,string)> WriteCommandIdAsync(string commandId, int loadCategory)
         {
             return Task.Run(() =>
             {
+                string exmessage = "";
                 int[] value = new int[2];
                 value[1] = loadCategory;
                 int.TryParse(commandId, out value[0]);
-                if(Signal.ControllerSignal.CommandId.SetValue(value[0])==true)
-                 {
-                    return Signal.ControllerSignal.LoadCategory.SetValue(value[1]);
+                if(Signal.ControllerSignal.CommandId.SetValue(value[0], ref exmessage)==true)
+                {
+                    return (Signal.ControllerSignal.LoadCategory.SetValue(value[1], ref exmessage),exmessage);
                 }
                 else
                 {
-                    return Signal.ControllerSignal.CommandId.SetValue(value[0]);
+                    return (Signal.ControllerSignal.CommandId.SetValue(value[0], ref exmessage),exmessage);
                 }
 
             });
         }
         
-        public Task<bool> A4EmptysupplyOn()
+        public Task<(bool,string)> A4EmptysupplyOn()
         {
+            string exmessage = "";
             return Task.Run(() =>
             {
-                return Signal.ControllerSignal.A4Emptysupply.SetValue(1);
+                return (Signal.ControllerSignal.A4Emptysupply.SetValue(1, ref exmessage),exmessage);
             });
         }
-        public Task<bool> InitialNoticeTrigger()
+        public Task<(bool,string)> InitialNoticeTrigger()
         {
+            string exmessage = "";
             return Task.Run(() =>
             {
-                return Signal.ControllerSignal.InitialNotice.SetValue(1);
-            });
-        }
-
-        public Task<bool> Switch_Mode(int mode)
-        {
-            return Task.Run(() =>
-            {
-                return Signal.ControllerSignal.Switch_Mode.SetValue(mode);
+                return (Signal.ControllerSignal.InitialNotice.SetValue(1,ref exmessage),exmessage);
             });
         }
 
-        public Task<bool> WritePathChabgeNotice(int path)
+        public Task<(bool, string)> Switch_Mode(int mode)
         {
+            string exmessage = "";
             return Task.Run(() =>
             {
-                return Signal.ControllerSignal.PathChangeNotice.SetValue(path);
+                return (Signal.ControllerSignal.Switch_Mode.SetValue(mode, ref exmessage),exmessage);
+            });
+        }
+
+        public Task<(bool, string)> WritePathChabgeNotice(int path)
+        {
+            string exmessage = "";
+            return Task.Run(() =>
+            {
+                return (Signal.ControllerSignal.PathChangeNotice.SetValue(path, ref exmessage),exmessage);
             });
         }
     }

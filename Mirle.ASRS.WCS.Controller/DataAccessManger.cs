@@ -38,7 +38,7 @@ namespace Mirle.ASRS.WCS.Controller
                 return db;
             }
         }
-        public GetDataResult GetCmdMstByStoreOut(string stations, out DataObject<CmdMst> dataObject)
+        public GetDataResult GetCmdMstByStoreOutStart(string stations, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
@@ -50,7 +50,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        public GetDataResult GetCmdMstByStoreOut(string stations, string CmdSno, out DataObject<CmdMst> dataObject)
+        public GetDataResult GetCmdMstByStoreOutCrane(string CmdSno, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {
@@ -59,7 +59,19 @@ namespace Mirle.ASRS.WCS.Controller
                 sql += $"AND CmdSno='{CmdSno}' ";
                 sql += $"AND TRACE='{11}' ";
                 sql += $"AND CMDSTS='{1}' ";
-                sql += $"AND STNNO = '{stations} '";
+                return db.GetData(sql, out dataObject);
+            }
+        }
+
+        public GetDataResult GetCmdMstByEmptyStoreOutCrane(string CmdSno, out DataObject<CmdMst> dataObject)
+        {
+            using (var db = GetDB())
+            {
+                string sql = "SELECT * FROM CMDMST ";
+                sql += $"WHERE CMDMODE IN ('{2}') ";
+                sql += $"AND CmdSno='{CmdSno}' ";
+                sql += $"AND TRACE='{31}' ";
+                sql += $"AND CMDSTS='{1}' ";
                 return db.GetData(sql, out dataObject);
             }
         }
@@ -101,7 +113,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        public GetDataResult GetCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
+        public GetDataResult GetCmdMstByStoreInCrane(string cmdsno, out DataObject<CmdMst> dataObject)
         {
             using (var db = GetDB())
             {

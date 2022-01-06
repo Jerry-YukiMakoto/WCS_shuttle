@@ -28,7 +28,7 @@ namespace Mirle.MPLC.DataType
             }
         }
 
-        public bool SetValue(int data)
+        public bool SetValue(int data, ref string exmessage)
         {
             if (_mplc is null || string.IsNullOrWhiteSpace(Address))
             {
@@ -43,6 +43,7 @@ namespace Mirle.MPLC.DataType
                 }
                 catch (Exception ex)
                 {
+                    exmessage = ex.Message;
                     return false;
                 }
             }

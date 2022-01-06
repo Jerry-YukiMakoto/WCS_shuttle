@@ -87,6 +87,12 @@ namespace Mirle.ASRS.Conveyors.Signal
                     readyBufferIndex.Add(7, 6);//A7
                     readyBufferIndex.Add(9, 8); //A9
 
+                    var PathChangeNotice = new Dictionary<int, int>();
+                    PathChangeNotice.Add(1, 0);//A1
+                    PathChangeNotice.Add(2, 1);//A2
+                    PathChangeNotice.Add(3, 2);//A3
+                    PathChangeNotice.Add(4, 3);//A4
+
 
 
                     for (int bufferIndex = 0; bufferIndex < conveyor.Buffers.Count; bufferIndex++)
@@ -119,6 +125,15 @@ namespace Mirle.ASRS.Conveyors.Signal
                         else
                         {
                             buffer.Ready = new Word();
+                        }
+
+                        if (PathChangeNotice.ContainsKey(bufferIndex + 1))
+                        {
+                            buffer.PathChangeNotice = new Word(_mplc, $"D{plcIndex + (bufferIndex * 10) + 4}");
+                        }
+                        else
+                        {
+                            buffer.PathChangeNotice = new Word();
                         }
 
                         buffer.Alarm = new Word(_mplc, $"D{plcIndex + (bufferIndex * 10) + 6}");

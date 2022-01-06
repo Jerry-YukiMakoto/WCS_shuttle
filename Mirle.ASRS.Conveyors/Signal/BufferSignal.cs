@@ -8,7 +8,7 @@ namespace Mirle.ASRS.Conveyors.Signal
         public int BufferIndex { get; }
         public string BufferName { get; }
         public Word CommandId { get; protected internal set; }
-        public Word PathNotice { get; protected internal set; }
+        public Word PathChangeNotice { get; protected internal set; }
         public Word LoadCategory { get; protected internal set; }
         public Word CmdMode { get; protected internal set; }
         public BufferStatusSignal StatusSignal { get; protected internal set; }

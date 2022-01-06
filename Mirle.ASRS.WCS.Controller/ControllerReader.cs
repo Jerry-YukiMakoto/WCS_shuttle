@@ -23,10 +23,10 @@ namespace Mirle.ASRS.WCS.Controller
 
         public static void FunGetController(clsDbConfig dbConfig, clsPlcConfig CVConfig) {
 
-            _wcsManager = new WCSManager(CVConfig.SignalGroup == 0);
-            _cvController = new CVController(CVConfig.MPLCIP, CVConfig.MPLCPort, CVConfig.SignalGroup, CVConfig.InMemorySimulator);
             _dataAccessManger = new DataAccessManger(dbConfig);
-            _loggerManager = new LoggerManager();            
+            _loggerManager = new LoggerManager();
+            _cvController = new CVController(CVConfig.MPLCIP, CVConfig.MPLCPort, CVConfig.SignalGroup, CVConfig.InMemorySimulator);
+            _wcsManager = new WCSManager();
             _wcsManager.Start();
         }
 

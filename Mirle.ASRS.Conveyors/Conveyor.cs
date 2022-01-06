@@ -63,16 +63,17 @@ namespace Mirle.ASRS.Conveyors
 
         private void Heartbeat()
         {
+            string exmessage = "";
             var systemSignal = _signal.GetSystemSignal();
             if (systemSignal.Heartbeat.GetValue() == systemSignal.ControllerSignal.Heartbeat.GetValue())
             {
                 if (systemSignal.Heartbeat.GetValue() == 0)
                 {
-                    systemSignal.ControllerSignal.Heartbeat.SetValue(1);
+                    systemSignal.ControllerSignal.Heartbeat.SetValue(1,ref exmessage);
                 }
                 else
                 {
-                    systemSignal.ControllerSignal.Heartbeat.SetValue(0);
+                    systemSignal.ControllerSignal.Heartbeat.SetValue(0, ref exmessage);
                 }
             }
 
