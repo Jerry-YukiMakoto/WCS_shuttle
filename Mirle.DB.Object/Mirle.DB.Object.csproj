@@ -55,6 +55,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
+      <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
+      <Name>Mirle.ASRS.WCS.Controller</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.Fun\Mirle.DB.Fun.csproj">
       <Project>{c40166b0-0f5d-4535-94a7-699764a59a83}</Project>
       <Name>Mirle.DB.Fun</Name>

@@ -7,6 +7,7 @@ using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.Conveyors;
 using Mirle.DataBase;
 using Mirle.DB.Object;
+using Mirle.Def;
 
 namespace Mirle.ASRS.WCS.Controller
 {
@@ -20,11 +21,11 @@ namespace Mirle.ASRS.WCS.Controller
         private readonly Timer _otherProcess = new Timer();
         private readonly bool IsConnected = false;
 
-        public WCSManager()
+        public WCSManager(clsDbConfig dbConfig)
         {
             _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             _loggerManager = ControllerReader.GetLoggerManager();
-            _dataAccessManger = ControllerReader.GetDataAccessManger();
+            _dataAccessManger = new DataAccessManger(dbConfig);
 
             IsConnected= ControllerReader.GetCVControllerr().GetConnect();
 
