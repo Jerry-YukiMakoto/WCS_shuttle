@@ -216,7 +216,33 @@ namespace Mirle.DB.Proc
             }
         }
 
-        
+        public GetDataResult GetCmdMstByStoreInCrane(string cmdsno, out DataObject<CmdMst> dataObject)
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        return CMD_MST.GetCmdMstByStoreInCrane(cmdsno, out dataObject, db);
+                    }
+                    else
+                    {
+                        dataObject = new DataObject<CmdMst>();
+                        return GetDataResult.Initial;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                dataObject = new DataObject<CmdMst>();
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return GetDataResult.Exception;
+            }
+        }
 
         public GetDataResult GetLocToLoc(out DataObject<CmdMst> dataObject)
         {
