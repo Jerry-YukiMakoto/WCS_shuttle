@@ -24,7 +24,7 @@ namespace Mirle.ASRS.WCS.Controller.Service
             CheckLastCargo();
         }
 
-        public static bool CheckLastCargo()
+        public bool CheckLastCargo()
         {
             if (_dataAccessManger.GetCmdMstByStoreOutcheck(StnNo.A3, out var dataObject) == GetDataResult.Success)
             {
