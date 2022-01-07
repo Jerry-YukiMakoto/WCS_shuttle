@@ -20,7 +20,7 @@ namespace Mirle.ASRS.WCS.Controller
         private readonly Timer _storeInProcess = new Timer();
         private readonly Timer _storeOutProcess = new Timer();
         private readonly Timer _otherProcess = new Timer();
-        private readonly bool IsConnected = false;
+        private bool IsConnected => ControllerReader.GetCVControllerr().GetConnect();
 
         public WCSManager(clsDbConfig dbConfig)
         {
@@ -28,7 +28,7 @@ namespace Mirle.ASRS.WCS.Controller
             _loggerManager = ControllerReader.GetLoggerManager();
             _dataAccessManger = new DataAccessManger(dbConfig);
 
-            IsConnected= ControllerReader.GetCVControllerr().GetConnect();
+           
 
             _storeOutProcess.Interval = 500;
             _storeInProcess.Interval = 500;
@@ -56,27 +56,31 @@ namespace Mirle.ASRS.WCS.Controller
         #region StoreOut
         private void StoreOutProcess(object sender, ElapsedEventArgs e)
         {
-            _storeOutProcess.Stop();
-
-            if (IsConnected)
+            try
             {
-                StoreOut_A1_WriteCV();
+                _storeOutProcess.Stop();
 
-                StoreOut_A1_CreateEquCmd();
+                if (IsConnected)
+                {
+                    StoreOut_A1_WriteCV();
 
-                StoreOut_A2ToA4_WriteCV();
+                    StoreOut_A1_CreateEquCmd();
 
-                StoreOut_A2ToA4_CreateEquCmd();
+                    StoreOut_A2ToA4_WriteCV();
 
-                StoreOut_EquCmdFinish();
+                    StoreOut_A2ToA4_CreateEquCmd();
+
+                    StoreOut_EquCmdFinish();
+                }
+
+                _storeOutProcess.Start();
             }
-            //StoreOut_S201_WriteCV();
-            //StoreOut_S201_CreateEquCmd();
-            //StoreOut_S301_WriteCV();
-            //StoreOut_S301_CreateEquCmd();
-            //StoreOut_S401_WriteCV();
-            //StoreOut_S401_CreateEquCmd();
-            _storeOutProcess.Start();
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
         }
 
 
@@ -1239,31 +1243,33 @@ namespace Mirle.ASRS.WCS.Controller
         #region StoreIn
         private void StoreInProcess(object sender, ElapsedEventArgs e)
         {
-            _storeInProcess.Stop();
-
-            if (IsConnected)
+            try
             {
-                if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)
+                _storeInProcess.Stop();
+                if (IsConnected)
                 {
-                    StoreIn_A1_WriteCV();//OK
+                    if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)
+                    {
+                        StoreIn_A1_WriteCV();//OK
 
-                    StoreIn_A1_CreateEquCmd();//OK
+                        StoreIn_A1_CreateEquCmd();//OK
+                    }
+
+                    StoreIn_A2ToA4_WriteCV();
+
+                    StoreIn_A2ToA4_CreateEquCmd();
+
+                    StoreIn_EquCmdFinish();//OK
                 }
 
-                StoreIn_A2ToA4_WriteCV();
-
-                StoreIn_A2ToA4_CreateEquCmd();
-
-                StoreIn_EquCmdFinish();//OK
+                _storeInProcess.Start();
             }
-            //StoreIn_S201_WriteCV();//OK
-            //StoreIn_S201_CreateEquCmd();//OK
-            //StoreIn_S301_WriteCV();//OK
-            //StoreIn_S301_CreateEquCmd();//OK
-            //StoreIn_S401_WriteCV();//OK
-            //StoreIn_S401_CreateEquCmd();//OK
-
-            _storeInProcess.Start();
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
         }
 
 
@@ -1354,7 +1360,7 @@ namespace Mirle.ASRS.WCS.Controller
                             }
 
                         }
-                        else if (IOType == IOtype.NormalstorIn //待確認類別，目前尚未確定
+                        else if (IOType == IOtype.NormalstorIn 
                         && _conveyor.GetBuffer(bufferIndex).Auto
                         && _conveyor.GetBuffer(bufferIndex).InMode
                         && _conveyor.GetBuffer(bufferIndex).CommandId == 0
@@ -2370,26 +2376,35 @@ namespace Mirle.ASRS.WCS.Controller
         #region Other
         private void OtherProcess(object sender, ElapsedEventArgs e)
         {
-            _otherProcess.Stop();
-
-            if (IsConnected)
+            try
             {
-                EmptyStoreIn_A1_WriteCV();
+                _otherProcess.Stop();
 
-                EmptyStoreIn_A1_CreateEquCmd();
+                if (IsConnected)
+                {
+                    EmptyStoreIn_A1_WriteCV();
 
-                EmptyStoreIn_EquCmdFinish();
+                    EmptyStoreIn_A1_CreateEquCmd();
 
-                EmptyStoreOut_A1_WriteCV();
+                    EmptyStoreIn_EquCmdFinish();
 
-                EmptyStoreOut_A1_CreateEquCmd();
+                    EmptyStoreOut_A1_WriteCV();
 
-                EmptyStoreOut_EquCmdFinish();
+                    EmptyStoreOut_A1_CreateEquCmd();
 
-                Other_LocToLoc();
+                    EmptyStoreOut_EquCmdFinish();
+
+                    Other_LocToLoc();
+                }
+
+                _otherProcess.Start();
             }
-
-            _otherProcess.Start();
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
         }
 
 
@@ -2662,7 +2677,7 @@ namespace Mirle.ASRS.WCS.Controller
                             log.LoadCategory = cmdmode;
                             _loggerManager.WriteLogTrace(log);
 
-                            //確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
+                            //確認目前模式，是否可以切換模式，可以就寫入切換成出庫的請求
                             if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreInReady
                             && _conveyor.GetBuffer(bufferIndex).Switch_Ack == 1)
                             {
@@ -2930,50 +2945,57 @@ namespace Mirle.ASRS.WCS.Controller
 
         private void Other_LocToLoc()
         {
-           
-
-            if (_dataAccessManger.GetLocToLoc(out var dataObject) == GetDataResult.Success)
+            try
             {
-
-                string source = $"{dataObject[0].Loc}";
-                string dest = $"{dataObject[0].NewLoc}";
-                string cmdSno = $"{dataObject[0].CmdSno}";
-
-                var log = new StoreOutLogTrace(5, "LocToLoc", "LocToLoc Command Received");
-                log.CmdSno = cmdSno;
-                _loggerManager.WriteLogTrace(log);
-
-                using (var db = _dataAccessManger.GetDB())
+                if (_dataAccessManger.GetLocToLoc(out var dataObject) == GetDataResult.Success)
                 {
-                    if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+
+                    string source = $"{dataObject[0].Loc}";
+                    string dest = $"{dataObject[0].NewLoc}";
+                    string cmdSno = $"{dataObject[0].CmdSno}";
+
+                    var log = new StoreOutLogTrace(5, "LocToLoc", "LocToLoc Command Received");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
+
+                    using (var db = _dataAccessManger.GetDB())
                     {
-                        log = new StoreOutLogTrace(5, "LocToLoc", "Create Crane LocToLoc Command, Begin Fail");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
-                        return;
-                    }
-                    if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.LoctoLocReady) != ExecuteSQLResult.Success)
-                    {
-                        log = new StoreOutLogTrace(5, "LocToLoc", "Create Crane LocToLoc Command, Update CmdMst Fail");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
-                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                        return;
-                    }
-                    if (InsertLocToLocEquCmd(db, 5, "LocToLoc", 1, cmdSno, source, dest, 1) == false)
-                    {
-                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                        return;
-                    }
-                    if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                    {
-                        log = new StoreOutLogTrace(5, "LocToLoc",  "Create Crane LocToLoc Command Commit Fail");
-                        log.CmdSno = cmdSno;
-                        _loggerManager.WriteLogTrace(log);
-                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                        return;
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(5, "LocToLoc", "Create Crane LocToLoc Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.LoctoLocReady) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreOutLogTrace(5, "LocToLoc", "Create Crane LocToLoc Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertLocToLocEquCmd(db, 5, "LocToLoc", 1, cmdSno, source, dest, 1) == false)
+                        {
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreOutLogTrace(5, "LocToLoc", "Create Crane LocToLoc Command Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
             }
         }
 
