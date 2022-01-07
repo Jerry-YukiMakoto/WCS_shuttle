@@ -143,6 +143,7 @@
     <Compile Include="View\CraneSpeedMaintainView.Designer.cs">
       <DependentUpon>CraneSpeedMaintainView.cs</DependentUpon>
     </Compile>
+    <Compile Include="WCSManager.cs" />
     <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -178,6 +179,10 @@
     <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
       <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
       <Name>Mirle.ASRS.WCS.Controller</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
+      <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
+      <Name>Mirle.ASRS.WCS.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.ClearCmd.Proc\Mirle.DB.ClearCmd.Proc.csproj">
       <Project>{31deb747-36ca-4a92-8df1-89eee47a0fa4}</Project>

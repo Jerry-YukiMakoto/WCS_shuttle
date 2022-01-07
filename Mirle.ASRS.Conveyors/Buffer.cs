@@ -57,7 +57,7 @@ namespace Mirle.ASRS.Conveyors
             Signal = signal;
         }
 
-        protected internal virtual void Refresh()
+        protected internal virtual void Refresh()//自己寫入的值，自己清，當寫入的值和確認PLC寫的值條件=>確認寫入成功，才清理自己寫的值
         {
             string exmessage = "";
 
@@ -79,13 +79,14 @@ namespace Mirle.ASRS.Conveyors
                 OnBufferPathNoticeChange?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
-            if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)
+            if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)//待修改，需要知道什麼時候電控運送母托到A3
             {
                 Signal.ControllerSignal.A4Emptysupply.SetValue(0,ref exmessage);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
-            if (/*放站口模式入出來決定Signal.PathChangeNotice.GetValue() > 0*/Signal.ControllerSignal.Switch_Mode.GetValue() > 0)
+            if (Signal.StatusSignal.InMode.IsOn() == true && Signal.ControllerSignal.Switch_Mode.GetValue() == 1
+                || Signal.StatusSignal.OutMode.IsOn() == true && Signal.ControllerSignal.Switch_Mode.GetValue() == 2)
             {
                 Signal.ControllerSignal.Switch_Mode.SetValue(0,ref exmessage);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));

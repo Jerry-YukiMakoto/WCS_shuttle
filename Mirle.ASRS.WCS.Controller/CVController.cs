@@ -88,6 +88,11 @@ namespace Mirle.ASRS.WCS.Controller
             return _converyor;
         }
 
+        public bool GetConnect()
+        {
+            return _plcHost.IsConnected;
+        }
+
         private bool disposedValue;
 
         protected virtual void Dispose(bool disposing)
