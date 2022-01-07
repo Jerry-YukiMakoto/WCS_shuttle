@@ -24,9 +24,9 @@ namespace Mirle.ASRS.WCS.View
         private DB.ClearCmd.Proc.clsHost clearCmd;
         private WebApiHost _webApiHost;
         private UnityContainer _unityContainer;
+        private static WCSManager _wcsManager;
         private static System.Timers.Timer timRead = new System.Timers.Timer();
 
-        
         public MainForm()
         {
             InitializeComponent();
@@ -357,8 +357,9 @@ namespace Mirle.ASRS.WCS.View
             var archive = new AutoArchive();
             archive.Start();
             clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS); //原DataAccessController功能
-            ControllerReader.FunGetController(clInitSys.DbConfig, clInitSys.CV_Config);
-
+            ControllerReader.FunGetController(clInitSys.CV_Config);
+            _wcsManager = new WCSManager(clInitSys.DbConfig);
+            _wcsManager.Start();
             _unityContainer = new UnityContainer();
             _unityContainer.RegisterInstance(new WMSWCSController());
             _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);

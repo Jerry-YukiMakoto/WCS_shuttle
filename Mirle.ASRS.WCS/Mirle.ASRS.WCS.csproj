@@ -114,6 +114,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccessManger.cs" />
     <Compile Include="Library\clInitSys.cs" />
     <Compile Include="Library\clsTool.cs" />
     <Compile Include="Library\clsWriLog.cs" />
