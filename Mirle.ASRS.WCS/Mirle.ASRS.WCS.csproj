@@ -118,6 +118,7 @@
     <Compile Include="Library\clInitSys.cs" />
     <Compile Include="Library\clsTool.cs" />
     <Compile Include="Library\clsWriLog.cs" />
+    <Compile Include="Service\SwitchInMode.cs" />
     <Compile Include="View\BufferView.cs">
       <SubType>UserControl</SubType>
     </Compile>
