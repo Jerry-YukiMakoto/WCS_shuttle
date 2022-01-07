@@ -13,21 +13,13 @@ namespace Mirle.ASRS.WCS.Controller
 {
     public class ControllerReader : IDisposable
     {
-        private static WCSManager _wcsManager;
+        
         private static CVController _cvController;
         private static LoggerManager _loggerManager;
-        private static DataAccessManger _dataAccessManger;
-        private static Form mainView;
-
         
-
-        public static void FunGetController(clsDbConfig dbConfig, clsPlcConfig CVConfig) {
-
-            _dataAccessManger = new DataAccessManger(dbConfig);
+        public static void FunGetController(clsPlcConfig CVConfig) {
             _loggerManager = new LoggerManager();
             _cvController = new CVController(CVConfig.MPLCIP, CVConfig.MPLCPort, CVConfig.SignalGroup, CVConfig.InMemorySimulator);
-            _wcsManager = new WCSManager();
-            _wcsManager.Start();
         }
 
         #region Get_Manager
@@ -40,17 +32,6 @@ namespace Mirle.ASRS.WCS.Controller
         {
             return _cvController;
         }
-
-        public static WCSManager GetWCSManager()
-        {
-            return _wcsManager;
-        }
-
-        public static DataAccessManger GetDataAccessManger()
-        {
-            return _dataAccessManger;
-        }
-
         #endregion Get_Manager
 
         #region Dispose
@@ -63,8 +44,6 @@ namespace Mirle.ASRS.WCS.Controller
                 {
                     _cvController.Dispose();
                     _loggerManager.Dispose();
-                    _wcsManager.Dispose();
-                    //mainView.Dispose();
                 }
 
                 disposedValue = true;
