@@ -7,6 +7,7 @@ using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.Conveyors;
 using Mirle.DataBase;
 using Mirle.DB.Object;
+using Mirle.Def;
 using Mirle.ASRS.WCS.Service;
 
 namespace Mirle.ASRS.WCS.Controller
