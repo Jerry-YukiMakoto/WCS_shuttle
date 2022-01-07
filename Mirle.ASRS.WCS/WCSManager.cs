@@ -7,6 +7,7 @@ using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.Conveyors;
 using Mirle.DataBase;
 using Mirle.DB.Object;
+using Mirle.ASRS.WCS.Service;
 
 namespace Mirle.ASRS.WCS.Controller
 {
@@ -1241,9 +1242,12 @@ namespace Mirle.ASRS.WCS.Controller
 
             if (IsConnected)
             {
-                StoreIn_A1_WriteCV();//OK
+                if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)
+                {
+                    StoreIn_A1_WriteCV();//OK
 
-                StoreIn_A1_CreateEquCmd();//OK
+                    StoreIn_A1_CreateEquCmd();//OK
+                }
 
                 StoreIn_A2ToA4_WriteCV();
 
@@ -1279,29 +1283,6 @@ namespace Mirle.ASRS.WCS.Controller
                         var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Get StoreIn Command");
                         log.CmdSno = cmdSno;
                         _loggerManager.WriteLogTrace(log);
-
-                        //確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
-                        if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady
-                            && _conveyor.GetBuffer(bufferIndex - 2).Switch_Ack == 1)
-                        {
-                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreIn Ready, Can Switchmode");
-                            _loggerManager.WriteLogTrace(log);
-
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex - 2).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                            bool Result = WritePlccheck.Item1;
-                            string exmessage = WritePlccheck.Item2;
-                            if (Result != true)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Normal-StoreIn Switchmode fail:{exmessage}");
-                                _loggerManager.WriteLogTrace(log);
-                                return;
-                            }
-                            else
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Switchmode Complete");
-                                _loggerManager.WriteLogTrace(log);
-                            }
-                        }
 
                         if (IOType == IOtype.NormalstorIn
                          && _conveyor.GetBuffer(bufferIndex).Auto
@@ -2429,31 +2410,6 @@ namespace Mirle.ASRS.WCS.Controller
                             var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Get EmptyStoreIn Command");
                             log.CmdSno = cmdSno;
                             _loggerManager.WriteLogTrace(log);
-
-                            //確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
-                            if (_conveyor.GetBuffer(bufferIndex - 3).Ready != Ready.StoreInReady
-                            && _conveyor.GetBuffer(bufferIndex - 3).Switch_Ack == 1)
-                            {
-                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, "Not StoreIn Ready, Can Switchmode");
-                                _loggerManager.WriteLogTrace(log);
-
-                                var WritePlccheck = _conveyor.GetBuffer(bufferIndex - 3).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result = WritePlccheck.Item1;
-                                string exmessage = WritePlccheck.Item2;
-                                if (Result != true)
-                                {
-                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, $"Empty StoreIn Switchmode fail:{exmessage}");
-                                    _loggerManager.WriteLogTrace(log);
-                                    return;
-                                }
-                                else
-                                {
-                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, "Switchmode Complete");
-                                    _loggerManager.WriteLogTrace(log);
-                                }
-
-
-                            }
 
                             if (_conveyor.GetBuffer(bufferIndex).Auto
                             && _conveyor.GetBuffer(bufferIndex).InMode
