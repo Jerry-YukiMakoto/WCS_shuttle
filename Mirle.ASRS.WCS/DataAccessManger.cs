@@ -93,7 +93,7 @@ namespace Mirle.ASRS.WCS.Controller
             using (var db = GetDB())
             {
                 string sql = "SELECT * FROM CMDMST ";
-                sql += $"WHERE CMDMODE IN ('{2}', '{3}') ";
+                sql += $"WHERE CMDMODE IN ('{2}','{3}') ";
                 sql += $"AND CMDSTS='{1}' ";
                 sql += $"AND TRACE IN ('{12}') ";
                 sql += $"AND STNNO IN (";
@@ -145,7 +145,7 @@ namespace Mirle.ASRS.WCS.Controller
                 string sql = "SELECT * FROM CMDMST ";
                 sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
                 sql += $"AND CMDSTS='{1}' ";
-                sql += $"AND TRACE IN ('{23}', '{25}') ";
+                sql += $"AND TRACE IN ('{23}') ";
                 sql += $"AND STNNO IN (";
                 foreach (var stn in stations)
                 {

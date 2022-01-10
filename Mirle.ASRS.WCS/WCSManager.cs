@@ -1201,10 +1201,13 @@ namespace Mirle.ASRS.WCS.Controller
                                         {
                                             return;
                                         }
-                                        if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.StoreOutCraneCmdFinish) == ExecuteSQLResult.Success)
+                                        if (cmdMst.IOType == "2")
                                         {
-                                            db.TransactionCtrl2(TransactionTypes.Rollback);
-                                            return;
+                                            if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.StoreOutCraneCmdFinish) == ExecuteSQLResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return;
+                                            }
                                         }
                                         if (_dataAccessManger.DeleteEquCmd(db, equCmd[0].CmdSno) == ExecuteSQLResult.Success)
                                         {
@@ -1251,14 +1254,14 @@ namespace Mirle.ASRS.WCS.Controller
                 {
                     if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)
                     {
-                        clsStoreIn.StoreIn_A1_WriteCV();//OK
+                     clsStoreIn.StoreIn_A1_WriteCV();//OK
 
-                    clsStoreIn.StoreIn_A1_CreateEquCmd();//OK
-                }
+                     clsStoreIn.StoreIn_A1_CreateEquCmd();//OK
+                    }
 
                     clsStoreIn.StoreIn_A2ToA4_WriteCV();
 
-                    StoreIn_A2ToA4_CreateEquCmd();
+                    clsStoreIn.StoreIn_A2toA4_CreateEquCmd();
 
                     StoreIn_EquCmdFinish();//OK
                 }
@@ -1692,8 +1695,6 @@ namespace Mirle.ASRS.WCS.Controller
                 }
             }
         }
-        
-        #endregion 已抽離Funtions
 
         private void StoreIn_A2ToA4_CreateEquCmd()//A2ToA4建立Crane命令
         {
@@ -1789,7 +1790,11 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-       
+        #endregion 已抽離Funtions
+
+
+
+
         private void StoreIn_EquCmdFinish()
         {
             try

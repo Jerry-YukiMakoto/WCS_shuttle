@@ -42,10 +42,10 @@ namespace Mirle.DB.Fun
             
         }
 
-        public GetDataResult GetCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        public GetDataResult GetCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject, SqlServer db)//盤點出庫不要在這裡被更新到
         {
             string sql = "SELECT * FROM CMDMST ";
-            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}','{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
             sql += $"AND TRACE IN ('{12}') ";
             sql += $"AND STNNO IN (";
@@ -88,7 +88,7 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
             sql += $"AND CMDSTS='{1}' ";
-            sql += $"AND TRACE IN ('{23}', '{25}') ";
+            sql += $"AND TRACE IN ('{23}') ";
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
@@ -105,12 +105,12 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
-        public GetDataResult GetCmdMstByStoreInCrane(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db)
+        public GetDataResult GetCmdMstByStoreInCrane(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db) //同時處理盤點入庫
         {
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
             sql += $"AND CmdSno='{cmdsno}' ";
-            sql += $"AND TRACE IN ('{21}') ";
+            sql += $"AND TRACE IN ('{21}','{12}') ";
             sql += $"AND CMDSTS='{1}' ";
             return db.GetData(sql, out dataObject);
         }
