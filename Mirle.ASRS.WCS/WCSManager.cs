@@ -1243,25 +1243,34 @@ namespace Mirle.ASRS.WCS.Controller
         #region StoreIn
         private void StoreInProcess(object sender, ElapsedEventArgs e)
         {
-            _storeInProcess.Stop();
-
-            if (IsConnected)
+            try
             {
-                if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)
+                _storeInProcess.Stop();
+
+                if (IsConnected)
                 {
-                    clsStoreIn.StoreIn_A1_WriteCV();//OK
+                    if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)
+                    {
+                        clsStoreIn.StoreIn_A1_WriteCV();//OK
 
                         StoreIn_A1_CreateEquCmd();//OK
                     }
 
-                clsStoreIn.StoreIn_A2ToA4_WriteCV();
+                    clsStoreIn.StoreIn_A2ToA4_WriteCV();
 
                     StoreIn_A2ToA4_CreateEquCmd();
 
-                StoreIn_EquCmdFinish();//OK
+                    StoreIn_EquCmdFinish();//OK
+                }
+
+                _storeInProcess.Start();
             }
-            
-            _storeInProcess.Start();
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
         }
 
         #region 已抽離Funtions

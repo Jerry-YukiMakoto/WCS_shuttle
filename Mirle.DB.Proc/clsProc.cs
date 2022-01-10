@@ -147,24 +147,6 @@ namespace Mirle.DB.Proc
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             int IOType = Convert.ToInt32(dataObject[0].IOType);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                            //確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
-                            if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady
-                                && _conveyor.GetBuffer(bufferIndex - 2).Switch_Ack == 1)
-                            {
-                                var WritePlccheck = _conveyor.GetBuffer(bufferIndex - 2).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result = WritePlccheck.Item1;
-                                string exmessage = WritePlccheck.Item2;
-                                if (Result != true)
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Normal-StoreIn Switchmode fail:{exmessage}");
-                                    return false;
-                                }
-                                else
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Switchmode Complete");
-                                    return true;
-                                }
-                            }
 
                             if (IOType == IOtype.NormalstorIn
                              && _conveyor.GetBuffer(bufferIndex).Auto
