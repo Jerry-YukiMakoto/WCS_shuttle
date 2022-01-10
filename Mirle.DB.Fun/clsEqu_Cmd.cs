@@ -5,11 +5,51 @@ using Mirle.Structure;
 using Mirle.DataBase;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using System.Collections.Generic;
+using Mirle.ASRS.WCS.Controller;
 
 namespace Mirle.DB.Fun
 {
     public class clsEqu_Cmd
     {
+        public bool CheckExecutionEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination, SqlServer db)
+        {
+            if (GetEquCmd(cmdSno, out var equCmd, db) == GetDataResult.Success)
+            {
+                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+                if (equCmd[0].CmdSts == CmdSts.Queue.GetHashCode().ToString() || equCmd[0].CmdSts == CmdSts.Transferring.GetHashCode().ToString())
+                {
+                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ Execute, Please Check => {cmdSno}, " +
+                    $"{craneNo}, " +
+                    $"{source}, " +
+                    $"{destination}");
+
+                    return true;
+                }
+                else
+                {
+                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ, Please Check => {cmdSno}, " +
+                    $"{craneNo}, " +
+                    $"{source}, " +
+                    $"{destination}");
+
+                    return true;
+                }
+            }
+            else
+            {
+                if (checkCraneNoReapeat(out var dataObject, db) == GetDataResult.Success)
+                {
+                    int intCraneCount = 0;
+                    intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
+                    return intCraneCount == 0 ? false : true;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
         public int CheckHasEquCmd(string CmdSno, SqlServer db)
         {
             DataTable dtTmp = new DataTable();

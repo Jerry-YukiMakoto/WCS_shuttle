@@ -561,7 +561,7 @@ namespace Mirle.DB.Proc
                     return false;
                 }
 
-                if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination) == false)
+                if (EQU_CMD.CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination, db) == false)
                 {
                     if (EQU_CMD.InsertEquCmd(craneNo, cmdSno, ((int)EquCmdMode.InMode).ToString(), source, destination, priority, db) == ExecuteSQLResult.Success)
                     {
@@ -595,48 +595,6 @@ namespace Mirle.DB.Proc
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
                 return false;
-            }
-        }
-
-        private bool CheckExecutionEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination)
-        {
-            using (var db = clsGetDB.GetDB(_config))
-            {
-                if (EQU_CMD.GetEquCmd(cmdSno, out var equCmd, db) == GetDataResult.Success)
-                {
-                    var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                    if (equCmd[0].CmdSts == CmdSts.Queue.GetHashCode().ToString() || equCmd[0].CmdSts == CmdSts.Transferring.GetHashCode().ToString())
-                    {
-                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ Execute, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                        
-                        return true;
-                    }
-                    else
-                    {
-                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                        
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (EQU_CMD.checkCraneNoReapeat(out var dataObject, db) == GetDataResult.Success)
-                    {
-                        int intCraneCount = 0;
-                        intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
-                        return intCraneCount == 0 ? false : true;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
             }
         }
     }
