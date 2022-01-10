@@ -105,7 +105,15 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
-        
+        public GetDataResult GetCmdMstByStoreInCrane(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{1}', '{3}') ";
+            sql += $"AND CmdSno='{cmdsno}' ";
+            sql += $"AND TRACE IN ('{21}') ";
+            sql += $"AND CMDSTS='{1}' ";
+            return db.GetData(sql, out dataObject);
+        }
 
         public GetDataResult GetLocToLoc(out DataObject<CmdMst> dataObject, SqlServer db)
         {
