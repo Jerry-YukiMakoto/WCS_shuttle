@@ -1240,6 +1240,14 @@ namespace Mirle.DB.Proc
                     $"{craneNo}, " +
                     $"{source}, " +
                     $"{destination}");
+                if (EQU_CMD.CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination, db) == false)
+                {
+                    if (EQU_CMD.InsertEquCmd(craneNo, cmdSno, ((int)EquCmdMode.InMode).ToString(), source, destination, priority, db) == ExecuteSQLResult.Success)
+                    {
+                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Insert Equ Cmd => {cmdSno}, " +
+                        $"{craneNo}, " +
+                        $"{source}, " +
+                        $"{destination}");
                         
                     return true;
                 }
