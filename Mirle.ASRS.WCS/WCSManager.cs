@@ -1252,18 +1252,18 @@ namespace Mirle.ASRS.WCS.Controller
 
                 if (IsConnected)
                 {
-                    if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)
+                    if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)//這邊換條件，對於
                     {
-                     clsStoreIn.StoreIn_A1_WriteCV();//OK
+                     clsStoreIn.StoreIn_A1_WriteCV();
 
-                     clsStoreIn.StoreIn_A1_CreateEquCmd();//OK
+                     clsStoreIn.StoreIn_A1_CreateEquCmd();
                     }
 
                     clsStoreIn.StoreIn_A2ToA4_WriteCV();
 
                     clsStoreIn.StoreIn_A2toA4_CreateEquCmd();
 
-                    StoreIn_EquCmdFinish();//OK
+                    clsStoreIn.StoreIn_EquCmdFinish();
                 }
 
                 _storeInProcess.Start();
@@ -1790,10 +1790,6 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        #endregion 已抽離Funtions
-
-
-
 
         private void StoreIn_EquCmdFinish()
         {
@@ -1860,6 +1856,12 @@ namespace Mirle.ASRS.WCS.Controller
                 _loggerManager.WriteLogTrace(log);
             }
         }
+        #endregion 已抽離Funtions
+
+
+
+
+
         #endregion StoreIn
 
         #region Other
