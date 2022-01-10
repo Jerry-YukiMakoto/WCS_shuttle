@@ -12,7 +12,7 @@ namespace Mirle.DB.Fun
     {
         private clsTool tool = new clsTool();
 
-        public GetDataResult GetCmdMstByStoreOut(string stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        public GetDataResult GetCmdMstByStoreOutStart(string stations, out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
@@ -21,14 +21,13 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
-        public GetDataResult GetCmdMstByStoreOut(string stations, string CmdSno, out DataObject<CmdMst> dataObject, SqlServer db)
+        public GetDataResult GetCmdMstByStoreOutCrane(string CmdSno, out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
-            sql += $"AND CMDSNO='{CmdSno}' ";
+            sql += $"AND CmdSno='{CmdSno}' ";
             sql += $"AND TRACE='{11}' ";
             sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
-            sql += $"AND STNNO = '{stations} '";
             return db.GetData(sql, out dataObject);
         }
 
@@ -61,16 +60,6 @@ namespace Mirle.DB.Fun
                 }
             }
             sql += $")";
-            return db.GetData(sql, out dataObject);
-        }
-
-        public GetDataResult GetCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db)
-        {
-            string sql = "SELECT * FROM CMDMST ";
-            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}', '{clsConstValue.CmdMode.Cycle}') ";
-            sql += $"AND CMDSNO='{cmdsno}' ";
-            sql += $"AND TRACE IN ('{21}') ";
-            sql += $"AND CMDSTS='{clsConstValue.CmdSts.strCmd_Running}' ";
             return db.GetData(sql, out dataObject);
         }
 

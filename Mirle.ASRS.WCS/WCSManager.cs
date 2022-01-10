@@ -62,11 +62,11 @@ namespace Mirle.ASRS.WCS.Controller
 
                 if (IsConnected)
                 {
-                    StoreOut_A1_WriteCV();
+                    clsStoreOut.StoreOut_A1_WriteCV();
 
-                    StoreOut_A1_CreateEquCmd();
+                    clsStoreOut.StoreOut_A1_CreateEquCmd();
 
-                    StoreOut_A2ToA4_WriteCV();
+                    clsStoreOut.StoreOut_A2ToA4_WriteCV();
 
                     StoreOut_A2ToA4_CreateEquCmd();
 
@@ -1263,7 +1263,7 @@ namespace Mirle.ASRS.WCS.Controller
 
                     clsStoreIn.StoreIn_A2toA4_CreateEquCmd();
 
-                    StoreIn_EquCmdFinish();//OK
+                    clsStoreIn.StoreIn_EquCmdFinish();//OK
                 }
 
                 _storeInProcess.Start();
@@ -1276,7 +1276,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        #region 已抽離Funtions
+        
         private void StoreIn_A1_WriteCV()
         {
             try
@@ -1790,11 +1790,6 @@ namespace Mirle.ASRS.WCS.Controller
             }
         }
 
-        #endregion 已抽離Funtions
-
-
-
-
         private void StoreIn_EquCmdFinish()
         {
             try
@@ -1860,6 +1855,7 @@ namespace Mirle.ASRS.WCS.Controller
                 _loggerManager.WriteLogTrace(log);
             }
         }
+        
         #endregion StoreIn
 
         #region Other
@@ -1895,8 +1891,6 @@ namespace Mirle.ASRS.WCS.Controller
                 _loggerManager.WriteLogTrace(log);
             }
         }
-
-
 
         private void EmptyStoreIn_A1_WriteCV()
         {
