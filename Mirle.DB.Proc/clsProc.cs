@@ -956,7 +956,6 @@ namespace Mirle.DB.Proc
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
                                     $"{CmdMode}");
-                                    return false;
                                 }
                                 else
                                 {
@@ -1021,7 +1020,7 @@ namespace Mirle.DB.Proc
                             #endregion
                             else return false;
                         }
-                        else return false;
+                        return true;
                     }
                     else
                     {
