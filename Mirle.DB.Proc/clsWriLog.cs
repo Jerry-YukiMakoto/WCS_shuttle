@@ -18,6 +18,10 @@ namespace Mirle.DB.Proc
         {
             Log.FunWriTraceLog_CV($"{BufferIndex} | {BufferName}: {Msg}");
         }
-
+        
+        public static void L2LLogTrace(int BufferIndex, string BufferName, string Msg)
+        {
+            Log.FunWriTraceLog_CV($"{BufferIndex} | {BufferName}: {Msg}");
+        }
     }
 }

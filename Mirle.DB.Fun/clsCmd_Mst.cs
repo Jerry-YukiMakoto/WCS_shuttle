@@ -63,7 +63,19 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
-        public GetDataResult GetCmdMstByStoreInstart(string stations, out DataObject<CmdMst> dataObject, SqlServer db) 
+        public GetDataResult GetCmdMstByEmptyStoreOutCrane(string CmdSno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{2}') ";
+            sql += $"AND CmdSno='{CmdSno}' ";
+            sql += $"AND TRACE='{31}' ";
+            sql += $"AND CMDSTS='{1}' ";
+            return db.GetData(sql, out dataObject);
+        }
+
+
+
+        public GetDataResult GetCmdMstByStoreInStart(string stations, out DataObject<CmdMst> dataObject, SqlServer db) 
         {
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}', '{clsConstValue.CmdMode.Cycle}') ";

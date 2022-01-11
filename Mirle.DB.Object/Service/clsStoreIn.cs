@@ -90,7 +90,7 @@ namespace Mirle.DB.Object.Service
         {
             try
             {
-                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreIn_EquCmdFinish();  
+                clsDB_Proc.GetDB_Object().GetProcess().FunStoreInEquCmdFinish();  
             }
             catch (Exception ex)
             {

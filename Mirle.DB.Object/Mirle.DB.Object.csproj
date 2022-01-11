@@ -53,6 +53,7 @@
     <Compile Include="clsTool.cs" />
     <Compile Include="clsWriLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\clsOther.cs" />
     <Compile Include="Service\clsStoreIn.cs" />
     <Compile Include="Service\clsStoreOut.cs" />
   </ItemGroup>
