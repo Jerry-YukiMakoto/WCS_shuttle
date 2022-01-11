@@ -170,7 +170,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)//為了不跟盤點命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -295,7 +295,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)//為了不跟盤點命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -745,7 +745,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreOutReady, db);
                                 return false;
                             }
-                            if(_conveyor.GetBuffer(bufferIndex).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex+1).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex+2).CmdMode != 3)//為了不跟盤點命令衝突的條件
+                            if(_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex+1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex+2).CmdMode == 3)//為了不跟盤點命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -890,7 +890,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreOutReady, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode != 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)//為了不跟盤點命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -983,11 +983,6 @@ namespace Mirle.DB.Proc
                             if (_conveyor.GetBuffer(bufferIndex).Error == true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
                             }
                             if (_conveyor.GetBuffer(bufferIndex).Presence == true)
@@ -1512,18 +1507,18 @@ namespace Mirle.DB.Proc
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
 
-                                //確認目前模式，是否可以切換模式，可以就寫入切換成出庫的請求
+                                #region//確認目前模式，是否可以切換模式，可以就寫入切換成出庫的請求
                                 if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreInReady
                                 && _conveyor.GetBuffer(bufferIndex).Switch_Ack == 1)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreOut Ready, Can Switchmode");
 
-                                    var WritePlccheck = _conveyor.GetBuffer(bufferIndex).Switch_Mode(2).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                    bool Result = WritePlccheck.Item1;
-                                    string exmessage = WritePlccheck.Item2;
-                                    if (Result != true)
+                                    var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex).Switch_Mode(2).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                                    bool Result1 = WritePlccheck1.Item1;
+                                    string exmessage1 = WritePlccheck1.Item2;
+                                    if (Result1 != true)
                                     {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Empty StoreOut Switchmode fail:{exmessage}");
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Empty StoreOut Switchmode fail:{exmessage1}");
                                         return false;
                                     }
                                     else
@@ -1531,18 +1526,48 @@ namespace Mirle.DB.Proc
                                         clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Empty StoreOut Switchmode Complete");
                                     }
                                 }
+                                #endregion
 
-                                if (_conveyor.GetBuffer(bufferIndex).Auto
-                                && _conveyor.GetBuffer(bufferIndex).OutMode
-                                && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                                && _conveyor.GetBuffer(bufferIndex).Presence == false
-                                && _conveyor.GetBuffer(bufferIndex).Error == false
-                                && _conveyor.GetBuffer(bufferIndex).Ready == Ready.StoreOutReady
-                                && _conveyor.GetBuffer(bufferIndex + 1).CmdMode != 3  //為了不跟盤點命令衝突的條件
-                                && _conveyor.GetBuffer(bufferIndex + 2).CmdMode != 3  //為了不跟盤點命令衝突的條件
-                                && _conveyor.GetBuffer(bufferIndex).CmdMode != 3) //為了不跟盤點命令衝突的條件)
+                                #region//站口狀態確認
+                                if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreOut Command");
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
+                                    return false;
+                                }
+                                if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
+                                {
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
+                                    return false;
+                                }
+                                if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                                {
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
+                                    return false;
+                                }
+                                if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                                {
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
+                                    return false;
+                                }
+                                if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                                {
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
+                                    return false;
+                                }
+                                if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
+                                {
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreOutReady, db);
+                                    return false;
+                                }
+                                if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)//為了不跟盤點命令衝突的條件
+                                {
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
+                                    return false;
+                                }
+                                #endregion
+
+
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreOut Command");
 
                                     if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                                     {
@@ -1552,7 +1577,6 @@ namespace Mirle.DB.Proc
                                     if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.EmptyStoreOutWriteCraneCmdToCV, db) == ExecuteSQLResult.Success)
                                     {
                                         clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Update cmd success => {cmdSno}");
-                                        return false;
                                     }
                                     else
                                     {
@@ -1579,45 +1603,13 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
-                                    if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                    {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return false;
-                                    }
-                                }
-                                #region 站口狀態自動確認-Update-CMD-Remark
-                                else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
+                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
                                 {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                    return false;
-                                }
-                                else if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                    return false;
-                                }
-                                else if (_conveyor.GetBuffer(bufferIndex - 3).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                                    return false;
-                                }
-                                else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
-                                    return false;
-                                }
-                                else if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreInReady, db);
-                                    return false;
-                                }
-                                #endregion
+                                else return true;
                             }
                         }
                         return true;
