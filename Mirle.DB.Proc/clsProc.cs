@@ -853,6 +853,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
+                                return true;
                             }
                             #region 站口狀態自動確認-Update-CMD-Remark
                             else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
@@ -898,7 +899,7 @@ namespace Mirle.DB.Proc
                             #endregion
                             else return false;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -979,7 +980,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-
+                                return true;
                             }
                             #region 站口狀態自動確認-Update-CMD-Remark
                             else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
@@ -1020,7 +1021,7 @@ namespace Mirle.DB.Proc
                             #endregion
                             else return false;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -1094,7 +1095,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                             }
-                            return false;
+                            return true;
                         }
                         #region 站口狀態自動確認-Update-CMD-Remark
                         else if (_conveyor.GetBuffer(bufferIndex).OutMode == false)
@@ -1225,7 +1226,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                             }
-                            return false;
+                            return true;
                         }
                         else return false;
                     }
@@ -1294,15 +1295,11 @@ namespace Mirle.DB.Proc
                                             {
                                                 return false;
                                             }
-                                            else return true;
                                         }
-                                        else return false;
                                     }
-                                    else return false;
                                 }
-                                else return false;
                             }
-                            return false;
+                            return true;
                         }
                         else return false;
                     }
@@ -1387,6 +1384,7 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
+                                    return true;
                                 }
                                 
                                 #region 站口狀態自動確認-Update-CMD-Remark
@@ -1422,8 +1420,9 @@ namespace Mirle.DB.Proc
                                 }
                                 #endregion
                             }
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -1496,8 +1495,9 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                             }
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -1569,8 +1569,9 @@ namespace Mirle.DB.Proc
                                     }
                                 }
                             }
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -1682,6 +1683,7 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
+                                    return true;
                                 }
                                 #region 站口狀態自動確認-Update-CMD-Remark
                                 else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
@@ -1716,8 +1718,9 @@ namespace Mirle.DB.Proc
                                 }
                                 #endregion
                             }
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -1788,8 +1791,9 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                             }
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -1861,8 +1865,9 @@ namespace Mirle.DB.Proc
                                     }
                                 }
                             }
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -1924,8 +1929,9 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
