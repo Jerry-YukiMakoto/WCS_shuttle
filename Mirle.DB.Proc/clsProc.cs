@@ -802,7 +802,6 @@ namespace Mirle.DB.Proc
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
                                     $"{CmdMode}");
-                                    return false;
                                 }
                                 else
                                 {
@@ -899,7 +898,7 @@ namespace Mirle.DB.Proc
                             #endregion
                             else return false;
                         }
-                        else return false;
+                        return true;
                     }
                     else
                     {
@@ -1652,7 +1651,6 @@ namespace Mirle.DB.Proc
                                     if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.EmptyStoreOutWriteCraneCmdToCV, db) == ExecuteSQLResult.Success)
                                     {
                                         clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Update cmd success => {cmdSno}");
-                                        return false;
                                     }
                                     else
                                     {
