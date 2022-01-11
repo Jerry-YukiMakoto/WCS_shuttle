@@ -9,19 +9,31 @@ namespace Mirle.DB.Proc
     public class clsWriLog
     {
         public static clsLog Log = new clsLog("DB_Proc", true);
+
         public static void StoreInLogTrace(int BufferIndex, string BufferName, string Msg)
         {
-            Log.FunWriTraceLog_CV($"{BufferIndex} | {BufferName}: {Msg}");
+            Log.FunWriTraceLog_CV($"StoreIn => {BufferIndex} | {BufferName}: {Msg}");
         }
 
         public static void StoreOutLogTrace(int BufferIndex, string BufferName, string Msg)
         {
-            Log.FunWriTraceLog_CV($"{BufferIndex} | {BufferName}: {Msg}");
+            Log.FunWriTraceLog_CV($"StoreOut => {BufferIndex} | {BufferName}: {Msg}");
         }
         
-        public static void L2LLogTrace(int BufferIndex, string BufferName, string Msg)
+        public static void L2LLogTrace(int CmdType, string IoType, string Msg)
         {
-            Log.FunWriTraceLog_CV($"{BufferIndex} | {BufferName}: {Msg}");
+            Log.FunWriTraceLog_CV($"L2L => {CmdType} | {IoType}: {Msg}");
         }
+
+        public static void EmptyStoreInLogTrace(int BufferIndex, string BufferName, string Msg)
+        {
+            Log.FunWriTraceLog_CV($"EmptyStoreIn => {BufferIndex} | {BufferName}: {Msg}");
+        }
+
+        public static void EmptyStoreOutLogTrace(int BufferIndex, string BufferName, string Msg)
+        {
+            Log.FunWriTraceLog_CV($"EmptyStoreOut => {BufferIndex} | {BufferName}: {Msg}");
+        }
+
     }
 }
