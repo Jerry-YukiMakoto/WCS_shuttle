@@ -1252,7 +1252,9 @@ namespace Mirle.ASRS.WCS.Controller
 
                 if (IsConnected)
                 {
-                    if (SwitchInMode.Switch_InMode(_conveyor, _loggerManager) == true)//這邊換條件，對於
+                    SwitchInMode.Switch_InMode(_conveyor, _loggerManager);//自動切入庫模式
+
+                    if (_conveyor.GetBuffer(1).Ready==Ready.StoreInReady)
                     {
                      clsStoreIn.StoreIn_A1_WriteCV();
 

@@ -15,7 +15,7 @@ namespace Mirle.ASRS.WCS.Service
     public class SwitchInMode 
     {
 
-        public static bool Switch_InMode(Conveyor _conveyor,LoggerManager _loggerManager)
+        public static void Switch_InMode(Conveyor _conveyor,LoggerManager _loggerManager)//自動切換入庫模式
         {
             #region//確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
             if (_conveyor.GetBuffer(1).Ready != Ready.StoreInReady)
@@ -31,29 +31,15 @@ namespace Mirle.ASRS.WCS.Service
                         if (Result != true)
                         {
                             var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, $"Normal-StoreOut Switchmode fail:{exmessage}");
-                            _loggerManager.WriteLogTrace(log);
-                            return false;
+                            _loggerManager.WriteLogTrace(log);   
                         }
                         else
                         {
                             var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, "Normal-StoreOut Switchmode Complete");
                             _loggerManager.WriteLogTrace(log);
-                            return true;
                         }
                     }
-                    else
-                    {
-                        return false;
-                    }
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
             }
             #endregion 
         }
