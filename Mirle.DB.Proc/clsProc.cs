@@ -688,7 +688,6 @@ namespace Mirle.DB.Proc
                                     {
                                         if (equCmd[0].CompleteCode == "92")
                                         {
-
                                             if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                                             {
                                                 return false;
@@ -1161,35 +1160,34 @@ namespace Mirle.DB.Proc
                                             }
                                             if (cmdMst.IOType == "2")
                                             {
-                                                if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.StoreOutCraneCmdFinish, db) == ExecuteSQLResult.Success)
+                                                if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.StoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
                                                 {
                                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                                     return false;
                                                 }
                                             }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) == ExecuteSQLResult.Success)
+                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit) == TransactionCtrlResult.Success)
+                                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
                                             {
-                                                return true;
-                                            }
-                                            else
                                                 return false;
+                                            }
+                                            else return true;
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) == ExecuteSQLResult.Success)
+                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
                                             {
-                                                return true;
+                                                return false;
                                             }
-                                            else return false;
+                                            else return true;
                                         }
                                         else return false;
                                     }
-                                    else return false; 
+                                    else return false;
                                 }
                                 else return false;
                             }
@@ -1219,29 +1217,21 @@ namespace Mirle.DB.Proc
 
 
         private bool InsertStoreInEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority, SqlServer db)
-    {
-        try
         {
-            var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-            if (destination.Length != 7)
+            try
             {
-                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Check destination Fail, Please Check => {cmdSno}, " +
-                    $"{craneNo}, " +
-                    $"{source}, " +
-                    $"{destination}");
-                    
-                return false;
-            }
-
-            if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination) == false)
-            {
-                if (EQU_CMD.InsertEquCmd(craneNo, cmdSno, ((int)EquCmdMode.InMode).ToString(), source, destination, priority, db) == ExecuteSQLResult.Success)
+                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+                if (destination.Length != 7)
                 {
-                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Insert Equ Cmd => {cmdSno}, " +
-                    $"{craneNo}, " +
-                    $"{source}, " +
-                    $"{destination}");
-                if (EQU_CMD.CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination, db) == false)
+                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Check destination Fail, Please Check => {cmdSno}, " +
+                        $"{craneNo}, " +
+                        $"{source}, " +
+                        $"{destination}");
+                    
+                    return false;
+                }
+
+                if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination) == false)
                 {
                     if (EQU_CMD.InsertEquCmd(craneNo, cmdSno, ((int)EquCmdMode.InMode).ToString(), source, destination, priority, db) == ExecuteSQLResult.Success)
                     {
@@ -1249,34 +1239,30 @@ namespace Mirle.DB.Proc
                         $"{craneNo}, " +
                         $"{source}, " +
                         $"{destination}");
-                        
-                    return true;
-                }
-                else
-                {
+                        return true;
+                    }
+                    else
+                    {
                     clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Insert Equ Cmd Fail => {cmdSno}, " +
                     $"{craneNo}, " +
                     $"{source}, " +
                     $"{destination}");
-                        
+                    return false;
+                    }
+                }
+                else
+                {
                     return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
                 return false;
             }
-
-
         }
-        catch (Exception ex)
-        {
-            int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-            var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-            clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-            return false;
-        }
-    }
 
         private bool InsertStoreOutEquCmd( int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority, SqlServer db)
         {
@@ -1320,8 +1306,6 @@ namespace Mirle.DB.Proc
                     return false;
                 }
             }
-
-
             catch (Exception ex)
             {
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
