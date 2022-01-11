@@ -361,14 +361,14 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if(_conveyor.GetBuffer(bufferIndex).Presence == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
                             if (_conveyor.GetBuffer(bufferIndex).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3)//為了不跟盤點命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
                                 return false;
                             }
                             if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
@@ -445,7 +445,7 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                            
-                            string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
                        
                         if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db) == GetDataResult.Success)
                         {
@@ -493,7 +493,6 @@ namespace Mirle.DB.Proc
                                     dest = $"{dataObject[0].NewLoc}";
                                 }
                                 
-
                                 if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                                 {
                                     clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
@@ -801,7 +800,12 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
                                 return false;
                             }
-                            if(_conveyor.GetBuffer(bufferIndex).CommandId >0)
+                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).CommandId >0)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
@@ -809,11 +813,6 @@ namespace Mirle.DB.Proc
                             if (_conveyor.GetBuffer(bufferIndex).Presence==true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
-                            if(_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
                                 return false;
                             }
                             if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
@@ -946,6 +945,11 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
                                 return false;
                             }
+                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
+                                return false;
+                            }
                             if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
@@ -954,11 +958,6 @@ namespace Mirle.DB.Proc
                             if (_conveyor.GetBuffer(bufferIndex).Presence == true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
                                 return false;
                             }
                             if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
@@ -986,7 +985,6 @@ namespace Mirle.DB.Proc
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
                                     $"{CmdMode}");
-                                    return false;
                                 }
                                 else
                                 {
@@ -1004,12 +1002,13 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
+                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            else return true;
                         }
                         else return false;
                     }
@@ -1083,7 +1082,6 @@ namespace Mirle.DB.Proc
                             }
                             #endregion
 
-
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
 
@@ -1115,6 +1113,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
+                                else return true;
                         }
                         return false;
                     }
@@ -1319,9 +1318,10 @@ namespace Mirle.DB.Proc
         {
             using (var db = clsGetDB.GetDB(_config))
             {
+                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+
                 if (EQU_CMD.GetEquCmd(cmdSno, out var equCmd, db) == GetDataResult.Success)
                 {
-                    var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                     if (equCmd[0].CmdSts == CmdSts.Queue.GetHashCode().ToString() || equCmd[0].CmdSts == CmdSts.Transferring.GetHashCode().ToString())
                     {
                         clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ Execute, Please Check => {cmdSno}, " +
@@ -1345,12 +1345,15 @@ namespace Mirle.DB.Proc
                 {
                     if (EQU_CMD.checkCraneNoReapeat(out var dataObject, db) == GetDataResult.Success)
                     {
-                        int intCraneCount = 0;
-                        intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
-                        return intCraneCount == 0 ? false : true;
+                        int intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
+                        return intCraneCount != 0;
                     }
                     else
                     {
+                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Check Crane Reapeat Fail, Please Check => {cmdSno}, " +
+                        $"{craneNo}, " +
+                        $"{source}, " +
+                        $"{destination}");
                         return true;
                     }
                 }
