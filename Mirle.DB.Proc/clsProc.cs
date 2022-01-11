@@ -149,164 +149,98 @@ namespace Mirle.DB.Proc
                             int IOType = Convert.ToInt32(dataObject[0].IOType);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
-                            if (IOType == IOtype.NormalstorIn
-                             && _conveyor.GetBuffer(bufferIndex).Auto
-                            && _conveyor.GetBuffer(bufferIndex).InMode
-                            && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                            && _conveyor.GetBuffer(bufferIndex).Presence == false
-                            && _conveyor.GetBuffer(bufferIndex).Error == false
-                            && _conveyor.GetBuffer(bufferIndex - 2).Ready == Ready.StoreInReady
-                            && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
-                            && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3  //為了不跟盤點命令衝突的條件
-                            && _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3   //為了不跟盤點命令衝突的條件
-                             && _conveyor.GetBuffer(bufferIndex + 1).Presence == true) //在一般入庫時要確認A4是否有空棧板，沒有則不寫入命令
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-
-                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
-                                    return false;
-                                }
-                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db) == ExecuteSQLResult.Success)
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd succeess => {cmdSno}");
-                                }
-                                else
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-
-                                var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result = WritePlccheck.Item1;
-                                string exmessage = WritePlccheck.Item2;
-                                if (Result != true)//寫入命令和模式
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (IOType == IOtype.NormalstorIn)
-                                {
-                                    WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                    Result = WritePlccheck.Item1;
-                                    exmessage = WritePlccheck.Item2;
-                                    if (Result != true)//請A4補充母托一版
-                                    {
-                                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC A4EmptySupply Fail:{exmessage}");
-
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return false;
-                                    }
-                                }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-
-                                return true;
-                            }
-                            else if (IOType == IOtype.NormalstorIn //待確認類別，目前尚未確定
-                            && _conveyor.GetBuffer(bufferIndex).Auto
-                            && _conveyor.GetBuffer(bufferIndex).InMode
-                            && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-                            && _conveyor.GetBuffer(bufferIndex).Presence == false
-                            && _conveyor.GetBuffer(bufferIndex).Error == false
-                            && _conveyor.GetBuffer(bufferIndex - 2).Ready == Ready.StoreInReady
-                            && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
-                            && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3  //為了不跟盤點命令衝突的條件
-                            && _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3)  //為了不跟盤點命令衝突的條件
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-
-                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
-                                    return false;
-                                }
-                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db) == ExecuteSQLResult.Success)
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Update cmd Success => {cmdSno}");
-                                }
-                                else
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result = WritePlccheck.Item1;
-                                string exmessage = WritePlccheck.Item2;
-                                if (Result != true)//寫入命令和模式
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-
-                                return true;
-                            }
-                            #region 站口狀態自動確認-Update-CMD-Remark
-                            else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
-                                return false;
-                            }
-                            else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                            #region//根據buffer狀態更新命令
+                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
                                 return false;
                             }
-                            else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
                                 return false;
                             }
-                            else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                                return false;
-                            }
-                            else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
-                            else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                            if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            else if (_conveyor.GetBuffer(bufferIndex + 1).Presence == false)
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode != 3)//為了不跟盤點命令衝突的條件
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.A4EmptyisEmpty, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
                             }
-                            else if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady)
+                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreInReady, db);
                                 return false;
                             }
-                            else return false;
+                            //&& _conveyor.GetBuffer(bufferIndex + 1).Presence == true) //在一般入庫時要確認A4是否有空棧板，沒有則不寫入命令=>目前不加入條件因為會與空棧版入庫衝突
                             #endregion
+
+                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db) == ExecuteSQLResult.Success)
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd succeess => {cmdSno}");
+                            }
+                            else
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                            bool Result = WritePlccheck.Item1;
+                            string exmessage = WritePlccheck.Item2;
+                            if (Result != true)//寫入命令和模式
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            if (IOType == IOtype.NormalstorIn)
+                            {
+                                WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                                Result = WritePlccheck.Item1;
+                                exmessage = WritePlccheck.Item2;
+                                if (Result != true)//請A4補充母托一版
+                                {
+                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC A4EmptySupply Fail:{exmessage}");
+
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            else return true;
                         }
                         else return false;
+
                     }
                     else
                     {
