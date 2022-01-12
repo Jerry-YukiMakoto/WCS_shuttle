@@ -77,7 +77,7 @@ namespace Mirle.ASRS.Conveyors
                 }
             }
 
-            //var dt = DateTime.Now; //看來目前用不道
+            //var dt = DateTime.Now; //看來目前用不到
             //int[] bcdDatetime = new int[6];
             //bcdDatetime[0] = dt.Year.ToBCD();
             //bcdDatetime[1] = dt.Year.ToBCD();

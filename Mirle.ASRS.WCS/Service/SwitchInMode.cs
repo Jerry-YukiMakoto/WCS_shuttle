@@ -20,7 +20,7 @@ namespace Mirle.ASRS.WCS.Service
             #region//確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
             if (_conveyor.GetBuffer(1).Ready != Ready.StoreInReady)
             {
-                if (_conveyor.GetBuffer(1).CmdMode > 1 && _conveyor.GetBuffer(2).CmdMode > 1 && _conveyor.GetBuffer(3).CmdMode > 1 && _conveyor.GetBuffer(4).CmdMode > 1)
+                if (_conveyor.GetBuffer(1).CmdMode <= 1 && _conveyor.GetBuffer(2).CmdMode <= 1 && _conveyor.GetBuffer(3).CmdMode <= 1 && _conveyor.GetBuffer(4).CmdMode <= 1)
                 {
                     if (_conveyor.GetBuffer(1).Switch_Ack == 1) 
                     {
