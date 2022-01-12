@@ -83,9 +83,10 @@ namespace Mirle.ASRS.Conveyors.Signal
                 {
                     var readyBufferIndex = new Dictionary<int, int>();
                     readyBufferIndex.Add(1, 0);//A1
-                    readyBufferIndex.Add(5, 4); //A5
+                    readyBufferIndex.Add(4, 3);//A4
+                    readyBufferIndex.Add(5, 4);//A5
                     readyBufferIndex.Add(7, 6);//A7
-                    readyBufferIndex.Add(9, 8); //A9
+                    readyBufferIndex.Add(9, 8);//A9
 
                     var PathChangeNotice = new Dictionary<int, int>();
                     PathChangeNotice.Add(1, 0);//A1

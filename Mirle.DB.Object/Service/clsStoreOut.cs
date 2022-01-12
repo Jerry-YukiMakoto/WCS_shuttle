@@ -93,6 +93,7 @@ namespace Mirle.DB.Object.Service
                 var stn = new List<string>()
                 {
                     StnNo.A3,
+                    StnNo.A4,
                     StnNo.A6,
                     StnNo.A8,
                     StnNo.A10,
