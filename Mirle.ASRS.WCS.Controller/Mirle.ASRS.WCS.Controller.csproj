@@ -123,10 +123,6 @@
       <Project>{10da0e99-fd46-4c3f-a87a-c5b66fcb4a87}</Project>
       <Name>Mirle.MPLC.MCProtocol</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle\Mirle.csproj">
-      <Project>{3b2a6f5e-ce8f-4a70-9080-162b60073c70}</Project>
-      <Name>Mirle</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

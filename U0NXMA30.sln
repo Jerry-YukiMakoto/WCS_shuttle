@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32002.261
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.Conveyors", "Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj", "{20D2F96E-F248-4E52-9F5A-F1CF028F8E98}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle", "Mirle\Mirle.csproj", "{3B2A6F5E-CE8F-4A70-9080-162B60073C70}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.MPLC.MCProtocol", "Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj", "{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}"
 EndProject
@@ -33,8 +31,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.Grid.U0NXMA30", "Mirl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLL", "DLL", "{B77665DF-BD94-48CE-8933-A2B5D28D5F10}"
 	ProjectSection(SolutionItems) = preProject
+		DLL\Package Source\asyncio.0.1.69.nupkg = DLL\Package Source\asyncio.0.1.69.nupkg
+		DLL\Package Source\Castle.Core.4.4.1.nupkg = DLL\Package Source\Castle.Core.4.4.1.nupkg
+		DLL\Package Source\Config.Net.4.13.7.nupkg = DLL\Package Source\Config.Net.4.13.7.nupkg
+		DLL\Package Source\microsoft.data.sqlclient.3.0.1.nupkg = DLL\Package Source\microsoft.data.sqlclient.3.0.1.nupkg
+		DLL\Package Source\Mirle.2.0.0.nupkg = DLL\Package Source\Mirle.2.0.0.nupkg
 		DLL\Mirle.ASRS.Close.Program.exe = DLL\Mirle.ASRS.Close.Program.exe
+		DLL\Package Source\Mirle.MPLC.MCProtocol.2.0.0.nupkg = DLL\Package Source\Mirle.MPLC.MCProtocol.2.0.0.nupkg
 		DLL\Mirle.WriLog.dll = DLL\Mirle.WriLog.dll
+		DLL\Package Source\netmq.4.0.0.207.nupkg = DLL\Package Source\netmq.4.0.0.207.nupkg
+		DLL\Package Source\Oracle.ManagedDataAccess.19.13.0.nupkg = DLL\Package Source\Oracle.ManagedDataAccess.19.13.0.nupkg
+		DLL\Package Source\Oracle.ManagedDataAccess.Core.2.19.130.nupkg = DLL\Package Source\Oracle.ManagedDataAccess.Core.2.19.130.nupkg
+		DLL\Package Source\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5.nupkg = DLL\Package Source\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5.nupkg
+		DLL\Package Source\Stub.System.Data.SQLite.Core.NetStandard.1.0.115.5.nupkg = DLL\Package Source\Stub.System.Data.SQLite.Core.NetStandard.1.0.115.5.nupkg
 		DLL\System.Web.dll = DLL\System.Web.dll
 		DLL\System.Web.Http.dll = DLL\System.Web.Http.dll
 		DLL\System.Web.Http.Owin.dll = DLL\System.Web.Http.Owin.dll
@@ -97,10 +106,6 @@ Global
 		{20D2F96E-F248-4E52-9F5A-F1CF028F8E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20D2F96E-F248-4E52-9F5A-F1CF028F8E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20D2F96E-F248-4E52-9F5A-F1CF028F8E98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B2A6F5E-CE8F-4A70-9080-162B60073C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B2A6F5E-CE8F-4A70-9080-162B60073C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B2A6F5E-CE8F-4A70-9080-162B60073C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B2A6F5E-CE8F-4A70-9080-162B60073C70}.Release|Any CPU.Build.0 = Release|Any CPU
 		{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10DA0E99-FD46-4C3F-A87A-C5B66FCB4A87}.Release|Any CPU.ActiveCfg = Release|Any CPU

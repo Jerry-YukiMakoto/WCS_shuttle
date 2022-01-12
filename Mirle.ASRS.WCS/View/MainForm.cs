@@ -232,7 +232,6 @@ namespace Mirle.ASRS.WCS.View
             _unityContainer.RegisterInstance(new WMSWCSController());
             _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
             clearCmd = new DB.ClearCmd.Proc.clsHost();
-            ChangeSubForm(BufferView)
 
             #region Mark
             //clsWmsApi.FunInit(clInitSys.WmsApi_Config);
