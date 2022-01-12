@@ -96,141 +96,9 @@ namespace Mirle.ASRS.WCS.View
             */
         }
 
-        #region Micron
-        //private void MainForm_OnAlarmBitChanged(object sender, Conveyor.U2NMMA30.Events.AlarmBitEventArgs e)
-        //{
-        //    string alarmMsg = clsMicronCV.GetCVAlarm(e.BufferIndex, e.AlarmBit);
-        //    if (e.Signal == true)
-        //    {
-        //        clsDB_Proc.GetDB_Object().GetEQ_Alarm().FunInsSts(e.BufferIndex, alarmMsg, clsEnum.AlarmSts.OnGoing);
-        //    }
-        //    else
-        //    {
-        //        clsDB_Proc.GetDB_Object().GetEQ_Alarm().FunUpdSts(e.BufferIndex, alarmMsg, clsEnum.AlarmSts.Clear);
-        //    }
-        //}
 
-        //private void MainForm_OnAlarmBitChanged_2(object sender, Conveyor.U2NMMA30.Events.AlarmBitEventArgs e)
-        //{
-        //    string alarmMsg = clsMicronCV.GetCVAlarm(e.BufferIndex, e.AlarmBit+16);
-        //    if (e.Signal == true)
-        //    {
-        //        clsDB_Proc.GetDB_Object().GetEQ_Alarm().FunInsSts(e.BufferIndex, alarmMsg, clsEnum.AlarmSts.OnGoing);
-        //    }
-        //    else
-        //    {
-        //        clsDB_Proc.GetDB_Object().GetEQ_Alarm().FunUpdSts(e.BufferIndex, alarmMsg, clsEnum.AlarmSts.Clear);
-        //    }
-        //}
 
-        //private void MainForm_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    //Ctrl + L
-        //    if (e.KeyCode == Keys.L && e.Modifiers == Keys.Control)
-        //    {
-        //        Def.clsTool.FunVisbleChange(ref btnSendAPITest);
-        //    }
-        //}
 
-        //private Form[] stkcView = new Form[4];
-        //private void MainForm_OnStkLabelClick(object sender, Conveyor.U2NMMA30.Events.StkLabelClickArgs e)
-        //{
-        //    if (stkcView[e.StockerID - 1] == null)
-        //        stkcView[e.StockerID - 1] = clsMicronStocker.GetSTKCHostById(e.StockerID).GetMainView();
-        //    stkcView[e.StockerID - 1].Show();
-        //    stkcView[e.StockerID - 1].Activate();
-        //}
-
-        
-
-        //private void StockoutToStnCheck_OnLoadPortDataChanged(object sender, Event.LoadPortEventArgs e)
-        //{
-        //    if (autoPickup_Proc.LoadPortData.TryGetValue(e.PortID, out _))
-        //    {
-        //        autoPickup_Proc.LoadPortData[e.PortID] = e.Command;
-        //    }
-        //    else
-        //    {
-        //        autoPickup_Proc.LoadPortData.Add(e.PortID, e.Command);
-        //    }
-        //}
-
-        //private void Buffer_OnPresenceChanged(object sender, Conveyor.U2NMMA30.Events.BufferEventArgs e)
-        //{
-        //    //if (clsMicronCV.CycleIndex.Any(v => v == e.BufferIndex))
-        //    //{
-        //    //    if (e.Presence) clsMicronCV.GetConveyorController().CycleCount++;
-        //    //    else
-        //    //    {
-        //    //        if (clsMicronCV.GetConveyorController().CycleCount > 0)
-        //    //            clsMicronCV.GetConveyorController().CycleCount--;
-        //    //    }
-        //    //}
-        //}
-
-        //private void Buffer_OnStatusChanged(object sender, Conveyor.U2NMMA30.Events.BufferEventArgs e)
-        //{
-        //    ConveyorInfo buffer = new ConveyorInfo();
-        //    bool bUpdate;
-        //    switch(e.BufferIndex)
-        //    {
-        //        case 41:
-        //            buffer = ConveyorDef.A1_41;
-        //            bUpdate = true;
-        //            break;
-        //        case 42:
-        //            buffer = ConveyorDef.A1_42;
-        //            bUpdate = true;
-        //            break;
-        //        case 43:
-        //            buffer = ConveyorDef.A1_43;
-        //            bUpdate = true;
-        //            break;
-        //        case 44:
-        //            buffer = ConveyorDef.A1_44;
-        //            bUpdate = true;
-        //            break;
-        //        default:
-        //            bUpdate = false; break;
-        //    }
-
-        //    if(bUpdate)
-        //    {
-        //        EQPStatusUpdateInfo info = new EQPStatusUpdateInfo
-        //        {
-        //            portId = buffer.StnNo,
-        //            portStatus = ((int)e.NewStatus).ToString()
-        //        };
-
-        //        clsWmsApi.GetApiProcess().GetEQPStatusUpdate().FunReport(info);
-        //    }
-        //}
-
-        #endregion Micron
-
-        #region Stocker Event
-
-        //private void Stocker_OnStatusChanged_4(object sender, Stocker.R46YP320.Events.CraneEventArgs args)
-        //{
-        //    clsWmsApi.FunReportStkStatusChanged(4, args.NewStatus);
-        //}
-
-        //private void Stocker_OnStatusChanged_3(object sender, Stocker.R46YP320.Events.CraneEventArgs args)
-        //{
-        //    clsWmsApi.FunReportStkStatusChanged(3, args.NewStatus);
-        //}
-
-        //private void Stocker_OnStatusChanged_2(object sender, Stocker.R46YP320.Events.CraneEventArgs args)
-        //{
-        //    clsWmsApi.FunReportStkStatusChanged(2, args.NewStatus);
-        //}
-
-        //private void Stocker_OnStatusChanged_1(object sender, Stocker.R46YP320.Events.CraneEventArgs args)
-        //{
-        //    clsWmsApi.FunReportStkStatusChanged(1, args.NewStatus);
-        //}
-
-        #endregion Stocker Event
 
         #region 側邊欄buttons
 
@@ -331,7 +199,7 @@ namespace Mirle.ASRS.WCS.View
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            timer1.Enabled = false;
+            timer1.Stop();
             try
             {
                 lblDBConn.BackColor = DB.Proc.clsHost.IsConn ? Color.Blue : Color.Red;
@@ -345,7 +213,7 @@ namespace Mirle.ASRS.WCS.View
             }
             finally
             {
-                timer1.Enabled = true;
+                timer1.Start();
             }
         }
 
@@ -364,6 +232,7 @@ namespace Mirle.ASRS.WCS.View
             _unityContainer.RegisterInstance(new WMSWCSController());
             _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
             clearCmd = new DB.ClearCmd.Proc.clsHost();
+            ChangeSubForm(BufferView)
 
             #region Mark
             //clsWmsApi.FunInit(clInitSys.WmsApi_Config);
