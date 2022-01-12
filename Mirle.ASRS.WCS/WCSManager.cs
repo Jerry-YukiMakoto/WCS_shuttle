@@ -1495,372 +1495,372 @@ namespace Mirle.ASRS.WCS.Controller
         //    }
         //}
 
-        //private void StoreIn_A2ToA4_WriteCV()//A2toA4寫入buffer
-        //{
-        //    string stn = "";
-        //    try
-        //    {
-        //        for (int bufferIndex = 6; bufferIndex <= 10; bufferIndex += 2)
-        //        {
-        //            using (var db = _dataAccessManger.GetDB())
-        //            {
-        //                if (bufferIndex == 6)
-        //                {
-        //                    stn = StnNo.A6;
-        //                }
-        //                else if (bufferIndex == 8)
-        //                {
-        //                    stn = StnNo.A8;
-        //                }
-        //                else if (bufferIndex == 10)
-        //                {
-        //                    stn = StnNo.A10;
-        //                }
+        private void StoreIn_A2ToA4_WriteCV()//A2toA4寫入buffer
+        {
+            string stn = "";
+            try
+            {
+                for (int bufferIndex = 6; bufferIndex <= 10; bufferIndex += 2)
+                {
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (bufferIndex == 6)
+                        {
+                            stn = StnNo.A6;
+                        }
+                        else if (bufferIndex == 8)
+                        {
+                            stn = StnNo.A8;
+                        }
+                        else if (bufferIndex == 10)
+                        {
+                            stn = StnNo.A10;
+                        }
 
-        //                if (_dataAccessManger.GetCmdMstByStoreInstart(stn, out var dataObject) == GetDataResult.Success) //讀取CMD_MST
-        //                {
-        //                    string cmdSno = dataObject[0].CmdSno;
-        //                    int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                        if (_dataAccessManger.GetCmdMstByStoreInstart(stn, out var dataObject) == GetDataResult.Success) //讀取CMD_MST
+                        {
+                            string cmdSno = dataObject[0].CmdSno;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
 
-        //                    var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Get StoreIn Command");
-        //                    log.CmdSno = cmdSno;
-        //                    _loggerManager.WriteLogTrace(log);
+                            var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Get StoreIn Command");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
 
 
-        //                    if (_conveyor.GetBuffer(bufferIndex).Auto
-        //                    && _conveyor.GetBuffer(bufferIndex).InMode
-        //                    && _conveyor.GetBuffer(bufferIndex).CommandId == 0
-        //                    && _conveyor.GetBuffer(bufferIndex).Presence == false
-        //                    && _conveyor.GetBuffer(bufferIndex).Error == false
-        //                    && _conveyor.GetBuffer(bufferIndex - 1).Ready == Ready.StoreInReady
-        //                    && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
-        //                    && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3) //為了不跟盤點命令衝突的條件)
-        //                    {
-        //                        log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
-        //                        _loggerManager.WriteLogTrace(log);
+                            if (_conveyor.GetBuffer(bufferIndex).Auto
+                            && _conveyor.GetBuffer(bufferIndex).InMode
+                            && _conveyor.GetBuffer(bufferIndex).CommandId == 0
+                            && _conveyor.GetBuffer(bufferIndex).Presence == false
+                            && _conveyor.GetBuffer(bufferIndex).Error == false
+                            && _conveyor.GetBuffer(bufferIndex - 1).Ready == Ready.StoreInReady
+                            && _conveyor.GetBuffer(bufferIndex).CmdMode != 3      //為了不跟盤點命令衝突的條件
+                            && _conveyor.GetBuffer(bufferIndex - 1).CmdMode != 3) //為了不跟盤點命令衝突的條件)
+                            {
+                                log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+                                _loggerManager.WriteLogTrace(log);
 
-        //                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            return;
-        //                        }
-        //                        if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd success");
-        //                            log.CmdSno = cmdSno;
-        //                            _loggerManager.WriteLogTrace(log);
-        //                        }
-        //                        else
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
-        //                            log.CmdSno = cmdSno;
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return;
-        //                        }
-        //                        var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-        //                        bool Result = WritePlccheck.Item1;
-        //                        string exmessage = WritePlccheck.Item2;
-        //                        if (Result != true)//寫入命令和模式
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return;
-        //                        }
-        //                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return;
-        //                        }
-        //                    }
-        //                    #region 站口狀態自動確認-Update-CMD-Remark
-        //                    else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
-        //                    {
-        //                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotInMode);
-        //                        return;
-        //                    }
-        //                    else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
-        //                    {
-        //                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
-        //                        return;
-        //                    }
-        //                    else if (_conveyor.GetBuffer(bufferIndex).Error == true)
-        //                    {
-        //                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
-        //                        return;
-        //                    }
-        //                    else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)
-        //                    {
-        //                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
-        //                        return;
-        //                    }
-        //                    else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-        //                    {
-        //                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
-        //                        return;
-        //                    }
-        //                    else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
-        //                    {
-        //                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
-        //                        return;
-        //                    }
-        //                    else if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
-        //                    {
-        //                        _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreInReady);
-        //                        return;
-        //                    }
-        //                    #endregion
+                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
+                                    _loggerManager.WriteLogTrace(log);
+                                    return;
+                                }
+                                if (_dataAccessManger.UpdateCmdMstTransferring(db, cmdSno, Trace.StoreInWriteCmdToCV) == ExecuteSQLResult.Success)
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd success");
+                                    log.CmdSno = cmdSno;
+                                    _loggerManager.WriteLogTrace(log);
+                                }
+                                else
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Upadte cmd fail");
+                                    log.CmdSno = cmdSno;
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
+                                var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                                bool Result = WritePlccheck.Item1;
+                                string exmessage = WritePlccheck.Item2;
+                                if (Result != true)//寫入命令和模式
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
+                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
+                            }
+                            #region 站口狀態自動確認-Update-CMD-Remark
+                            else if (_conveyor.GetBuffer(bufferIndex).InMode == false)
+                            {
+                                _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotInMode);
+                                return;
+                            }
+                            else if (_conveyor.GetBuffer(bufferIndex).Auto == false)
+                            {
+                                _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotAutoMode);
+                                return;
+                            }
+                            else if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            {
+                                _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.BufferError);
+                                return;
+                            }
+                            else if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)
+                            {
+                                _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CycleOperating);
+                                return;
+                            }
+                            else if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                            {
+                                _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.PresenceExist);
+                                return;
+                            }
+                            else if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                            {
+                                _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.CmdLeftOver);
+                                return;
+                            }
+                            else if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
+                            {
+                                _dataAccessManger.UpdateCmdMstRemark(db, cmdSno, Remark.NotStoreInReady);
+                                return;
+                            }
+                            #endregion
 
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-        //        _loggerManager.WriteLogTrace(log);
-        //    }
-        //}
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
+        }
 
-        //private void StoreIn_A1_CreateEquCmd()
-        //{
-        //    int bufferIndex = 1;
-        //    if (_conveyor.GetBuffer(bufferIndex).Auto
-        //        && _conveyor.GetBuffer(bufferIndex).InMode
-        //        && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-        //        && _conveyor.GetBuffer(bufferIndex).Presence
-        //        && _conveyor.GetBuffer(bufferIndex).Error == false)
-        //    {
-        //        var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
-        //        log.CmdSno = string.Empty;
-        //        _loggerManager.WriteLogTrace(log);
+        private void StoreIn_A1_CreateEquCmd()
+        {
+            int bufferIndex = 1;
+            if (_conveyor.GetBuffer(bufferIndex).Auto
+                && _conveyor.GetBuffer(bufferIndex).InMode
+                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                && _conveyor.GetBuffer(bufferIndex).Presence
+                && _conveyor.GetBuffer(bufferIndex).Error == false)
+            {
+                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                log.CmdSno = string.Empty;
+                _loggerManager.WriteLogTrace(log);
 
-        //        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
-        //        if (_dataAccessManger.GetCmdMstByStoreInCrane(cmdSno, out var dataObject) == GetDataResult.Success)
-        //        {
+                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                if (_dataAccessManger.GetCmdMstByStoreInCrane(cmdSno, out var dataObject) == GetDataResult.Success)
+                {
 
-        //            string source = $"{CranePortNo.A1}";
-        //            string IOType = dataObject[0].IOType;
-        //            string dest = "";
-        //            if (IOType == IOtype.Cycle.ToString())//如果是盤點，入庫儲位欄位是LOC，一般出庫是NewLoc
-        //            {
-        //                dest = $"{dataObject[0].Loc}";
-        //            }
-        //            else
-        //            {
-        //                dest = $"{dataObject[0].NewLoc}";
-        //            }
+                    string source = $"{CranePortNo.A1}";
+                    string IOType = dataObject[0].IOType;
+                    string dest = "";
+                    if (IOType == IOtype.Cycle.ToString())//如果是盤點，入庫儲位欄位是LOC，一般出庫是NewLoc
+                    {
+                        dest = $"{dataObject[0].Loc}";
+                    }
+                    else
+                    {
+                        dest = $"{dataObject[0].NewLoc}";
+                    }
 
-        //            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
-        //            log.CmdSno = cmdSno;
-        //            _loggerManager.WriteLogTrace(log);
+                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
+                    log.CmdSno = cmdSno;
+                    _loggerManager.WriteLogTrace(log);
 
-        //            using (var db = _dataAccessManger.GetDB())
-        //            {
-        //                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-        //                {
-        //                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-        //                    log.CmdSno = cmdSno;
-        //                    _loggerManager.WriteLogTrace(log);
-        //                    return;
-        //                }
-        //                if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
-        //                {
-        //                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
-        //                    log.CmdSno = cmdSno;
-        //                    _loggerManager.WriteLogTrace(log);
-        //                    db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                    return;
-        //                }
-        //                if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-        //                {
-        //                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Insert EquCmd Fail");
-        //                    log.CmdSno = cmdSno;
-        //                    _loggerManager.WriteLogTrace(log);
-        //                    db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                    return;
-        //                }
-        //                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-        //                {
-        //                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
-        //                    log.CmdSno = cmdSno;
-        //                    _loggerManager.WriteLogTrace(log);
-        //                    db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                    return;
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+                    using (var db = _dataAccessManger.GetDB())
+                    {
+                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            return;
+                        }
+                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Insert EquCmd Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                        {
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
+                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
 
-        //private void StoreIn_A2ToA4_CreateEquCmd()//A2ToA4建立Crane命令
-        //{
-        //    try
-        //    {
-        //        for (int bufferIndex = 5; bufferIndex <= 9; bufferIndex += 2)
-        //        {
-        //            if (_conveyor.GetBuffer(bufferIndex).Auto
-        //                && _conveyor.GetBuffer(bufferIndex).InMode
-        //                && _conveyor.GetBuffer(bufferIndex).CommandId > 0
-        //                && _conveyor.GetBuffer(bufferIndex).Presence
-        //                && _conveyor.GetBuffer(bufferIndex).Error == false)
-        //            {
+        private void StoreIn_A2ToA4_CreateEquCmd()//A2ToA4建立Crane命令
+        {
+            try
+            {
+                for (int bufferIndex = 5; bufferIndex <= 9; bufferIndex += 2)
+                {
+                    if (_conveyor.GetBuffer(bufferIndex).Auto
+                        && _conveyor.GetBuffer(bufferIndex).InMode
+                        && _conveyor.GetBuffer(bufferIndex).CommandId > 0
+                        && _conveyor.GetBuffer(bufferIndex).Presence
+                        && _conveyor.GetBuffer(bufferIndex).Error == false)
+                    {
 
-        //                var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
-        //                log.CmdSno = string.Empty;
-        //                _loggerManager.WriteLogTrace(log);
+                        var log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                        log.CmdSno = string.Empty;
+                        _loggerManager.WriteLogTrace(log);
 
-        //                string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
-        //                if (_dataAccessManger.GetCmdMstByStoreInCrane(cmdSno, out var dataObject) == GetDataResult.Success)
-        //                {
-        //                    string source = "";
-        //                    if (bufferIndex == 5)
-        //                    {
-        //                        source = $"{CranePortNo.A5}";
-        //                    }
-        //                    else if (bufferIndex == 7)
-        //                    {
-        //                        source = $"{CranePortNo.A7}";
-        //                    }
-        //                    else if (bufferIndex == 9)
-        //                    {
-        //                        source = $"{CranePortNo.A9}";
-        //                    }
-        //                    string IOType = dataObject[0].IOType;
-        //                    string dest = "";
-        //                    if (IOType == IOtype.Cycle.ToString()) //如果是盤點，入庫儲位欄位是LOC，一般出庫是NewLoc
-        //                    {
-        //                        dest = $"{dataObject[0].Loc}";
-        //                    }
-        //                    else
-        //                    {
-        //                        dest = $"{dataObject[0].NewLoc}";
-        //                    }
+                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                        if (_dataAccessManger.GetCmdMstByStoreInCrane(cmdSno, out var dataObject) == GetDataResult.Success)
+                        {
+                            string source = "";
+                            if (bufferIndex == 5)
+                            {
+                                source = $"{CranePortNo.A5}";
+                            }
+                            else if (bufferIndex == 7)
+                            {
+                                source = $"{CranePortNo.A7}";
+                            }
+                            else if (bufferIndex == 9)
+                            {
+                                source = $"{CranePortNo.A9}";
+                            }
+                            string IOType = dataObject[0].IOType;
+                            string dest = "";
+                            if (IOType == IOtype.Cycle.ToString()) //如果是盤點，入庫儲位欄位是LOC，一般出庫是NewLoc
+                            {
+                                dest = $"{dataObject[0].Loc}";
+                            }
+                            else
+                            {
+                                dest = $"{dataObject[0].NewLoc}";
+                            }
 
-        //                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
-        //                    log.CmdSno = cmdSno;
-        //                    _loggerManager.WriteLogTrace(log);
+                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
+                            log.CmdSno = cmdSno;
+                            _loggerManager.WriteLogTrace(log);
 
-        //                    using (var db = _dataAccessManger.GetDB())
-        //                    {
-        //                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-        //                            log.CmdSno = cmdSno;
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            return;
-        //                        }
-        //                        if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
-        //                            log.CmdSno = cmdSno;
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return;
-        //                        }
-        //                        if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Insert EquCmd Fail");
-        //                            log.CmdSno = cmdSno;
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return;
-        //                        }
-        //                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-        //                        {
-        //                            log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
-        //                            log.CmdSno = cmdSno;
-        //                            _loggerManager.WriteLogTrace(log);
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-        //        _loggerManager.WriteLogTrace(log);
-        //    }
-        //}
+                            using (var db = _dataAccessManger.GetDB())
+                            {
+                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
+                                    log.CmdSno = cmdSno;
+                                    _loggerManager.WriteLogTrace(log);
+                                    return;
+                                }
+                                if (_dataAccessManger.UpdateCmdMst(db, cmdSno, Trace.StoreInCreateCraneCmd) != ExecuteSQLResult.Success)
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Update CmdMst Fail");
+                                    log.CmdSno = cmdSno;
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
+                                if (InsertStoreInEquCmd(db, _conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5) == false)
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Insert EquCmd Fail");
+                                    log.CmdSno = cmdSno;
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
+                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                {
+                                    log = new StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Commit Fail");
+                                    log.CmdSno = cmdSno;
+                                    _loggerManager.WriteLogTrace(log);
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
+        }
 
-        //private void StoreIn_EquCmdFinish()
-        //{
-        //    try
-        //    {
-        //        var stn1 = new List<string>()
-        //    {
-        //        StnNo.A3,
-        //        StnNo.A6,
-        //        StnNo.A8,
-        //        StnNo.A10,
-        //    };
-        //        if (_dataAccessManger.GetCmdMstByStoreInFinish(stn1, out var dataObject) == GetDataResult.Success)
-        //        {
-        //            foreach (var cmdMst in dataObject.Data)
-        //            {
-        //                if (_dataAccessManger.GetEquCmd(cmdMst.CmdSno, out var equCmd) == GetDataResult.Success)
-        //                {
-        //                    if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-        //                    {
-        //                        if (equCmd[0].CompleteCode == "92")
-        //                        {
-        //                            using (var db = _dataAccessManger.GetDB())
-        //                            {
-        //                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-        //                                {
-        //                                    return;
-        //                                }
-        //                                if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.StoreInCraneCmdFinish) != ExecuteSQLResult.Success)
-        //                                {
-        //                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                                    return;
-        //                                }
-        //                                if (_dataAccessManger.DeleteEquCmd(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-        //                                {
-        //                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                                    return;
-        //                                }
-        //                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-        //                                {
-        //                                    return;
-        //                                }
-        //                            }
-        //                        }
-        //                        else if (equCmd[0].CompleteCode.StartsWith("W"))
-        //                        {
-        //                            using (var db = _dataAccessManger.GetDB())
-        //                            {
-        //                                if (_dataAccessManger.UpdateEquCmdRetry(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
-        //                                {
-        //                                    return;
-        //                                }
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-        //        _loggerManager.WriteLogTrace(log);
-        //    }
-        //}
+        private void StoreIn_EquCmdFinish()
+        {
+            try
+            {
+                var stn1 = new List<string>()
+            {
+                StnNo.A3,
+                StnNo.A6,
+                StnNo.A8,
+                StnNo.A10,
+            };
+                if (_dataAccessManger.GetCmdMstByStoreInFinish(stn1, out var dataObject) == GetDataResult.Success)
+                {
+                    foreach (var cmdMst in dataObject.Data)
+                    {
+                        if (_dataAccessManger.GetEquCmd(cmdMst.CmdSno, out var equCmd) == GetDataResult.Success)
+                        {
+                            if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
+                            {
+                                if (equCmd[0].CompleteCode == "92")
+                                {
+                                    using (var db = _dataAccessManger.GetDB())
+                                    {
+                                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                        {
+                                            return;
+                                        }
+                                        if (_dataAccessManger.UpdateCmdMst(db, equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.StoreInCraneCmdFinish) != ExecuteSQLResult.Success)
+                                        {
+                                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                                            return;
+                                        }
+                                        if (_dataAccessManger.DeleteEquCmd(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
+                                        {
+                                            db.TransactionCtrl2(TransactionTypes.Rollback);
+                                            return;
+                                        }
+                                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                        {
+                                            return;
+                                        }
+                                    }
+                                }
+                                else if (equCmd[0].CompleteCode.StartsWith("W"))
+                                {
+                                    using (var db = _dataAccessManger.GetDB())
+                                    {
+                                        if (_dataAccessManger.UpdateEquCmdRetry(db, equCmd[0].CmdSno) != ExecuteSQLResult.Success)
+                                        {
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
+        }
 
         #endregion StoreIn
 
-        
+
         private void OtherProcess(object sender, ElapsedEventArgs e)
         {
             try

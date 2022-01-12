@@ -83,7 +83,7 @@ namespace Mirle.DB.Proc
                                 strEM = "Error: Begin失敗！";
                                 if (strEM != cmd.Remark)
                                 {
-                                    CMD_MST.FunUpdateRemark(cmd.CmdSno, strEM, db);
+                                    CMD_MST.UpdateCmdMstRemark(cmd.CmdSno, strEM, db);
                                 }
 
                                 return false;
@@ -1221,6 +1221,7 @@ namespace Mirle.DB.Proc
                 return false;
             }
         }
+        
         #endregion StoreOut
 
         #region Other
