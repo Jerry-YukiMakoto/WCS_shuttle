@@ -131,9 +131,9 @@ namespace Mirle.ASRS.WCS.Controller
 
                     clsOther.clsEmptyPallets.EmptyStoreOut_A1_WriteCV();
 
-                    clsOther.clsEmptyPallets.EmptyStoreOut_A1_CreateEquCmd();
+                    //clsOther.clsEmptyPallets.EmptyStoreOut_A1_CreateEquCmd();
 
-                    clsOther.clsEmptyPallets.EmptyStoreOut_EquCmdFinish();
+                    //clsOther.clsEmptyPallets.EmptyStoreOut_EquCmdFinish();
 
                     clsOther.clsL2L.Other_LocToLoc();
                 }

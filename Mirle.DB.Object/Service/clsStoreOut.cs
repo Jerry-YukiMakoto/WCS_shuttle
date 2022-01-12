@@ -33,15 +33,15 @@ namespace Mirle.DB.Object.Service
                 {
                     if (bufferIndex == 5)
                     {
-                        stn = StnNo.A5;
+                        stn = StnNo.A6;
                     }
                     else if (bufferIndex == 7)
                     {
-                        stn = StnNo.A7;
+                        stn = StnNo.A8;
                     }
                     else if (bufferIndex == 9)
                     {
-                        stn = StnNo.A9;
+                        stn = StnNo.A10;
                     }
                     clsDB_Proc.GetDB_Object().GetProcess().FunStoreOutA2ToA4WriPlc(stn, bufferIndex);
                 }
@@ -93,6 +93,7 @@ namespace Mirle.DB.Object.Service
                 var stn = new List<string>()
                 {
                     StnNo.A3,
+                    StnNo.A4,
                     StnNo.A6,
                     StnNo.A8,
                     StnNo.A10,

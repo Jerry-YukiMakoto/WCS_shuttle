@@ -337,7 +337,13 @@ namespace Mirle.DB.Fun
             }
         }
 
-        
+        public GetDataResult EmptyInOutCheck(int Iotype,out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST";
+            sql += $"WHERE IOtype='{Iotype}' ";
+            sql += $"AND CMDSTS in ('{clsConstValue.CmdSts.strCmd_Initial}','{clsConstValue.CmdSts.strCmd_Running}') ";
+            return db.GetData(sql, out dataObject);
+        }
 
         #region Micron Fun
         public int FunGetFinishCommand(ref DataTable dtTmp, SqlServer db)
