@@ -97,14 +97,12 @@ namespace Mirle.DB.Proc
 
                             if (iRet_Task == DBResult.Success)
                             {
-                                if (EQU_CMD.DeleteEquCmd(cmd.CmdSno, db) == ExecuteSQLResult.Initial)
+                                if (EQU_CMD.DeleteEquCmd(cmd.CmdSno, db) != ExecuteSQLResult.Success)
                                 {
                                     db.TransactionCtrl(TransactionTypes.Rollback);
                                     return false;
                                 }
                             }
-
-
 
                             db.TransactionCtrl(TransactionTypes.Commit);
                             return true;
@@ -280,7 +278,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
                                 return false;
                             }
-                            if(_conveyor.GetBuffer(bufferIndex).InMode != true)
+                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
                                 return false;
@@ -347,8 +345,10 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
+
+                            return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -378,13 +378,13 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
-                       
+
                         if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db) == GetDataResult.Success)
                         {
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
 
                             #region//根據buffer狀態更新命令
-                            if (_conveyor.GetBuffer(bufferIndex).Auto!=true)
+                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
                                 return false;
@@ -424,7 +424,7 @@ namespace Mirle.DB.Proc
                             {
                                 dest = $"{dataObject[0].NewLoc}";
                             }
-                                
+
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                             {
@@ -439,7 +439,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                            if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Insert EquCmd Fail => {cmdSno}");
 
@@ -453,8 +453,9 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
+                            else return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -556,7 +557,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                            if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Insert EquCmd Fail => {cmdSno}");
 
@@ -570,8 +571,9 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
+                            else return true;
                         }
-                        return true;
+                        else return false;
                     }
                     else
                     {
@@ -636,7 +638,6 @@ namespace Mirle.DB.Proc
                                             {
                                                 return false;
                                             }
-
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
@@ -1016,7 +1017,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                                if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1125,7 +1126,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                                if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1397,7 +1398,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                                if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
                                 {
                                     clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Insert EquCmd Fail => {cmdSno}");
 
@@ -1710,7 +1711,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                                if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
                                 {
                                     clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1848,7 +1849,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (InsertLocToLocEquCmd(5, "LocToLoc", 1, cmdSno, source, dest, 1, db) == false)
+                            if (EQU_CMD.InsertLocToLocEquCmd(5, "LocToLoc", 1, cmdSno, source, dest, 1, db) == false)
                             {
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
@@ -1882,213 +1883,6 @@ namespace Mirle.DB.Proc
         }
 
         #endregion
-
-
-
-
-        private bool InsertStoreInEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority, SqlServer db)
-        {
-            try
-            {
-                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                if (destination.Length != 7)
-                {
-                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Check destination Fail, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                    
-                    return false;
-                }
-
-                if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.InMode, source, destination) == false)
-                {
-                    if (EQU_CMD.InsertEquCmd(craneNo, cmdSno, ((int)EquCmdMode.InMode).ToString(), source, destination, priority, db) == ExecuteSQLResult.Success)
-                    {
-                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Insert Equ Cmd => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                        return true;
-                    }
-                    else
-                    {
-                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Insert Equ Cmd Fail => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        private bool InsertStoreOutEquCmd( int bufferIndex, string bufferName, int craneNo, string cmdSno, string source, string destination, int priority, SqlServer db)
-        {
-            try
-            {
-                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                if (source.Length != 7)
-                {
-                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Check Source Fail, Please Check => {cmdSno}, " +
-                    $"{craneNo}, " +
-                    $"{source}, " +
-                    $"{destination}");
-
-                    return false;
-                }
-
-
-                if (CheckExecutionEquCmd(bufferIndex, bufferName, craneNo, cmdSno, EquCmdMode.OutMode, source, destination) == false)
-                {
-                    if (EQU_CMD.InsertEquCmd(craneNo, cmdSno, ((int)EquCmdMode.OutMode).ToString(), source, destination, priority, db) == ExecuteSQLResult.Success)
-                    {
-                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Insert Equ Cmd => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-
-                        return true;
-                    }
-                    else
-                    {
-                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Insert Equ Cmd Fail=> {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        private bool InsertLocToLocEquCmd(int CmdType, string IoType, int craneNo, string cmdSno, string source, string destination, int priority, SqlServer db)
-        {
-            try
-            {
-                if (source.Length != 7)
-                {
-                    clsWriLog.L2LLogTrace(CmdType, IoType, $"Check Source Fail, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-
-                    return false;
-                }
-
-                if (destination.Length != 7)
-                {
-                    clsWriLog.L2LLogTrace(CmdType, IoType, $"Check Destination Fail, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-
-                    return false;
-                }
-
-                if (CheckExecutionEquCmd(CmdType, IoType, craneNo, cmdSno, EquCmdMode.LocToLoc, source, destination) == false)
-                {
-                    if (EQU_CMD.InsertEquCmd(craneNo, cmdSno, ((int)EquCmdMode.LocToLoc).ToString(), source, destination, priority, db) == ExecuteSQLResult.Success)
-                    {
-                        clsWriLog.L2LLogTrace(CmdType, IoType, $"Insert Equ Cmd => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-
-                        return true;
-                    }
-                    else
-                    {
-                        clsWriLog.L2LLogTrace(CmdType, IoType, $"Insert Equ Cmd Fail => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        private bool CheckExecutionEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination)
-        {
-            using (var db = clsGetDB.GetDB(_config))
-            {
-                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-
-                if (EQU_CMD.GetEquCmd(cmdSno, out var equCmd, db) == GetDataResult.Success)
-                {
-                    if (equCmd[0].CmdSts == CmdSts.Queue.GetHashCode().ToString() || equCmd[0].CmdSts == CmdSts.Transferring.GetHashCode().ToString())
-                    {
-                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ Execute, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                        
-                        return true;
-                    }
-                    else
-                    {
-                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                        
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (EQU_CMD.checkCraneNoReapeat(out var dataObject, db) == GetDataResult.Success)
-                    {
-                        int intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
-                        return intCraneCount != 0;
-                    }
-                    else
-                    {
-                        clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Check Crane Reapeat Fail, Please Check => {cmdSno}, " +
-                        $"{craneNo}, " +
-                        $"{source}, " +
-                        $"{destination}");
-                        return true;
-                    }
-                }
-            }
-        }
 
         #region//根據判斷去決定一樓空棧板總數是否滿了，去擋下出庫命令
         private bool CheckEmptyWillBefullOrNot()

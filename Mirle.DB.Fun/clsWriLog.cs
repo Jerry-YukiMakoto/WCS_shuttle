@@ -13,5 +13,15 @@ namespace Mirle.DB.Fun
         {
             Log.FunWriTraceLog_CV($"{BufferIndex} | {BufferName}: {Msg}");
         }
+
+        public static void StoreOutLogTrace(int BufferIndex, string BufferName, string Msg)
+        {
+            Log.FunWriTraceLog_CV($"StoreOut => {BufferIndex} | {BufferName}: {Msg}");
+        }
+
+        public static void L2LLogTrace(int CmdType, string IoType, string Msg)
+        {
+            Log.FunWriTraceLog_CV($"L2L => {CmdType} | {IoType}: {Msg}");
+        }
     }
 }
