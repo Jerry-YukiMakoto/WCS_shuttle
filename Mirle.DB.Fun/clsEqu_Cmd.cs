@@ -79,7 +79,7 @@ namespace Mirle.DB.Fun
         }
         public GetDataResult checkCraneNoReapeat(out DataObject<CmdMst> dataObject, SqlServer db)
         {
-            string sql = "SELECT COUNT (*) AS COUNT FROM EQUCMD WHERE CMDSTS IN ('0', '1')";
+            string sql = $"SELECT COUNT (*) AS COUNT FROM EQUCMD WHERE CMDSTS IN ('{clsConstValue.CmdSts.strCmd_Initial}', '{clsConstValue.CmdSts.strCmd_Running}')";
             return db.GetData(sql, out dataObject);
         }
 
