@@ -532,7 +532,7 @@ namespace Mirle.DB.Proc
                                     sRemark = "Error: Begin失敗！";
                                     if (sRemark != sRemark_Pre)
                                     {
-                                        CMD_MST.FunUpdateRemark(sCmdSno, sRemark, db);
+                                        CMD_MST.UpdateCmdMstRemark(sCmdSno, sRemark, db);
                                     }
 
                                     continue;
