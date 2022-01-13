@@ -2,7 +2,7 @@
 
 namespace Mirle.Def
 {
-    public class clsDbConfig : IDBConfig
+    public class clsDbConfig
     {
         public DBTypes DBType { get; set; }
         public string DbName { get; set; }
