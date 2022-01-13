@@ -676,7 +676,6 @@ namespace Mirle.DB.Proc
                             int IOType = Convert.ToInt32(dataObject[0].IOType);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             bool Result;
-                            string exmessage;
 
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
@@ -1886,7 +1885,7 @@ namespace Mirle.DB.Proc
                     {
                         int COUNT = Convert.ToInt32(dataObject[0].COUNT);
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        if (_conveyor.GetBuffer(2).A2LV2 == 0 && COUNT == '0' && _conveyor.GetBuffer(2).CommandId == 0 && _conveyor.GetBuffer(1).CommandId == 0)
+                        if (_conveyor.GetBuffer(2).A2LV2 == 0 && COUNT == 0 && _conveyor.GetBuffer(2).CommandId == 0 && _conveyor.GetBuffer(1).CommandId == 0)
                         {
                             return 1;
                         }

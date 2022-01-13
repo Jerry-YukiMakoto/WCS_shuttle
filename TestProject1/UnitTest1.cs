@@ -5,6 +5,7 @@ using Mirle.MPLC.DataType;
 using Mirle.ASRS.WCS.Controller;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
+using Mirle.DB.Proc;
 
 namespace TestProject1;
 [TestClass]
@@ -24,7 +25,7 @@ public class UnitTest1
         public void TestMethod1()
         {
             
-            if ((EmptyINReady == 8 && CommandId != 0) || EmptyINReady == 8 && CommandId1 != 0)
+            if ((EmptyINReady == 8 && CommandId != 0) || EmptyINReady == 8 && CommandId1 != 0|| EmptyINReady == 7 && CommandId != 0 && CommandId1 != 0)
             {
                  actual = 1;
             }
@@ -46,6 +47,12 @@ public class UnitTest1
             {
                 actual = 0;
             }
+            Assert.AreEqual(1, actual, "fail");
+        }
+        
+              [TestMethod]
+        public void TestMethod3()
+        {
             Assert.AreEqual(1, actual, "fail");
         }
     }
