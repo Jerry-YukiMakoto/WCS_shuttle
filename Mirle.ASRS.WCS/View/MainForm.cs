@@ -229,7 +229,7 @@ namespace Mirle.ASRS.WCS.View
             ControllerReader.FunGetController(clInitSys.CV_Config);
             clsWmsApi.FunInit(clInitSys.WmsApi_Config);
 
-            _wcsManager = new WCSManager(clInitSys.DbConfig);
+            _wcsManager = new WCSManager();
             _wcsManager.Start();
             _unityContainer = new UnityContainer();
             _unityContainer.RegisterInstance(new WMSWCSController());
