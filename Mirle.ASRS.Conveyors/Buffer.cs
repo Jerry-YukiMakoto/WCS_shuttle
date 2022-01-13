@@ -51,7 +51,6 @@ namespace Mirle.ASRS.Conveyors
         public int EmptyINReady => Signal.EmptyInReady.GetValue();
         public int A2LV2 => Signal.A2LV2.GetValue();
 
-
         public Buffer(BufferSignal signal)
         {
             Signal = signal;
@@ -59,12 +58,10 @@ namespace Mirle.ASRS.Conveyors
 
         protected internal virtual void Refresh()//自己寫入的值，自己清，當寫入的值和確認PLC寫的值條件=>確認寫入成功，才清理自己寫的值
         {
-            string exmessage = "";
-
-            if (Signal.CmdMode.GetValue() > 0 && Signal.CmdMode.GetValue() == Signal.ControllerSignal.LoadCategory.GetValue()
+            if (Signal.CmdMode.GetValue() > 0 && Signal.CmdMode.GetValue() == Signal.ControllerSignal.CmdMode.GetValue()
                 )
             {
-                Signal.ControllerSignal.LoadCategory.Clear();
+                Signal.ControllerSignal.CmdMode.Clear();
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
             else if (Signal.CommandId.GetValue() > 0 && Signal.CommandId.GetValue() == Signal.ControllerSignal.CommandId.GetValue())
@@ -75,20 +72,20 @@ namespace Mirle.ASRS.Conveyors
 
             if (Signal.PathChangeNotice.GetValue() > 0 &&  Signal.PathChangeNotice.GetValue()==Signal.ControllerSignal.PathChangeNotice.GetValue())
             {
-                Signal.ControllerSignal.PathChangeNotice.SetValue(0,ref exmessage);
+                Signal.ControllerSignal.PathChangeNotice.SetValue(0);
                 OnBufferPathNoticeChange?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
             if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)//待修改，需要知道什麼時候電控運送母托到A3
             {
-                Signal.ControllerSignal.A4Emptysupply.SetValue(0,ref exmessage);
+                Signal.ControllerSignal.A4Emptysupply.SetValue(0);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
 
             if (Signal.StatusSignal.InMode.IsOn() == true && Signal.ControllerSignal.Switch_Mode.GetValue() == 1
                 || Signal.StatusSignal.OutMode.IsOn() == true && Signal.ControllerSignal.Switch_Mode.GetValue() == 2)
             {
-                Signal.ControllerSignal.Switch_Mode.SetValue(0,ref exmessage);
+                Signal.ControllerSignal.Switch_Mode.SetValue(0);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
             CheckIniatlNotice();
@@ -117,7 +114,6 @@ namespace Mirle.ASRS.Conveyors
         }
         private void CheckIniatlNotice()
         {
-            string exmessage = "";
             if (_onIniatlNotice == false && Signal.ControllerSignal.InitialNotice.GetValue() == 1)
             {
                 _onIniatlNotice = true;
@@ -126,63 +122,92 @@ namespace Mirle.ASRS.Conveyors
             else if (_onIniatlNotice == true && Signal.ControllerSignal.InitialNotice.GetValue() == 1 && Signal.InitialNotice.GetValue() == 1)
             {
                 _onIniatlNotice = false;
-                Signal.ControllerSignal.InitialNotice.SetValue(0,ref exmessage);
+                Signal.ControllerSignal.InitialNotice.SetValue(0);
                 OnIniatlNoticeComplete?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
         }
 
-        public Task<(bool,string)> WriteCommandIdAsync(string commandId, int loadCategory)
+        public Task<bool> WriteCommandIdAsync(string Command, int commandMode)
         {
             return Task.Run(() =>
             {
-                string exmessage = "";
-                int[] value = new int[2];
-                value[1] = loadCategory;
-                int.TryParse(commandId, out value[0]);
-                if(Signal.ControllerSignal.CommandId.SetValue(value[0], ref exmessage)==true)
+                try
                 {
-                    return (Signal.ControllerSignal.LoadCategory.SetValue(value[1], ref exmessage),exmessage);
+                    if (CommandId != 0) return false;
+
+                    Signal.ControllerSignal.CmdMode.SetValue(commandMode);
+                    Signal.ControllerSignal.CommandId.SetValue(Convert.ToInt32(Command));
+
+                    Task.Delay(500).Wait();
+                    return true;
                 }
-                else
+                catch
                 {
-                    return (Signal.ControllerSignal.CommandId.SetValue(value[0], ref exmessage),exmessage);
+                    return false;
                 }
-
-            });
-        }
-        
-        public Task<(bool,string)> A4EmptysupplyOn()
-        {
-            string exmessage = "";
-            return Task.Run(() =>
-            {
-                return (Signal.ControllerSignal.A4Emptysupply.SetValue(1, ref exmessage),exmessage);
-            });
-        }
-        public Task<(bool,string)> InitialNoticeTrigger()
-        {
-            string exmessage = "";
-            return Task.Run(() =>
-            {
-                return (Signal.ControllerSignal.InitialNotice.SetValue(1,ref exmessage),exmessage);
             });
         }
 
-        public Task<(bool, string)> Switch_Mode(int mode)
+        public Task<bool> A4EmptysupplyOn()
         {
-            string exmessage = "";
             return Task.Run(() =>
             {
-                return (Signal.ControllerSignal.Switch_Mode.SetValue(mode, ref exmessage),exmessage);
+                try
+                {
+                    Signal.ControllerSignal.A4Emptysupply.SetValue(1);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+        }
+        public Task<bool> InitialNoticeTrigger()
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    Signal.ControllerSignal.InitialNotice.SetValue(1);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             });
         }
 
-        public Task<(bool, string)> WritePathChabgeNotice(int path)
+        public Task<bool> Switch_Mode(int mode)
         {
-            string exmessage = "";
             return Task.Run(() =>
             {
-                return (Signal.ControllerSignal.PathChangeNotice.SetValue(path, ref exmessage),exmessage);
+                try
+                {
+                    Signal.ControllerSignal.Switch_Mode.SetValue(mode);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+        }
+
+        public Task<bool> WritePathChabgeNotice(int path)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    Signal.ControllerSignal.PathChangeNotice.SetValue(path);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             });
         }
     }

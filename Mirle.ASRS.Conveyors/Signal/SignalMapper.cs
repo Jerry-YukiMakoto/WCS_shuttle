@@ -157,7 +157,7 @@ namespace Mirle.ASRS.Conveyors.Signal
                         #endregion
 
                         buffer.ControllerSignal.CommandId = new Word(_mplc, $"D{pcIndex + (bufferIndex * 10)}");
-                        buffer.ControllerSignal.LoadCategory = new Word(_mplc, $"D{pcIndex + (bufferIndex * 10) + 1}");
+                        buffer.ControllerSignal.CmdMode = new Word(_mplc, $"D{pcIndex + (bufferIndex * 10) + 1}");
 
                         #region PC->PLC增加單一特殊點位位置
                         if (bufferIndex + 1 == 1)

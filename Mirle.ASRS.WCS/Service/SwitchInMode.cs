@@ -26,11 +26,10 @@ namespace Mirle.ASRS.WCS.Service
                     {
 
                         var WritePlccheck = _conveyor.GetBuffer(1).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                        bool Result = WritePlccheck.Item1;
-                        string exmessage = WritePlccheck.Item2;
+                        bool Result = WritePlccheck;
                         if (Result != true)
                         {
-                            var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, $"Normal-StoreOut Switchmode fail:{exmessage}");
+                            var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, $"Normal-StoreOut Switchmode fail");
                             _loggerManager.WriteLogTrace(log);   
                         }
                         else
