@@ -24,7 +24,7 @@ namespace Mirle.DB.Proc
             proc = new Fun.clsProc(config_WMS);
         }
 
-        public GetDataResult checkCraneNoReapeat(out DataObject<CmdMst> dataObject)
+        public int checkCraneNoReapeat(out DataObject<CmdMst> dataObject)
         {
             try
             {
@@ -33,12 +33,12 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return EQU_CMD.checkCraneNoReapeat(out dataObject, db);
+                        return EQU_CMD.checkCraneNoReapeat(out dataObject, db).ResultCode;
                     }
                     else
                     {
                         dataObject = new DataObject<CmdMst>();
-                        return GetDataResult.Initial;
+                        return iRet;
                     }
                 }
             }
@@ -48,7 +48,7 @@ namespace Mirle.DB.Proc
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return GetDataResult.Exception;
+                return DBResult.Exception;
             }
         }
 
@@ -122,7 +122,7 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public GetDataResult GetEquCmd(string cmdSno, out DataObject<EquCmd> dataObject)
+        public int GetEquCmd(string cmdSno, out DataObject<EquCmd> dataObject)
         {
             try
             {
@@ -131,12 +131,12 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return EQU_CMD.GetEquCmd(cmdSno, out dataObject, db);
+                        return EQU_CMD.GetEquCmd(cmdSno, out dataObject, db).ResultCode;
                     }
                     else
                     {
                         dataObject = new DataObject<EquCmd>();
-                        return GetDataResult.Initial;
+                        return iRet;
                     }
                 }
             }
@@ -146,11 +146,11 @@ namespace Mirle.DB.Proc
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return GetDataResult.Exception;
+                return DBResult.Exception;
             }
         }
 
-        public GetDataResult GetEquCmdByOutMode(int craneNo, string destination, out DataObject<EquCmd> dataObject)
+        public int GetEquCmdByOutMode(int craneNo, string destination, out DataObject<EquCmd> dataObject)
         {
             try
             {
@@ -159,12 +159,12 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return EQU_CMD.GetEquCmdByOutMode(craneNo, destination, out dataObject, db);
+                        return EQU_CMD.GetEquCmdByOutMode(craneNo, destination, out dataObject, db).ResultCode;
                     }
                     else
                     {
                         dataObject = new DataObject<EquCmd>();
-                        return GetDataResult.Initial;
+                        return iRet;
                     }
                 }
             }
@@ -174,11 +174,11 @@ namespace Mirle.DB.Proc
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return GetDataResult.Exception;
+                return DBResult.Exception;
             }
         }
 
-        public GetDataResult GetEquCmdByInMode(int craneNo, string source, out DataObject<EquCmd> dataObject)
+        public int GetEquCmdByInMode(int craneNo, string source, out DataObject<EquCmd> dataObject)
         {
             try
             {
@@ -187,12 +187,12 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return EQU_CMD.GetEquCmdByInMode(craneNo, source, out dataObject, db);
+                        return EQU_CMD.GetEquCmdByInMode(craneNo, source, out dataObject, db).ResultCode;
                     }
                     else
                     {
                         dataObject = new DataObject<EquCmd>();
-                        return GetDataResult.Initial;
+                        return iRet;
                     }
                 }
             }
@@ -202,11 +202,11 @@ namespace Mirle.DB.Proc
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return GetDataResult.Exception;
+                return DBResult.Exception;
             }
         }
 
-        public GetDataResult GetEquCmdByLocToLoc(int craneNo, out DataObject<EquCmd> dataObject)
+        public int GetEquCmdByLocToLoc(int craneNo, out DataObject<EquCmd> dataObject)
         {
             try
             {
@@ -215,12 +215,12 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        return EQU_CMD.GetEquCmdByLocToLoc(craneNo, out dataObject, db);
+                        return EQU_CMD.GetEquCmdByLocToLoc(craneNo, out dataObject, db).ResultCode;
                     }
                     else
                     {
                         dataObject = new DataObject<EquCmd>();
-                        return GetDataResult.Initial;
+                        return iRet;
                     }
                 }
             }
@@ -230,7 +230,7 @@ namespace Mirle.DB.Proc
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return GetDataResult.Exception;
+                return DBResult.Exception;
             }
         }
 

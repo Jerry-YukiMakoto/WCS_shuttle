@@ -206,11 +206,10 @@ namespace Mirle.DB.Proc
                             }
 
                             var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                            bool Result = WritePlccheck.Item1;
-                            string exmessage = WritePlccheck.Item2;
+                            bool Result = WritePlccheck;
                             if (Result != true)//寫入命令和模式
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
@@ -218,11 +217,10 @@ namespace Mirle.DB.Proc
                             if (IOType == IOtype.NormalstorIn)
                             {
                                 WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                Result = WritePlccheck.Item1;
-                                exmessage = WritePlccheck.Item2;
+                                Result = WritePlccheck;
                                 if (Result != true)//請A4補充母托一版
                                 {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC A4EmptySupply Fail:{exmessage}");
+                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC A4EmptySupply Fail");
 
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
@@ -329,11 +327,10 @@ namespace Mirle.DB.Proc
                                 return false;
                             }
                             var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                            bool Result = WritePlccheck.Item1;
-                            string exmessage = WritePlccheck.Item2;
+                            bool Result = WritePlccheck;
                             if (Result != true)//寫入命令和模式
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
@@ -691,11 +688,10 @@ namespace Mirle.DB.Proc
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreOut Ready, Can Switchmode");
 
                                 var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex).Switch_Mode(2).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                Result = WritePlccheck1.Item1;
-                                exmessage = WritePlccheck1.Item2;
+                                Result = WritePlccheck1;
                                 if (Result != true)
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Normal-StoreOut Switchmode fail:{exmessage}");
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Normal-StoreOut Switchmode fail");
                                     return false;
                                 }
                                 else
@@ -770,11 +766,10 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                Result = WritePlccheck.Item1;
-                                exmessage = WritePlccheck.Item2;
+                                Result = WritePlccheck;
                                 if (Result != true)
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
@@ -782,11 +777,10 @@ namespace Mirle.DB.Proc
                                 if (IOType == IOtype.Cycle || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
-                                    Result = WritePlccheck.Item1;
-                                    exmessage = WritePlccheck.Item2;
+                                    Result = WritePlccheck;
                                     if (Result != true)
                                     {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path2_toA3 Fail:{exmessage}");
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path2_toA3 Fail");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
@@ -794,11 +788,10 @@ namespace Mirle.DB.Proc
                                 else if(IOType == IOtype.EmptyStroeOut)
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path3_toA4).Result;//錯誤時回傳exmessage
-                                    Result = WritePlccheck.Item1;
-                                    exmessage = WritePlccheck.Item2;
+                                    Result = WritePlccheck;
                                     if (Result != true)
                                     {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path3_toA4 Fail:{exmessage}");
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path3_toA4 Fail");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
@@ -806,11 +799,10 @@ namespace Mirle.DB.Proc
                                 else
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2).Result;//錯誤時回傳exmessage
-                                    Result = WritePlccheck.Item1;
-                                    exmessage = WritePlccheck.Item2;
+                                    Result = WritePlccheck;
                                     if (Result != true)
                                     {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path1_toA2 Fail:{exmessage}");
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path1_toA2 Fail");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
@@ -921,11 +913,10 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result = WritePlccheck.Item1;
-                                string exmessage = WritePlccheck.Item2;
+                                bool Result = WritePlccheck;
                                 if (Result != true)//寫入命令和模式
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
@@ -1294,11 +1285,10 @@ namespace Mirle.DB.Proc
                                         return false;
                                     }
                                     var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                    bool Result = WritePlccheck.Item1;
-                                    string exmessage = WritePlccheck.Item2;
+                                    bool Result = WritePlccheck;
                                     if (Result != true)//寫入命令和模式
                                     {
-                                        clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
+                                        clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }

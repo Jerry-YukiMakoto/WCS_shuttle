@@ -31,11 +31,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
             else
             {
-                var plcHostInfo = new PLCHostInfo();
-                plcHostInfo.IPAddress = ipAddress;
-                plcHostInfo.TcpPort = tcpPort;
-                plcHostInfo.HostId = signalGroup == 0 ? "BQA" : "MFG";
-                plcHostInfo.BlockInfos = GetBlockInfos(signalGroup);
+                var plcHostInfo = new PLCHostInfo(signalGroup == 0 ? "BQA" : "MFG", ipAddress, tcpPort, GetBlockInfos(signalGroup));
                 _plcHost = new PLCHost(plcHostInfo);
                 _plcHost.Interval = 200;
                 _plcHost.MPLCTimeout = 600;

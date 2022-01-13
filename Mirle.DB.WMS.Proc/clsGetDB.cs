@@ -11,7 +11,13 @@ namespace Mirle.DB.WMS.Proc
     {
         public static SqlServer GetDB(clsDbConfig _config)
         {
-            var db = new SqlServer(_config);
+            DBOptions options = new DBOptions();
+            options.SetDBType(DBTypes.SqlServer);
+            options.SetAccount(_config.DbName, _config.DbUser, _config.DbPassword);
+            options.SetCommandTimeOut(_config.CommandTimeOut);
+            options.SetConnectTimeOut(_config.ConnectTimeOut);
+            options.SetDBServer(_config.DbServer, _config.DbPort, _config.FODBServer);
+            var db = new SqlServer(options);
             return db;
         }
 
