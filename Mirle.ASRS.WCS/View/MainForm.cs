@@ -96,7 +96,7 @@ namespace Mirle.ASRS.WCS.View
             */
         }
 
-
+        #endregion Event
 
 
 
@@ -172,7 +172,7 @@ namespace Mirle.ASRS.WCS.View
 
         
 
-        #endregion Event
+       
 
         #region Timer
         private void timRead_Elapsed(object source, System.Timers.ElapsedEventArgs e)
@@ -226,7 +226,7 @@ namespace Mirle.ASRS.WCS.View
             archive.Start();
             clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS); //原DataAccessController功能
             ControllerReader.FunGetController(clInitSys.CV_Config);
-            _wcsManager = new WCSManager(clInitSys.DbConfig);
+            _wcsManager = new WCSManager();
             _wcsManager.Start();
             _unityContainer = new UnityContainer();
             _unityContainer.RegisterInstance(new WMSWCSController());
