@@ -663,7 +663,7 @@ namespace Mirle.DB.Proc
         #endregion StoreIn
 
         #region StoreOut
-        public bool FunStoreOutWriPlc(string sStnNo, int bufferIndex)
+        public bool FunStoreOutWriPlc(string sStnNo, int bufferIndex)//出庫主要流程與空棧板出庫共用
         {
             try
             {
