@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{60C72719-D780-4BC8-9198-FC21C9754918}</ProjectGuid>
+    <ProjectGuid>{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mirle.DB.Proc</RootNamespace>
-    <AssemblyName>Mirle.DB.Proc</AssemblyName>
+    <RootNamespace>Mirle.CENS.U0NXMA30</RootNamespace>
+    <AssemblyName>Mirle.CENS.U0NXMA30</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,16 +29,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mirle.WriLog, Version=1.0.2101.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,46 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="clsAlarmData.cs" />
-    <Compile Include="clsCmd_Mst.cs" />
-    <Compile Include="clsCmd_Mst_His.cs" />
-    <Compile Include="clsEqu_Cmd.cs" />
-    <Compile Include="clsEQ_Alarm.cs" />
-    <Compile Include="clsGetDB.cs" />
-    <Compile Include="clsHost.cs" />
-    <Compile Include="clsLocMst.cs" />
-    <Compile Include="clsProc.cs" />
-    <Compile Include="clsSno.cs" />
-    <Compile Include="clsUnitModeDef.cs" />
-    <Compile Include="clsUnitStsLog.cs" />
-    <Compile Include="clsWriLog.cs" />
-    <Compile Include="EmptyReport.cs" />
+    <Compile Include="clsWmsApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
       <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
       <Name>Mirle.ASRS.Conveyors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
-      <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
-      <Name>Mirle.ASRS.WCS.Controller</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
-      <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
-      <Name>Mirle.ASRS.WCS.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj">
-      <Project>{dcbe44b8-7c23-4dba-86ae-9ca5f9cb3774}</Project>
-      <Name>Mirle.CENS.U0NXMA30</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.DB.Fun\Mirle.DB.Fun.csproj">
-      <Project>{c40166b0-0f5d-4535-94a7-699764a59a83}</Project>
-      <Name>Mirle.DB.Fun</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.DB.WMS.Proc\Mirle.DB.WMS.Proc.csproj">
-      <Project>{553bd8cf-f4c1-4b39-97ab-42cc2f7c8187}</Project>
-      <Name>Mirle.DB.WMS.Proc</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.Def.U0NXMA30\Mirle.Def.U0NXMA30.csproj">
       <Project>{e6f732fe-3905-49a7-b2cf-b4fa79c2dc5d}</Project>
@@ -98,14 +57,6 @@
       <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
       <Name>Mirle.Def</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.Grid\Mirle.Grid.csproj">
-      <Project>{8ab5fac9-7cc2-4eec-b583-39778e66ce1f}</Project>
-      <Name>Mirle.Grid</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Grid.U0NXMA30\Mirle.Grid.U0NXMA30.csproj">
-      <Project>{39a4c47b-c53b-4057-9dc5-93b8907639e8}</Project>
-      <Name>Mirle.Grid.U0NXMA30</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.Structure\Mirle.Structure.csproj">
       <Project>{0a0d222e-0c76-4838-a8b1-6ca6f26cb225}</Project>
       <Name>Mirle.Structure</Name>
@@ -114,17 +65,6 @@
       <Project>{c09122bb-250e-4fe2-9880-1620a2b6cea4}</Project>
       <Name>WCS_API_Client</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Mirle.MPLC.MCProtocol">
-      <Version>2.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Mirle.MPLC.MXComponent">
-      <Version>1.0.2</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

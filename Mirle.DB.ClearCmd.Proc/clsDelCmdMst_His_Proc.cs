@@ -32,7 +32,7 @@ namespace Mirle.DB.ClearCmd.Proc
                 {
                     if (DB.Proc.clsHost.IsConn)
                     {
-                        if(clsDB_Proc.GetDB_Object().GetCmd_Mst().FunDelCMD_MST_His(180))
+                        if(clsDB_Proc.GetDB_Object().GetCmd_Mst().FunDelCMD_MST_His(7))
                         {
                             strLastExportTime = strNowTime;
                         }

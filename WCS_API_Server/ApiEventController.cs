@@ -25,7 +25,6 @@ namespace WCS_API_Server
             {
                 lineId = Body.lineId,
                 taskNo = Body.taskNo,
-                palletNo = Body.palletNo
             };
             clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_ADD start!");
             
@@ -35,13 +34,8 @@ namespace WCS_API_Server
                 #region 填入cmd資訊
                 CmdMstInfo cmd = new CmdMstInfo();
                 string strEM = "";
-                
-                cmd.CmdSno = clsDB_Proc.GetDB_Object().GetSNO().FunGetSeqNo(clsEnum.enuSnoType.CMDSNO);
-                if (string.IsNullOrWhiteSpace(cmd.CmdSno))
-                {
-                    throw new Exception($"<{Body.taskNo}>取得序號失敗！");
-                }
-               
+
+                cmd.CmdSno = Body.taskNo;
                 cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
                 cmd.IoType = Body.bussinessType;
                 cmd.Loc = Body.locationFrom;
@@ -92,7 +86,6 @@ namespace WCS_API_Server
             clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_FORCE_CLEAR start!");
             try
             {
-                
                 string strEM = "";
                 if (!clsDB_Proc.GetDB_Object().GetProcess().FunMoveTaskForceClear(Body.taskNo, ref strEM))
                     throw new Exception(strEM);

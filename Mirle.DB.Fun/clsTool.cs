@@ -13,7 +13,6 @@ namespace Mirle.DB.Fun
             CmdMstInfo cmd = new CmdMstInfo
             {
                 CmdSno = Convert.ToString(dtTmp.Rows[0]["CmdSno"]),
-                taskNo = Convert.ToString(dtTmp.Rows[0]["taskNo"]),
                 CmdMode = Convert.ToString(dtTmp.Rows[0]["CmdMode"]),
                 CmdSts = Convert.ToString(dtTmp.Rows[0]["CmdSts"]),
                 EquNo = Convert.ToString(dtTmp.Rows[0]["EquNO"]),
@@ -33,18 +32,6 @@ namespace Mirle.DB.Fun
             return cmd;
         }
 
-        //public int CheckLocDDHasNeedL2LCmd(CmdMstInfo cmd, string sDeviceID, string sCurLoc, ref string sCmdSno_DD, SqlServer db)
-        //{
-        //    try
-        //    {
-        //        return proc.CheckLocDDHasNeedL2LCmd(cmd, sDeviceID, sCurLoc, ref sCmdSno_DD, db);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-        //        return DBResult.Exception;
-        //    }
-        //}
+        
     }
 }

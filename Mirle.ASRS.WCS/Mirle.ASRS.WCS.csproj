@@ -167,6 +167,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="Config\ASRS.ini" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -193,6 +194,10 @@
     <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
       <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
       <Name>Mirle.ASRS.WCS.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj">
+      <Project>{dcbe44b8-7c23-4dba-86ae-9ca5f9cb3774}</Project>
+      <Name>Mirle.CENS.U0NXMA30</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.ClearCmd.Proc\Mirle.DB.ClearCmd.Proc.csproj">
       <Project>{31deb747-36ca-4a92-8df1-89eee47a0fa4}</Project>
@@ -239,8 +244,9 @@
       <Name>WCS_API_Server</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Config\" />
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" />

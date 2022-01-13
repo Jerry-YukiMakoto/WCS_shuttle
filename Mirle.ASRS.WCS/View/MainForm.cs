@@ -13,6 +13,7 @@ using Mirle.ASRS.Close.Program;
 using System.Threading;
 using Mirle.ASRS.WCS.Library;
 using Mirle.ASRS.WCS.Controller;
+using Mirle.CENS.U0NXMA30;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -226,6 +227,8 @@ namespace Mirle.ASRS.WCS.View
             archive.Start();
             clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS); //原DataAccessController功能
             ControllerReader.FunGetController(clInitSys.CV_Config);
+            clsWmsApi.FunInit(clInitSys.WmsApi_Config);
+
             _wcsManager = new WCSManager(clInitSys.DbConfig);
             _wcsManager.Start();
             _unityContainer = new UnityContainer();
@@ -285,7 +288,6 @@ namespace Mirle.ASRS.WCS.View
                             oGrid.Rows.Add();
                             oGrid.Rows[oGrid.RowCount - 1].HeaderCell.Value = Convert.ToString(oGrid.RowCount);
                             oGrid[ColumnDef.CMD_MST.CmdSno.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CMDSNO"]);
-                            oGrid[ColumnDef.CMD_MST.taskNo.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["taskNo"]);
                             oGrid[ColumnDef.CMD_MST.CmdSts.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CMDSTS"]);
                             oGrid[ColumnDef.CMD_MST.PRT.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["PRT"]);
                             oGrid[ColumnDef.CMD_MST.CmdMode.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CmdMode"]);

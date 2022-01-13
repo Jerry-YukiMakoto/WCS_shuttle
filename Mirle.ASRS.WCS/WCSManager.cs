@@ -9,6 +9,7 @@ using Mirle.DataBase;
 using Mirle.DB.Object.Service;
 using Mirle.Def;
 using Mirle.ASRS.WCS.Service;
+using Mirle.DB.Proc;
 
 namespace Mirle.ASRS.WCS.Controller
 {
@@ -16,6 +17,10 @@ namespace Mirle.ASRS.WCS.Controller
     {
         private readonly Conveyor _conveyor;
         private readonly LoggerManager _loggerManager;
+        private readonly EmptyReport emptyReport = new EmptyReport();
+
+        private readonly Timer _emptyInReport = new Timer();
+        private readonly Timer _emptyOutReport = new Timer();
         
         private readonly Timer _storeInProcess = new Timer();
         private readonly Timer _storeOutProcess = new Timer();
@@ -26,16 +31,21 @@ namespace Mirle.ASRS.WCS.Controller
         {
             _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             _loggerManager = ControllerReader.GetLoggerManager();
-           
 
             _storeOutProcess.Interval = 500;
             _storeInProcess.Interval = 500;
             _otherProcess.Interval = 500;
+            
+            _emptyInReport.Interval = 500;
+            _emptyOutReport.Interval = 500;
 
             _storeOutProcess.Elapsed += StoreOutProcess;
             _storeInProcess.Elapsed += StoreInProcess;
             _otherProcess.Elapsed += OtherProcess;
             
+            _emptyInReport.Elapsed += emptyReport.EmptyInWMS;
+            _emptyOutReport.Elapsed += emptyReport.EmptyOutWMS;
+
         }
 
         public void Start()

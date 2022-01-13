@@ -5,15 +5,15 @@ using System.Text;
 using Mirle.Def;
 using WCS_API_Client.Functions;
 
-namespace Mirle.WebAPI.U2NMMA30
+namespace WCS_API_Client
 {
     public class clsHost
     {
         private WebApiConfig _config = new WebApiConfig();
         private TaskStateUpdate taskStateUpdate;
         private DisplayTaskStatus displayTaskStatus;
-        private StackPalletsIn StackPalletsIn;
-        private StackPalletsOut StackPalletsOut;
+        private StackPalletsIn stackPalletsIn;
+        private StackPalletsOut stackPalletsOut;
         
 
         public clsHost(WebApiConfig Config)
@@ -21,8 +21,8 @@ namespace Mirle.WebAPI.U2NMMA30
             _config = Config;
             taskStateUpdate = new TaskStateUpdate(_config);
             displayTaskStatus = new DisplayTaskStatus(_config);
-            StackPalletsIn = new StackPalletsIn(_config);
-            StackPalletsOut = new StackPalletsOut(_config);
+            stackPalletsIn = new StackPalletsIn(_config);
+            stackPalletsOut = new StackPalletsOut(_config);
         }
         public TaskStateUpdate GetTaskStateUpdate()
         {
@@ -35,12 +35,12 @@ namespace Mirle.WebAPI.U2NMMA30
 
         public StackPalletsIn GetStackPalletsIn()
         {
-            return StackPalletsIn;
+            return stackPalletsIn;
         }
 
-        public StackPalletsOut GetPalletsOut()
+        public StackPalletsOut GetStackPalletsOut()
         {
-            return StackPalletsOut;
+            return stackPalletsOut;
         }
 
     }

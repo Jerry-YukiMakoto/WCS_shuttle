@@ -96,6 +96,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Layout", "Layout", "{124CFB
 		..\Documents\1HFFAK01.dwg = ..\Documents\1HFFAK01.dwg
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj", "{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -178,6 +180,10 @@ Global
 		{95116D24-80F9-4BDE-94CA-7F3567C76CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95116D24-80F9-4BDE-94CA-7F3567C76CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95116D24-80F9-4BDE-94CA-7F3567C76CDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,9 +14,6 @@ namespace Mirle.Def.U0NXMA30
         [Option(Alias = "WMS Data Base")]
         DatabaseConfig Database_WMS { get; }
 
-        [Option(Alias = "System Info")]
-        SystemConfig System_Info { get; }
-
         [Option(Alias = "WMS API")]
         APIConfig WMS_API { get; }
 
@@ -28,9 +25,6 @@ namespace Mirle.Def.U0NXMA30
 
         [Option(Alias = "CV PLC")]
         CV_PlcConfig CV { get; }
-
-        [Option(Alias = "STK Port")]
-        StkPortConfig StkPort { get; }
 
         [Option(Alias = "StnNo")]
         StnNoConfig StnNo { get; }
@@ -59,22 +53,6 @@ namespace Mirle.Def.U0NXMA30
         int CommandTimeOut { get; }
     }
 
-    public interface SystemConfig
-    {
-        [Option(DefaultValue = 5)]
-        int L2L_MaxCount { get; }
-    }
-
-    public interface OEEParameterConfig
-    {
-        [Option(DefaultValue = 24)]
-        int PlanTime { get; }
-
-        string PlaneCount { get; }
-
-        string CountBy { get; }
-    }
-
     public interface APIConfig
     {
         string IP { get; }
@@ -82,17 +60,10 @@ namespace Mirle.Def.U0NXMA30
 
     public interface DeviceConfig
     {
-        string StockerID { get; }
+        string CraneID { get; }
         string Speed { get; }
     }
 
-    public interface ForkSetupConfig
-    {
-        string S1 { get; }
-        string S2 { get; }
-        string S3 { get; }
-        string S4 { get; }
-    }
 
     public interface CV_PlcConfig
     {
@@ -122,27 +93,15 @@ namespace Mirle.Def.U0NXMA30
         int SignalGroup { get; }
     }
 
-    public interface StkPortConfig
-    {
-        [Option(DefaultValue = 1)]
-        int Left1 { get; }
-
-        [Option(DefaultValue = 2)]
-        int Left2 { get; }
-
-        [Option(DefaultValue = 3)]
-        int Right1 { get; }
-
-        [Option(DefaultValue = 4)]
-        int Right2 { get; }
-    }
+    
 
     public interface StnNoConfig
     {
-        string A1_41 { get; }
-        string A1_42 { get; }
-        string A1_43 { get; }
-        string A1_44 { get; }
+        string A3 { get; }
+        string A6 { get; }
+        string A8 { get; }
+        string A10 { get; }
+        string A4 { get; }
         string WaterLevel { get; }
     }
 }
