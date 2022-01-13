@@ -96,7 +96,7 @@ namespace Mirle.ASRS.WCS.View
             */
         }
 
-
+        #endregion Event
 
 
 
@@ -172,7 +172,7 @@ namespace Mirle.ASRS.WCS.View
 
         
 
-        #endregion Event
+       
 
         #region Timer
         private void timRead_Elapsed(object source, System.Timers.ElapsedEventArgs e)
