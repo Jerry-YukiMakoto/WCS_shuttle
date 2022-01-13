@@ -17,6 +17,7 @@ namespace Mirle.DB.WMS.Proc
             options.SetCommandTimeOut(_config.CommandTimeOut);
             options.SetConnectTimeOut(_config.ConnectTimeOut);
             options.SetDBServer(_config.DbServer, _config.DbPort, _config.FODBServer);
+            options.EnableWriteLog();
             var db = new SqlServer(options);
             return db;
         }

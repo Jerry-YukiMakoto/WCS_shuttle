@@ -27,7 +27,7 @@ namespace Mirle.ASRS.WCS.Controller
         private readonly Timer _otherProcess = new Timer();
         private bool IsConnected => ControllerReader.GetCVControllerr().GetConnect();
 
-        public WCSManager(clsDbConfig dbConfig)
+        public WCSManager()
         {
             _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             _loggerManager = ControllerReader.GetLoggerManager();
@@ -64,10 +64,9 @@ namespace Mirle.ASRS.WCS.Controller
         
         private void StoreOutProcess(object sender, ElapsedEventArgs e)
         {
+            _storeOutProcess.Stop();
             try
             {
-                _storeOutProcess.Stop();
-
                 if (IsConnected)
                 {
                     clsStoreOut.StoreOut_A1_WriteCV();
@@ -80,8 +79,6 @@ namespace Mirle.ASRS.WCS.Controller
 
                     clsStoreOut.StoreOut_EquCmdFinish();
                 }
-
-                _storeOutProcess.Start();
             }
             catch (Exception ex)
             {
@@ -89,14 +86,17 @@ namespace Mirle.ASRS.WCS.Controller
                 var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
                 _loggerManager.WriteLogTrace(log);
             }
+            finally
+            {
+                _storeOutProcess.Start();
+            }
         }
 
         private void StoreInProcess(object sender, ElapsedEventArgs e)
         {
+            _storeInProcess.Stop();
             try
             {
-                _storeInProcess.Stop();
-
                 if (IsConnected)
                 {
                     SwitchInMode.Switch_InMode(_conveyor, _loggerManager);//自動切入庫模式
@@ -114,8 +114,6 @@ namespace Mirle.ASRS.WCS.Controller
 
                     clsStoreIn.StoreIn_EquCmdFinish();//OK
                 }
-
-                _storeInProcess.Start();
             }
             catch (Exception ex)
             {
@@ -123,14 +121,17 @@ namespace Mirle.ASRS.WCS.Controller
                 var log = new StoreInLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
                 _loggerManager.WriteLogTrace(log);
             }
+            finally
+            {
+                _storeInProcess.Start();
+            }
         }
 
         private void OtherProcess(object sender, ElapsedEventArgs e)
         {
+            _otherProcess.Stop();
             try
             {
-                _otherProcess.Stop();
-
                 if (IsConnected)
                 {
                     clsOther.clsEmptyPallets.EmptyStoreIn_A1_WriteCV();
@@ -147,14 +148,16 @@ namespace Mirle.ASRS.WCS.Controller
 
                     clsOther.clsL2L.Other_LocToLoc();
                 }
-
-                _otherProcess.Start();
             }
             catch (Exception ex)
             {
                 System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
                 _loggerManager.WriteLogTrace(log);
+            }
+            finally
+            {
+                _otherProcess.Start();
             }
         }
 

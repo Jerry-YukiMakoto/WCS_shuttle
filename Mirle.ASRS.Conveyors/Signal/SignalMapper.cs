@@ -73,8 +73,8 @@ namespace Mirle.ASRS.Conveyors.Signal
                 define.Serialize(fileName);
             }
 
-            int plcIndex = 101;
-            int pcIndex = 3101;
+            int plcIndex = 111;
+            int pcIndex = 3111;
 
             if (define.Exists(r => r.SignalGroup == _signalGroup))
             {
