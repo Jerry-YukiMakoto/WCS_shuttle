@@ -27,10 +27,9 @@ namespace WCS_API_Client.Functions
                 clsWriLog.Log.FunWriTraceLog_CV($"URL: {sLink}");
                 string re = clsTool.HttpPost(sLink, strJson);
                 clsWriLog.Log.FunWriTraceLog_CV(re);
-                var info_wms = (ReturnMsgInfo)Newtonsoft.Json.Linq.JObject.Parse(re).ToObject(typeof(ReturnMsgInfo));
 
-                if (info_wms.success) return true;
-                else return false;
+                return true;
+                
             }
             catch (Exception ex)
             {
