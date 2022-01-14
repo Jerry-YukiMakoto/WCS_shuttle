@@ -15,6 +15,7 @@ namespace Mirle.DB.Fun
                 CmdSno = Convert.ToString(dtTmp.Rows[0]["CmdSno"]),
                 CmdMode = Convert.ToString(dtTmp.Rows[0]["CmdMode"]),
                 CmdSts = Convert.ToString(dtTmp.Rows[0]["CmdSts"]),
+                taskNo = Convert.ToString(dtTmp.Rows[0]["taskNo"]),
                 EquNo = Convert.ToString(dtTmp.Rows[0]["EquNO"]),
                 IoType = Convert.ToString(dtTmp.Rows[0]["Iotype"]),
                 Loc = Convert.ToString(dtTmp.Rows[0]["Loc"]),
