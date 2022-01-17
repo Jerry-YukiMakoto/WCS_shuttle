@@ -35,12 +35,7 @@ namespace WCS_API_Server
                 CmdMstInfo cmd = new CmdMstInfo();
                 string strEM = "";
 
-                cmd.CmdSno = clsDB_Proc.GetDB_Object().GetSNO().FunGetSeqNo(clsEnum.enuSnoType.CMDSNO);
-                if (string.IsNullOrWhiteSpace(cmd.CmdSno))
-                {
-                    throw new Exception($"<{Body.taskNo}>取得序號失敗！");
-                }
-
+                cmd.CmdSno = Body.taskNo;
                 cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
                 cmd.IoType = Body.bussinessType;
                 cmd.taskNo = Body.taskNo;

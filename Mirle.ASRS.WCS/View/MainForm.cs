@@ -237,8 +237,6 @@ namespace Mirle.ASRS.WCS.View
             clearCmd = new DB.ClearCmd.Proc.clsHost();
 
             #region Mark
-            //clsWmsApi.FunInit(clInitSys.WmsApi_Config);
-
             //bool bFlag;
             //do
             //{

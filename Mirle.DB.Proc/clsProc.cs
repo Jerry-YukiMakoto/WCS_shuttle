@@ -70,7 +70,7 @@ namespace Mirle.DB.Proc
                             int iRet_Task = EQU_CMD.CheckHasEquCmd(cmd.CmdSno, db);
                             if (iRet_Task == DBResult.Exception)
                             {
-                                strEM = "取得Task命令失敗！";
+                                strEM = "取得設備命令失敗！";
                                 return false;
                             }
 

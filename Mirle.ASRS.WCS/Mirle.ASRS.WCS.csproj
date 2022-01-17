@@ -127,12 +127,6 @@
     <Compile Include="Library\clsTool.cs" />
     <Compile Include="Library\clsWriLog.cs" />
     <Compile Include="Service\SwitchInMode.cs" />
-    <Compile Include="View\BufferView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="View\BufferView.Designer.cs">
-      <DependentUpon>BufferView.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
