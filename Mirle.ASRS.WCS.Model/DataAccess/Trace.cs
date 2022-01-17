@@ -7,8 +7,8 @@
         public const string StoreOutCraneCmdFinish = "13";
 
         public const string StoreInWriteCmdToCV = "21";
-        public const string StoreInCreateCraneCmd = "23";
-        public const string StoreInCraneCmdFinish = "24";
+        public const string StoreInCreateCraneCmd = "22";
+        public const string StoreInCraneCmdFinish = "23";
 
         public const string EmptyStoreOutWriteCraneCmdToCV = "31";
         public const string EmptyStoreOutCreateCraneCmd = "32";

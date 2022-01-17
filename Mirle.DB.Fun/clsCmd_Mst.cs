@@ -236,19 +236,7 @@ namespace Mirle.DB.Fun
             string sql = "UPDATE CMDMST ";
             sql += $"SET CmdSts='{clsConstValue.CmdSts.strCmd_Running}', ";
             sql += $"TRACE='{trace}', ";
-            sql += $"EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
-            sql += $"WHERE CmdSno='{cmdSno}' ";
-            sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
-            return db.ExecuteSQL2(sql);
-        }
-
-        public ExecuteSQLResult UpdateCmdMstTransferring(string cmdSno, string trace, int trayWeight, SqlServer db)
-        {
-            string sql = "UPDATE CMDMST ";
-            sql += $"SET CmdSts='{clsConstValue.CmdSts.strCmd_Running}', ";
-            sql += $"TRACE='{trace}', ";
-            sql += $"TRAYWEIGHT='{trayWeight}', ";
-            sql += $"EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
+            sql += $"ExpDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
             sql += $"WHERE CmdSno='{cmdSno}' ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
             return db.ExecuteSQL2(sql);
@@ -257,15 +245,25 @@ namespace Mirle.DB.Fun
         public ExecuteSQLResult UpdateCmdMstRemark(string cmdSno, string REMARK, SqlServer db)
         {
             string sql = "UPDATE CMDMST ";
-            sql += $"SET EXPTIME='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
+            sql += $"SET ExpDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
             sql += $"REMARK='{REMARK}' ";
+            sql += $"WHERE CmdSno='{cmdSno}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstRemarkandAbnormal(string cmdSno, string REMARK,string abnormal, SqlServer db)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET ExpDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
+            sql += $"REMARK='{REMARK}' ";
+            sql += $"Cmd_Abnormal='{abnormal}' ";
             sql += $"WHERE CmdSno='{cmdSno}' ";
             return db.ExecuteSQL2(sql);
         }
 
         #endregion Update
 
-       
+
 
         public bool FunGetCommand_byTaskNo(string taskNo, ref CmdMstInfo cmd, SqlServer db)
         {

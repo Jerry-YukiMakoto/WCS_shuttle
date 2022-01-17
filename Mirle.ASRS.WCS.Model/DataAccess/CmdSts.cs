@@ -5,5 +5,6 @@
         Queue = 0,
         Transferring = 1,
         CompleteWaitUpdate = 7,
+        CmdCancel = 8
     }
 }
