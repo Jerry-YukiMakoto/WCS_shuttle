@@ -147,6 +147,8 @@ namespace Mirle.ASRS.WCS.Controller
                     //clsOther.clsEmptyPallets.EmptyStoreOut_EquCmdFinish();
 
                     clsOther.clsL2L.Other_LocToLoc();
+
+                    clsOther.clsL2L.Other_LocToLocfinish();
                 }
             }
             catch (Exception ex)

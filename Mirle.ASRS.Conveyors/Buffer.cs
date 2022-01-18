@@ -33,7 +33,6 @@ namespace Mirle.ASRS.Conveyors
 
         public int CommandId => Signal.CommandId.GetValue();
         public int PathNotice => Signal.PathChangeNotice.GetValue();
-        public int LoadCategory => Signal.LoadCategory.GetValue();
         public int CmdMode => Signal.CmdMode.GetValue();
         public int Ready => Signal.Ready.GetValue();
         public int ReadNotice => Signal.ReadNotice.GetValue();
@@ -46,7 +45,6 @@ namespace Mirle.ASRS.Conveyors
         public bool Presence => Signal.StatusSignal.Presence.IsOn();
         public bool Position => Signal.StatusSignal.Position.IsOn();
         public int PickingDirection => Signal.PickingDirection.GetValue();
-        public int TrayType => Signal.TrayType.GetValue();
         public int Switch_Ack => Signal.Switch_Ack.GetValue();
         public int EmptyINReady => Signal.EmptyInReady.GetValue();
         public int A2LV2 => Signal.A2LV2.GetValue();
