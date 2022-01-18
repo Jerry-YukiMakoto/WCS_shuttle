@@ -302,11 +302,11 @@ namespace Mirle.DB.Fun
             string sSQL = "";
             try
             {
-                sSQL = "INSERT INTO CMD_MST (CmdSno, CmdSts, PRT, Cmd_Abnormal, StnNo, CmdMode, Iotype, Loc, NewLoc,";
+                sSQL = "INSERT INTO CMD_MST (CmdSno, CmdSts, PRT, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, Loc, NewLoc,";
                 sSQL += "CrtDate, ExpDate, EndDate, UserID, EquNO) values(";
                 sSQL += "'" + stuCmdMst.CmdSno + "', ";
                 sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', ";
-                sSQL += "'" + stuCmdMst.Prt + "', 'NA', ";
+                sSQL += "'" + stuCmdMst.Prt + "', 'NA', '', ";
                 sSQL += "'" + stuCmdMst.StnNo + "', ";
                 sSQL += "'" + stuCmdMst.CmdMode + "', ";
                 sSQL += "'" + stuCmdMst.IoType + "', ";

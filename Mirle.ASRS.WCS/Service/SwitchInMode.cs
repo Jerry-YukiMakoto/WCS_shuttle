@@ -15,7 +15,7 @@ namespace Mirle.ASRS.WCS.Service
     public class SwitchInMode 
     {
 
-        public static void Switch_InMode(Conveyor _conveyor,LoggerManager _loggerManager)//自動切換入庫模式
+        public static void Switch_InMode(Conveyors.Conveyor _conveyor,LoggerManager _loggerManager)//自動切換入庫模式
         {
             #region//確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
             if (_conveyor.GetBuffer(1).Ready != Ready.StoreInReady)

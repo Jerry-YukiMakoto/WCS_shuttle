@@ -28,17 +28,23 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
 
         }
 
+        /// <summary>
+        /// 游標提示
+        /// </summary>
         private void funInitToolTip()
         {
-            string strBufferName = "輸送機編號";
+            string strBufferIndex = "位置編號";
+            string strBufferName = "輸送機編號\n背景色: 綠色 -> 正常\n紅色 -> 異常";
             string strCommandId = "序號";
-            string strCmdMode = "模式:\n1 -> 入庫\n2 -> 出庫\n3 -> 盤點\n5 -> 庫對庫";
-            string strAuto = "自動模式:\n1 -> 自動ON\n2 -> 手動";
-            string strReady = "Ready訊號:\n1 -> 入庫Ready\n2 -> 出庫Ready";
-            string strPathNotice = "路徑編號:\n由WCS告知CV貨物該往哪走";
-            string strError = "異常碼";
-            string strInitialNotice = "初始通知:\n1 -> CV通知WCS輸送機初始已完成";
+            string strCmdMode = "模式:\n1 -> 入庫\n2 -> 出庫\n3 -> 盤點";
+            string strAuto = "自動模式:\n綠燈 -> 自動ON\n黃燈 -> 手動";
+            string strReady = "Ready訊號:\n0 -> No Ready\n1 -> 入庫Ready\n2 -> 出庫Ready"; //A1,4,5,7,9
+            string strPathNotice = "路徑編號:\n由WCS告知CV貨物該往哪走"; //A1~A4
             string strPresence = "荷有:\nV -> 此位置有物";
+            string strSwitch_Ack = "站口模式切換:\n0 -> 不允許ON\n1 -> 允許"; //A1,5,7,9
+            string strInitialNotice = "初始通知:\n1 -> CV通知WCS輸送機初始已完成";
+            string strError = "異常碼";
+
 
             ToolTip objToolTip = new ToolTip();
             objToolTip.AutoPopDelay = 5000;
@@ -48,31 +54,30 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             objToolTip.UseFading = false;
             objToolTip.ShowAlways = true;
 
+            objToolTip.SetToolTip(lblBufferIndex, strBufferIndex);
             objToolTip.SetToolTip(lblBufferName, strBufferName);
             objToolTip.SetToolTip(lblCommandId, strCommandId);
             objToolTip.SetToolTip(lblCmdMode, strCmdMode);
             objToolTip.SetToolTip(lblAuto, strAuto);
             objToolTip.SetToolTip(lblReady, strReady);
             objToolTip.SetToolTip(lblPathNotice, strPathNotice);
-            objToolTip.SetToolTip(lblError, strError);
             objToolTip.SetToolTip(lblPresence, strPresence);
+            objToolTip.SetToolTip(lblSwitch_Ack, strSwitch_Ack);
             objToolTip.SetToolTip(lblInitialNotice, strInitialNotice);
            
         }
 
         public void Refresh_Buffer(Buffer buffer)
         {
-            Refresh(lblBufferName, buffer.BufferName, buffer.Auto, buffer.Manual, buffer.Error);
+            Refresh(lblBufferName, buffer.BufferName, buffer.Error);
             Refresh(lblCommandId, buffer.CommandId.ToString("D4"));
-            Refresh(lblInitialNotice, buffer.InitialNotice.ToString());
+            Refresh(lblCmdMode, buffer.CmdMode.ToString());
+            Refresh(lblAuto, buffer.Auto.ToColor(Color.LightGreen, Color.Yellow));
             Refresh(lblReady, buffer.Ready.ToString());
-            Refresh(lblAuto, buffer.Auto.ToString());
-            Refresh(lbl2ndLayer, buffer.PickingDirection.ToString());
-            Refresh(lblPresence, buffer.Presence.ToColor());
-            Refresh(lblError, buffer.Error.ToColor());
-            Refresh(lblSwitch_Ack, buffer.ReadNotice.ToString());
-            Refresh(lblCmdMode, buffer.Ready.ToString());
             Refresh(lblPathNotice, buffer.PathNotice.ToString());
+            Refresh(lblPresence, buffer.Presence.ToColor());
+            Refresh(lblSwitch_Ack, buffer.Switch_Ack.ToString()); 
+            Refresh(lblInitialNotice, buffer.InitialNotice.ToString());
         }
 
         private void Refresh(Label label, string value)
@@ -100,32 +105,20 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
                 label.BackColor = color;
             }
         }
-        private void Refresh(Label label, string bufferName, bool auto, bool manual, bool error)
+
+        private void Refresh(Label label, string bufferName, bool error)
         {
             if (InvokeRequired)
             {
-                var action = new Action<Label, string, bool, bool, bool>(Refresh);
-                Invoke(action, label, auto, manual, error);
+                var action = new Action<Label, string, bool>(Refresh);
+                Invoke(action, label, error);
             }
             else
             {
                 label.Text = bufferName;
-                if (error)
-                {
-                    label.BackColor = Color.Red;
-                }
-                else if (manual)
-                {
-                    label.BackColor = Color.Yellow;
-                }
-                else if (auto)
-                {
-                    label.BackColor = Color.Lime;
-                }
-                else
-                {
-                    label.BackColor = Color.Red;
-                }
+
+                label.BackColor = error ? Color.Red : Color.LimeGreen;
+                
             }
         }
     }

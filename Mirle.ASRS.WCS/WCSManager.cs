@@ -4,6 +4,7 @@ using System.Timers;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using Mirle.ASRS.WCS.Model.LogTrace;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
+using Mirle.ASRS.WCS.Controller;
 using Mirle.ASRS.Conveyors;
 using Mirle.DataBase;
 using Mirle.DB.Object.Service;
@@ -11,11 +12,11 @@ using Mirle.Def;
 using Mirle.ASRS.WCS.Service;
 using Mirle.DB.Proc;
 
-namespace Mirle.ASRS.WCS.Controller
+namespace Mirle.ASRS.WCS
 {
     public class WCSManager
     {
-        private readonly Conveyor _conveyor;
+        private readonly Conveyors.Conveyor _conveyor;
         private readonly LoggerManager _loggerManager;
         private readonly EmptyReport emptyReport = new EmptyReport();
 

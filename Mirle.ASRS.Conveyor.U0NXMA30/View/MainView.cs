@@ -20,7 +20,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
         private readonly Conveyor _conveyor;
         private IMPLCProvider _mplc;
         private LoggerService _loggerService;
-        private BufferView _bufferView;
+        
 
         public MainView()
         {
@@ -31,14 +31,10 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
 
         private void MainView_Load(object sender, EventArgs e)
         {
+            timerMainProc.Enabled = true;
             //Start Timer
             timerMainProc.Interval = 300;
             timerMainProc.Enabled = true;
-        }
-
-        public BufferView GetBufferView()
-        {
-            return _bufferView;
         }
 
         private void timerMainProc_Tick(object sender, EventArgs e)
@@ -47,16 +43,19 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             try
             {
                 //Check PLC
-                if (_mplc.IsConnected)
-                {
-                    lblPLCConnSts.BackColor = Color.Lime;
-                }
-                else
-                {
-                    lblPLCConnSts.BackColor = Color.Red;
-                }
+                lblPLCConnSts.BackColor =  _mplc.IsConnected  ? Color.Lime : Color.Red;
+               
 
-
+                for(int index = 0; index < splitContainer1.Panel1.Controls.Count; index++) 
+                {
+                    if(splitContainer1.Panel1.Controls[index] is BufferView bufferView)
+                    {
+                        if(_conveyor.TryGetBuffer(bufferView.BufferIndex, out var buffer))
+                        {
+                            bufferView.Refresh_Buffer(buffer);
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {

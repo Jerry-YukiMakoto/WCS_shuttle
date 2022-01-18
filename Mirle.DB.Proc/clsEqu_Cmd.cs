@@ -52,75 +52,74 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public void FunCheckEquCmdFinish()
-        {
-            DataTable dtTmp = new DataTable();
-            var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        iRet = EQU_CMD.GetFinishCommand(ref dtTmp, db);
-                        if (iRet == DBResult.Success)
-                        {
-                            for (int i = 0; i < dtTmp.Rows.Count; i++)
-                            {
-                                string sDeviceID = Convert.ToString(dtTmp.Rows[i]["DeviceID"]);
-                                string sCmdSno = Convert.ToString(dtTmp.Rows[i]["CMDSNO"]);
-                                string strCompleteCode = Convert.ToString(dtTmp.Rows[i]["CompleteCode"]);
-                                string sTaskMode = Convert.ToString(dtTmp.Rows[i]["TransferMode"]);
-                                string sFinishLoc = Convert.ToString(dtTmp.Rows[i]["FinishLocation"]);
-                                int iMode = int.Parse(sTaskMode);
-                                string sSource = Convert.ToString(dtTmp.Rows[i]["Source"]);
-                                int.TryParse(sSource, out int iSource);
-                                string sDestination = Convert.ToString(dtTmp.Rows[i]["Destination"]);
-                                int.TryParse(sDestination, out int iDest);
+        //public void FunCheckEquCmdFinish()
+        //{
+        //    DataTable dtTmp = new DataTable();
+        //    var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //    try
+        //    {
+        //        using (var db = clsGetDB.GetDB(_config))
+        //        {
+        //            int iRet = clsGetDB.FunDbOpen(db);
+        //            if (iRet == DBResult.Success)
+        //            {
+        //                iRet = EQU_CMD.GetFinishCommand(ref dtTmp, db);
+        //                if (iRet == DBResult.Success)
+        //                {
+        //                    for (int i = 0; i < dtTmp.Rows.Count; i++)
+        //                    {
+        //                        string sDeviceID = Convert.ToString(dtTmp.Rows[i]["DeviceID"]);
+        //                        string sCmdSno = Convert.ToString(dtTmp.Rows[i]["CMDSNO"]);
+        //                        string strCompleteCode = Convert.ToString(dtTmp.Rows[i]["CompleteCode"]);
+        //                        string sTaskMode = Convert.ToString(dtTmp.Rows[i]["TransferMode"]);
+        //                        string sFinishLoc = Convert.ToString(dtTmp.Rows[i]["FinishLocation"]);
+        //                        int iMode = int.Parse(sTaskMode);
+        //                        string sSource = Convert.ToString(dtTmp.Rows[i]["Source"]);
+        //                        int.TryParse(sSource, out int iSource);
+        //                        string sDestination = Convert.ToString(dtTmp.Rows[i]["Destination"]);
+        //                        int.TryParse(sDestination, out int iDest);
 
-                                if (iMode == (int)clsEnum.TaskMode.Move)
-                                {
-                                    EQU_CMD.FunInsertHisEquCmd(sCmdSno, db);
-                                    EQU_CMD.DeleteEquCmd(sCmdSno, db);
-                                    continue;
-                                }
+        //                        if (iMode == (int)clsEnum.TaskMode.Move)
+        //                        {
+        //                            EQU_CMD.FunInsertHisEquCmd(sCmdSno, db);
+        //                            continue;
+        //                        }
 
-                                //clsEnum.LocType locType_Dest;
-                                //clsEnum.LocType locType_Source;
-                                //if (iSource > 100) locType_Source = clsEnum.LocType.Shelf;
-                                //else locType_Source = clsEnum.LocType.Port;
+        //                        //clsEnum.LocType locType_Dest;
+        //                        //clsEnum.LocType locType_Source;
+        //                        //if (iSource > 100) locType_Source = clsEnum.LocType.Shelf;
+        //                        //else locType_Source = clsEnum.LocType.Port;
 
-                                //if (iDest > 100) locType_Dest = clsEnum.LocType.Shelf;
-                                //else locType_Dest = clsEnum.LocType.Port;
+        //                        //if (iDest > 100) locType_Dest = clsEnum.LocType.Shelf;
+        //                        //else locType_Dest = clsEnum.LocType.Port;
 
-                                CmdMstInfo cmd = new CmdMstInfo();
-                                if (CMD_MST.FunGetCommand(sCmdSno, ref cmd, ref iRet, db) == false)
-                                {
-                                    if (iRet == DBResult.NoDataSelect)
-                                    {
-                                        if (EQU_CMD.FunInsertHisEquCmd(sCmdSno, db))
-                                        {
-                                            EQU_CMD.DeleteEquCmd(sCmdSno, db);
-                                        }
-                                    }
+        //                        CmdMstInfo cmd = new CmdMstInfo();
+        //                        if (CMD_MST.FunGetCommand(sCmdSno, ref cmd, ref iRet, db) == false)
+        //                        {
+        //                            if (iRet == DBResult.NoDataSelect)
+        //                            {
+        //                                if (EQU_CMD.FunInsertHisEquCmd(sCmdSno, db))
+        //                                {
+        //                                    EQU_CMD.DeleteEquCmd(sCmdSno, db);
+        //                                }
+        //                            }
 
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-            }
-            finally
-            {
-                dtTmp = null;
-            }
-        }
+        //                            continue;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        dtTmp = null;
+        //    }
+        //}
 
         public int GetEquCmd(string cmdSno, out DataObject<EquCmd> dataObject)
         {

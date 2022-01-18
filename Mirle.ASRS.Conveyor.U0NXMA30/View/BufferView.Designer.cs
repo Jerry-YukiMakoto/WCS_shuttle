@@ -36,9 +36,9 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             this.lblAuto = new System.Windows.Forms.Label();
             this.lblReady = new System.Windows.Forms.Label();
             this.lblPathNotice = new System.Windows.Forms.Label();
-            this.lbl2ndLayer = new System.Windows.Forms.Label();
-            this.lblError = new System.Windows.Forms.Label();
             this.lblPresence = new System.Windows.Forms.Label();
+            this.lblOther1 = new System.Windows.Forms.Label();
+            this.lblOther2 = new System.Windows.Forms.Label();
             this.lblSwitch_Ack = new System.Windows.Forms.Label();
             this.lblInitialNotice = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -65,7 +65,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             // lblBufferName
             // 
             this.lblBufferName.AutoSize = true;
-            this.lblBufferName.BackColor = System.Drawing.Color.Lime;
+            this.lblBufferName.BackColor = System.Drawing.Color.LimeGreen;
             this.lblBufferName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblBufferName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblBufferName.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -120,7 +120,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             this.lblAuto.Name = "lblAuto";
             this.lblAuto.Size = new System.Drawing.Size(26, 18);
             this.lblAuto.TabIndex = 4;
-            this.lblAuto.Text = "0";
+            this.lblAuto.Text = "A";
             this.lblAuto.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblReady
@@ -153,36 +153,6 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             this.lblPathNotice.Text = "0";
             this.lblPathNotice.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lbl2ndLayer
-            // 
-            this.lbl2ndLayer.AutoSize = true;
-            this.lbl2ndLayer.BackColor = System.Drawing.Color.White;
-            this.lbl2ndLayer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lbl2ndLayer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbl2ndLayer.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.lbl2ndLayer.Location = new System.Drawing.Point(78, 18);
-            this.lbl2ndLayer.Margin = new System.Windows.Forms.Padding(0);
-            this.lbl2ndLayer.Name = "lbl2ndLayer";
-            this.lbl2ndLayer.Size = new System.Drawing.Size(29, 18);
-            this.lbl2ndLayer.TabIndex = 11;
-            this.lbl2ndLayer.Text = "0";
-            this.lbl2ndLayer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblError
-            // 
-            this.lblError.AutoSize = true;
-            this.lblError.BackColor = System.Drawing.Color.White;
-            this.lblError.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblError.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblError.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.lblError.Location = new System.Drawing.Point(0, 36);
-            this.lblError.Margin = new System.Windows.Forms.Padding(0);
-            this.lblError.Name = "lblError";
-            this.lblError.Size = new System.Drawing.Size(26, 20);
-            this.lblError.TabIndex = 16;
-            this.lblError.Text = "0";
-            this.lblError.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // lblPresence
             // 
             this.lblPresence.AutoSize = true;
@@ -190,13 +160,41 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             this.lblPresence.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblPresence.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblPresence.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.lblPresence.Location = new System.Drawing.Point(26, 36);
+            this.lblPresence.Location = new System.Drawing.Point(78, 18);
             this.lblPresence.Margin = new System.Windows.Forms.Padding(0);
             this.lblPresence.Name = "lblPresence";
-            this.lblPresence.Size = new System.Drawing.Size(26, 20);
-            this.lblPresence.TabIndex = 15;
-            this.lblPresence.Text = "0";
+            this.lblPresence.Size = new System.Drawing.Size(29, 18);
+            this.lblPresence.TabIndex = 11;
+            this.lblPresence.Text = "V";
             this.lblPresence.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblOther1
+            // 
+            this.lblOther1.AutoSize = true;
+            this.lblOther1.BackColor = System.Drawing.Color.White;
+            this.lblOther1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblOther1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblOther1.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.lblOther1.Location = new System.Drawing.Point(0, 36);
+            this.lblOther1.Margin = new System.Windows.Forms.Padding(0);
+            this.lblOther1.Name = "lblOther1";
+            this.lblOther1.Size = new System.Drawing.Size(26, 20);
+            this.lblOther1.TabIndex = 16;
+            this.lblOther1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblOther2
+            // 
+            this.lblOther2.AutoSize = true;
+            this.lblOther2.BackColor = System.Drawing.Color.White;
+            this.lblOther2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblOther2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblOther2.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.lblOther2.Location = new System.Drawing.Point(26, 36);
+            this.lblOther2.Margin = new System.Windows.Forms.Padding(0);
+            this.lblOther2.Name = "lblOther2";
+            this.lblOther2.Size = new System.Drawing.Size(26, 20);
+            this.lblOther2.TabIndex = 15;
+            this.lblOther2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblSwitch_Ack
             // 
@@ -239,12 +237,12 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             this.tableLayoutPanel1.Controls.Add(this.lblReady, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblPathNotice, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblInitialNotice, 3, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lbl2ndLayer, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblPresence, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblAuto, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblSwitch_Ack, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lblError, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblOther1, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.lblCmdMode, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblPresence, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblOther2, 1, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 25);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
@@ -287,7 +285,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             this.MaximumSize = new System.Drawing.Size(107, 81);
             this.MinimumSize = new System.Drawing.Size(107, 81);
             this.Name = "BufferView";
-            this.Size = new System.Drawing.Size(85, 64);
+            this.Size = new System.Drawing.Size(107, 81);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -305,9 +303,9 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
         private System.Windows.Forms.Label lblAuto;
         private System.Windows.Forms.Label lblReady;
         private System.Windows.Forms.Label lblPathNotice;
-        private System.Windows.Forms.Label lbl2ndLayer;
-        private System.Windows.Forms.Label lblError;
         private System.Windows.Forms.Label lblPresence;
+        private System.Windows.Forms.Label lblOther1;
+        private System.Windows.Forms.Label lblOther2;
         private System.Windows.Forms.Label lblSwitch_Ack;
         private System.Windows.Forms.Label lblInitialNotice;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

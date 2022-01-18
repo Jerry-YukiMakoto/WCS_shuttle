@@ -14,6 +14,7 @@ using System.Threading;
 using Mirle.ASRS.WCS.Library;
 using Mirle.ASRS.WCS.Controller;
 using Mirle.CENS.U0NXMA30;
+using Mirle.ASRS.Conveyors.U0NXMA30.View;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -26,14 +27,11 @@ namespace Mirle.ASRS.WCS.View
         private WebApiHost _webApiHost;
         private UnityContainer _unityContainer;
         private static WCSManager _wcsManager;
-        private static System.Timers.Timer timRead = new System.Timers.Timer();
+        private static Form mainView;
 
         public MainForm()
         {
             InitializeComponent();
-
-            timRead.Elapsed += new System.Timers.ElapsedEventHandler(timRead_Elapsed);
-            timRead.Enabled = false; timRead.Interval = 100;
         }
 
         #region Event
@@ -47,8 +45,7 @@ namespace Mirle.ASRS.WCS.View
             GridInit();
 
             Library.clsWriLog.Log.FunWriTraceLog_CV("WCS程式已開啟");
-            timRead.Enabled = true;
-            timer1.Enabled = true;
+            timer1.Start();
         }
 
         private void FunEventInit()
@@ -89,12 +86,6 @@ namespace Mirle.ASRS.WCS.View
                 Library.clsWriLog.Log.FunWriTraceLog_CV("WCS OnLine.");
             else
                 Library.clsWriLog.Log.FunWriTraceLog_CV("WCS OffLine.");
-            /*
-            for (int i = 1; i <= 4; i++)
-            {
-                clsMicronCV.GetConveyorController().GetMainView_Object().GetMonitor().FunSetOnline(i, chkOnline.Checked);
-            }
-            */
         }
 
         #endregion Event
@@ -176,27 +167,6 @@ namespace Mirle.ASRS.WCS.View
        
 
         #region Timer
-        private void timRead_Elapsed(object source, System.Timers.ElapsedEventArgs e)
-        {
-            timRead.Enabled = false;
-            try
-            {
-                 if (DB.Proc.clsHost.IsConn)
-                {
-                    clsDB_Proc.GetDB_Object().GetEqu_Cmd().FunCheckEquCmdFinish();
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-            }
-            finally
-            {
-                timRead.Enabled = true;
-            }
-        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -236,28 +206,15 @@ namespace Mirle.ASRS.WCS.View
             _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
             clearCmd = new DB.ClearCmd.Proc.clsHost();
 
-            #region Mark
-            //bool bFlag;
-            //do
-            //{
-            //    bFlag = clsDB_Proc.GetDB_Object().GetProcess().GetDevicePortProc();
-            //    Task.Delay(500).Wait();
-            //} while (!bFlag);
-
-            //CheckPathIsWork.subStart();
-
-            //reUpdateTaskCompleteCmd_Proc.subStart();
-
-            //ChangeSubForm(clsMicronCV.GetConveyorController().GetMainView());
-            //FunInitStockerStsForm();
-            #endregion Mark
+            mainView = new MainView();
+            ChangeSubForm(mainView);
         }
 
         #region Grid顯示
         private void GridInit()
         {
-            Grid.clInitSys.GridSysInit(ref Grid1);
-            ColumnDef.CMD_MST.GridSetLocRange(ref Grid1);
+            Grid.clInitSys.GridSysInit(ref GridCmd);
+            ColumnDef.CMD_MST.GridSetLocRange(ref GridCmd);
         }
 
         delegate void degShowCmdtoGrid(ref DataGridView oGrid);
@@ -289,6 +246,7 @@ namespace Mirle.ASRS.WCS.View
                             oGrid[ColumnDef.CMD_MST.CmdSts.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CMDSTS"]);
                             oGrid[ColumnDef.CMD_MST.PRT.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["PRT"]);
                             oGrid[ColumnDef.CMD_MST.CmdMode.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CmdMode"]);
+                            oGrid[ColumnDef.CMD_MST.Trace.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["Trace"]);
                             oGrid[ColumnDef.CMD_MST.StnNo.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["StnNo"]);
                             oGrid[ColumnDef.CMD_MST.Loc.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["Loc"]);
                             oGrid[ColumnDef.CMD_MST.NewLoc.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["NewLoc"]);
@@ -372,21 +330,5 @@ namespace Mirle.ASRS.WCS.View
                 Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
         }
-
-        //private void FunInitStockerStsForm()
-        //{
-        //    for (int i = 1; i < 5; i++)
-        //    {
-        //        var subForm = clsMicronStocker.GetSTKCHostById(i).GetStockerStsView();
-        //        subForm.TopLevel = false;
-        //        subForm.Dock = DockStyle.Fill;//適應窗體大小
-        //        subForm.FormBorderStyle = FormBorderStyle.None;//隱藏右上角的按鈕
-        //        subForm.Parent = tlpMainSts;
-        //        tlpMainSts.Controls.Add(subForm, i + 1, 0);
-        //        subForm.Show();
-        //    }
-        //}
-
-        
     }
 }
