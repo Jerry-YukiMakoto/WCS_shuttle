@@ -115,6 +115,20 @@ namespace Mirle.DB.Object.Service
                     clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
                 }
             }
+
+            public static void Other_LocToLocfinish()
+            {
+                try
+                {
+                    clsDB_Proc.GetDB_Object().GetProcess().FunLocToLocCmdFinish();
+                }
+                catch (Exception ex)
+                {
+                    int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                    var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                    clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                }
+            }
         }
 
     }

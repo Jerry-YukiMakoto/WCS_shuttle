@@ -1495,13 +1495,52 @@ namespace Mirle.DB.Proc
                                 {
                                     if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
                                     {
-                                        if (equCmd[0].CompleteCode == "92")
+                                        string cmdsts = "";
+                                        string cmdabnormal = "";
+                                        string remark = "";
+                                        bool bflag = false;
+
+                                        if (equCmd[0].CompleteCode == "92")//正常完成
+                                        {
+                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdabnormal = "NA";
+                                            remark = "存取車搬送命令完成";
+                                            bflag = true;
+                                        }
+                                        else if (equCmd[0].CompleteCode.StartsWith("W"))
+                                        {
+                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            {
+                                                return false;
+                                            }
+                                            bflag = false;
+                                        }
+                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
+                                        {
+                                            cmdsts = $"{CmdSts.CmdCancel}";
+                                            cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
+                                            remark = "存取車地上盤強制取消命令";
+                                            bflag = true;
+                                        }
+                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
+                                        {
+                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
+                                            remark = "存取車地上盤強制完成命令";
+                                            bflag = true;
+                                        }
+                                        if (bflag == true)
                                         {
                                             if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
                                             {
                                                 return false;
                                             }
-                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.EmptyStoreInCraneCmdFinish, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.EmptyStoreInCraneCmdFinish, db) != ExecuteSQLResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db) != ExecuteSQLResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
@@ -1512,13 +1551,6 @@ namespace Mirle.DB.Proc
                                                 return false;
                                             }
                                             if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode.StartsWith("W"))
-                                        {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
                                             {
                                                 return false;
                                             }
@@ -1919,6 +1951,107 @@ namespace Mirle.DB.Proc
             }
         }
 
+        public bool FunLocToLocCmdFinish()
+        {
+            try
+            {
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+                        if (CMD_MST.GetLoctoLocFinish(out var dataObject, db) == GetDataResult.Success)
+                        {
+                            foreach (var cmdMst in dataObject.Data)
+                            {
+                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db) == GetDataResult.Success)
+                                {
+                                    if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
+                                    {
+                                        string cmdsts = "";
+                                        string cmdabnormal = "";
+                                        string remark = "";
+                                        bool bflag = false;
+
+                                        if (equCmd[0].CompleteCode == "92")//正常完成
+                                        {
+                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdabnormal = "NA";
+                                            remark = "存取車搬送命令完成";
+                                            bflag = true;
+                                        }
+                                        else if (equCmd[0].CompleteCode.StartsWith("W"))
+                                        {
+                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            {
+                                                return false;
+                                            }
+                                            bflag = false;
+                                        }
+                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
+                                        {
+                                            cmdsts = $"{CmdSts.CmdCancel}";
+                                            cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
+                                            remark = "存取車地上盤強制取消命令";
+                                            bflag = true;
+                                        }
+                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
+                                        {
+                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
+                                            remark = "存取車地上盤強制完成命令";
+                                            bflag = true;
+                                        }
+                                        if (bflag == true)
+                                        {
+                                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                            {
+                                                return false;
+                                            }
+                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.LoctoLocReadyFinish, db) != ExecuteSQLResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db) != ExecuteSQLResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                            {
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            return true;
+                        }
+                        else return false;
+                    }
+                    else
+                    {
+                        string strEM = "Error: 開啟DB失敗！";
+                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return false;
+            }
+        }
         #endregion
 
         #region//根據判斷去決定一樓空棧板總數是否滿了，去擋下出庫命令

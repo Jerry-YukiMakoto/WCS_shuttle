@@ -263,7 +263,7 @@ namespace Mirle.DB.Fun
         {
             string sql = "INSERT INTO EQUCMD (";
             sql += "CMDSNO, ";
-            sql += "DeviceID, ";
+            sql += "EquNo, ";
             sql += "CMDMODE, ";
             sql += "CMDSTS, ";
             sql += "SOURCE, ";
@@ -334,7 +334,7 @@ namespace Mirle.DB.Fun
         public GetDataResult GetEquCmdByLocToLoc(int craneNo, out DataObject<EquCmd> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM EQUCMD ";
-            sql += $"WHERE DeviceID='{craneNo}' ";
+            sql += $"WHERE EquNo='{craneNo}' ";
             sql += $"AND CMDMODE ='{EquCmdMode.LocToLoc}' ";
             return db.GetData(sql, out dataObject);
         }
@@ -344,7 +344,7 @@ namespace Mirle.DB.Fun
             try
             {
                 string strDelDay = DateTime.Today.Date.AddDays(dblDay * (-1)).ToString("yyyy-MM-dd");
-                string strSql = "delete from HisEquCmd where HisDT <= '" + strDelDay + "' ";
+                string strSql = "delete from EquCmdHis where HisDT <= '" + strDelDay + "' ";
 
                 int iRet = db.ExecuteSQL(strSql);
                 if (iRet == DBResult.Success)
@@ -365,7 +365,7 @@ namespace Mirle.DB.Fun
         {
             try
             {
-                string SQL = "INSERT INTO HisEquCmd ";
+                string SQL = "INSERT INTO EquCmdHis ";
                 SQL += $" SELECT '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}', * FROM EQUCMD ";
                 SQL += $" WHERE CMDSNO='{sCmdSno}'";
 
