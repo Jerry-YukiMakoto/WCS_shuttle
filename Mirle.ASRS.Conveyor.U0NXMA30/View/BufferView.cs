@@ -41,7 +41,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             string strReady = "Ready訊號:\n0 -> No Ready\n1 -> 入庫Ready\n2 -> 出庫Ready"; //A1,4,5,7,9
             string strPathNotice = "路徑編號:\n由WCS告知CV貨物該往哪走"; //A1~A4
             string strPresence = "荷有:\nV -> 此位置有物";
-            string strSwitch_Ack = "站口模式切換:\n0 -> 不允許ON\n1 -> 允許"; //A1,5,7,9
+            string strSwitch_Ack = "站口模式切換:\n0 -> 不允許ON\n1 -> 允許"; //A1
             string strInitialNotice = "初始通知:\n1 -> CV通知WCS輸送機初始已完成";
             string strError = "異常碼";
 

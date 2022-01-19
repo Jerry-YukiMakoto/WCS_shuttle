@@ -205,11 +205,12 @@ namespace Mirle.ASRS.WCS.View
             _unityContainer.RegisterInstance(new WMSWCSController());
             _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
             clearCmd = new DB.ClearCmd.Proc.clsHost();
-
-            mainView = new MainView();
-            ChangeSubForm(mainView);
+            ChangeSubForm(ControllerReader.GetCVControllerr().GetMainView());
         }
 
+        //將兩個Grids整合成Interface再去call
+        //設置time_elapsed去定時更新Grid擷取的內容
+        //頁面切換觸發(Ref. Micron SNG)
         #region Grid顯示
         private void GridInit()
         {

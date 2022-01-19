@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Reflection;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Mirle.ASRS.Conveyors;
-using Mirle.ASRS.WCS.Controller;
 using Mirle.MPLC;
 using Mirle.ASRS.Conveyor.U2NMMA30.Service;
 
@@ -18,15 +10,14 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
     public partial class MainView : Form
     {
         private readonly Conveyor _conveyor;
-        private IMPLCProvider _mplc;
-        private LoggerService _loggerService;
-        
+        private IMPLCProvider _plchost;
+        private readonly LoggerService _loggerService;
 
-        public MainView()
+        public MainView(IMPLCProvider plchost)
         {
             InitializeComponent();
+            _plchost = plchost;
 
-            _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
         }
 
         private void MainView_Load(object sender, EventArgs e)
@@ -43,7 +34,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             try
             {
                 //Check PLC
-                lblPLCConnSts.BackColor =  _mplc.IsConnected  ? Color.Lime : Color.Red;
+                lblPLCConnSts.BackColor = _plchost.IsConnected  ? Color.Lime : Color.Red;
                
 
                 for(int index = 0; index < splitContainer1.Panel1.Controls.Count; index++) 

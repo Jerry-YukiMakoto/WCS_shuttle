@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
+using System.Windows.Forms;
 using Mirle.ASRS.Conveyors;
-using Mirle.ASRS.Conveyors.Signal;
 using Mirle.MPLC;
 using Mirle.MPLC.DataBlocks;
 using Mirle.MPLC.DataBlocks.DeviceRange;
 using Mirle.MPLC.MCProtocol;
 using Mirle.MPLC.SharedMemory;
+using Mirle.ASRS.Conveyors.U0NXMA30.View;
 
 namespace Mirle.ASRS.WCS.Controller
 {
     public class CVController : IDisposable
     {
         private readonly PLCHost _plcHost;
-        private readonly Conveyor _converyor;
+        private readonly Conveyors.Conveyor _converyor;
+
+        private readonly MainView _mainView;
 
         public CVController(string ipAddress, int tcpPort, int signalGroup, bool simulatorEnable)
         {
@@ -27,7 +28,7 @@ namespace Mirle.ASRS.WCS.Controller
                 {
                     smWriter.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
                 }
-                _converyor = new Conveyor(smWriter, signalGroup);
+                _converyor = new Conveyors.Conveyor(smWriter, signalGroup);
             }
             else
             {
@@ -44,7 +45,8 @@ namespace Mirle.ASRS.WCS.Controller
                     smReader.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
                 }
 
-                _converyor = new Conveyor(_plcHost, signalGroup);
+                _converyor = new Conveyors.Conveyor(_plcHost, signalGroup);
+                _mainView = new MainView(_plcHost);
                 _plcHost.Start();
             }
 
@@ -79,7 +81,7 @@ namespace Mirle.ASRS.WCS.Controller
 
       
 
-        public Conveyor GetConveryor()
+        public Conveyors.Conveyor GetConveryor()
         {
             return _converyor;
         }
@@ -87,6 +89,11 @@ namespace Mirle.ASRS.WCS.Controller
         public bool GetConnect()
         {
             return _plcHost.IsConnected;
+        }
+
+        public Form GetMainView()
+        {
+            return _mainView;
         }
 
         private bool disposedValue;

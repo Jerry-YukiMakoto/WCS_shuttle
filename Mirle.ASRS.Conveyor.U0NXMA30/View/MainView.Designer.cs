@@ -102,7 +102,7 @@
             this.lbl_4F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lbl_4F.Location = new System.Drawing.Point(574, 377);
             this.lbl_4F.Name = "lbl_4F";
-            this.lbl_4F.Size = new System.Drawing.Size(58, 40);
+            this.lbl_4F.Size = new System.Drawing.Size(46, 32);
             this.lbl_4F.TabIndex = 10;
             this.lbl_4F.Text = "4F";
             // 
@@ -113,7 +113,7 @@
             this.lbl_3F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lbl_3F.Location = new System.Drawing.Point(68, 377);
             this.lbl_3F.Name = "lbl_3F";
-            this.lbl_3F.Size = new System.Drawing.Size(58, 40);
+            this.lbl_3F.Size = new System.Drawing.Size(46, 32);
             this.lbl_3F.TabIndex = 9;
             this.lbl_3F.Text = "3F";
             // 
@@ -124,7 +124,7 @@
             this.lbl_2F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lbl_2F.Location = new System.Drawing.Point(574, 36);
             this.lbl_2F.Name = "lbl_2F";
-            this.lbl_2F.Size = new System.Drawing.Size(58, 40);
+            this.lbl_2F.Size = new System.Drawing.Size(46, 32);
             this.lbl_2F.TabIndex = 8;
             this.lbl_2F.Text = "2F";
             // 
@@ -135,7 +135,7 @@
             this.lbl_1F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lbl_1F.Location = new System.Drawing.Point(68, 36);
             this.lbl_1F.Name = "lbl_1F";
-            this.lbl_1F.Size = new System.Drawing.Size(58, 40);
+            this.lbl_1F.Size = new System.Drawing.Size(46, 32);
             this.lbl_1F.TabIndex = 7;
             this.lbl_1F.Text = "1F";
             // 
@@ -258,10 +258,12 @@
             this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 3);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 8F));
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(166, 587);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -270,11 +272,11 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("Times New Roman", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(160, 46);
+            this.label1.Size = new System.Drawing.Size(160, 35);
             this.label1.TabIndex = 13;
             this.label1.Text = "PLC Status";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -284,9 +286,9 @@
             this.lblPLCConnSts.BackColor = System.Drawing.Color.Red;
             this.lblPLCConnSts.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblPLCConnSts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblPLCConnSts.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPLCConnSts.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.lblPLCConnSts.ForeColor = System.Drawing.Color.Black;
-            this.lblPLCConnSts.Location = new System.Drawing.Point(2, 48);
+            this.lblPLCConnSts.Location = new System.Drawing.Point(2, 37);
             this.lblPLCConnSts.Margin = new System.Windows.Forms.Padding(2);
             this.lblPLCConnSts.Name = "lblPLCConnSts";
             this.lblPLCConnSts.Size = new System.Drawing.Size(162, 66);
