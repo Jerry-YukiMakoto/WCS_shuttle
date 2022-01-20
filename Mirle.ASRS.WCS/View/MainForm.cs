@@ -223,9 +223,6 @@ namespace Mirle.ASRS.WCS.View
         private void SubShowCmdtoGrid(ref DataGridView oGrid, clsEnum.GridType type)
         {
             degShowCmdtoGrid obj;
-            string strSql = string.Empty;
-            string strEM = string.Empty;
-            DataTable dtTmp = new DataTable();
             try
             {
                 if (InvokeRequired)
@@ -250,10 +247,6 @@ namespace Mirle.ASRS.WCS.View
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-            }
-            finally
-            {
-                dtTmp = null;
             }
         }
         #endregion Grid顯示
