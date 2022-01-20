@@ -94,30 +94,12 @@ namespace Mirle.ASRS.WCS.Library
 
         private static void FunPlcConfig(ASRSINI lcsini)
         {
-            switch (lcsini.CV.InMemorySimulator)
-            {
-                case 1:
-                    CV_Config.InMemorySimulator = true;
-                    break;
-                default:
-                    CV_Config.InMemorySimulator = false;
-                    break;
-            }
-
+            CV_Config.InMemorySimulator = lcsini.CV.InMemorySimulator == 1 ? true : false;
             CV_Config.MPLCIP = lcsini.CV.MPLCIP;
             CV_Config.MPLCNo = lcsini.CV.MPLCNo;
             CV_Config.MPLCPort = lcsini.CV.MPLCPort;
             CV_Config.MPLCTimeout = lcsini.CV.MPLCTimeout;
-
-            switch (lcsini.CV.UseMCProtocol)
-            {
-                case 0:
-                    CV_Config.UseMCProtocol = false;
-                    break;
-                case 1:
-                    CV_Config.UseMCProtocol = true;
-                    break;
-            }
+            CV_Config.UseMCProtocol = lcsini.CV.UseMCProtocol == 1 ? true : false;
         }
 
         private static void FunStnNoConfig(ASRSINI lcsini) 
