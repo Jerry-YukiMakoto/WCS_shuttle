@@ -19,7 +19,7 @@ namespace Mirle.ASRS.WCS.Controller
         
         public static void FunGetController(clsPlcConfig CVConfig) {
             _loggerManager = new LoggerManager();
-            _cvController = new CVController(CVConfig.MPLCIP, CVConfig.MPLCPort, CVConfig.SignalGroup, CVConfig.InMemorySimulator);
+            _cvController = new CVController(CVConfig.MPLCIP, CVConfig.MPLCPort, CVConfig.InMemorySimulator);
         }
 
         #region Get_Manager

@@ -20,13 +20,14 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
         private readonly Conveyor _conveyor;
         private IMPLCProvider _mplc;
         private LoggerService _loggerService;
-        
+        private readonly bool IsConnected = ControllerReader.GetCVControllerr().GetConnect();
 
         public MainView()
         {
             InitializeComponent();
 
             _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+            
         }
 
         private void MainView_Load(object sender, EventArgs e)
@@ -43,7 +44,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             try
             {
                 //Check PLC
-                lblPLCConnSts.BackColor =  _mplc.IsConnected  ? Color.Lime : Color.Red;
+                lblPLCConnSts.BackColor =  IsConnected  ? Color.Lime : Color.Red;
                
 
                 for(int index = 0; index < splitContainer1.Panel1.Controls.Count; index++) 

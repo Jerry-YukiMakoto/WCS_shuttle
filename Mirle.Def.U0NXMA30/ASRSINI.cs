@@ -89,8 +89,6 @@ namespace Mirle.Def.U0NXMA30
         [Option(DefaultValue = 10)]
         int CycleCount_Max { get; }
 
-        [Option(DefaultValue = 1)]
-        int SignalGroup { get; }
     }
 
     

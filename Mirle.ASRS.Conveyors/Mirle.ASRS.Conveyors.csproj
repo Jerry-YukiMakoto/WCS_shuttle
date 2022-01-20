@@ -72,7 +72,6 @@
     <Compile Include="Signal\ConveyorDefine.cs" />
     <Compile Include="Signal\BufferSignal.cs" />
     <Compile Include="Signal\BufferStatusSignal.cs" />
-    <Compile Include="Signal\DataBufferSignal.cs" />
     <Compile Include="Signal\SignalMapper.cs" />
     <Compile Include="Signal\SystemControllerSignal.cs" />
     <Compile Include="Signal\SystemSignal.cs" />

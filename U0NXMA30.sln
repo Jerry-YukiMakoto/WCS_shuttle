@@ -65,6 +65,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.Conveyors.U0NXMA30", "Mirle.ASRS.Conveyor.U0NXMA30\Mirle.ASRS.Conveyors.U0NXMA30.csproj", "{757F64C6-0FFC-4905-8857-C96BDCC8B173}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{78FB3F71-423A-45B5-919E-7F42693B2CEF}"
+	ProjectSection(SolutionItems) = preProject
+		Documents\金頂_WCS_FileLayOut_v1.0.docx = Documents\金頂_WCS_FileLayOut_v1.0.docx
+		Documents\金頂_自動倉庫工程進度_20211007.pdf = Documents\金頂_自動倉庫工程進度_20211007.pdf
+		Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0_1214與電控討論版本.xlsx = Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0_1214與電控討論版本.xlsx
+		Documents\金頂WCS、WMS_Web_Service_API_20220105.xlsx = Documents\金頂WCS、WMS_Web_Service_API_20220105.xlsx
+		Documents\金頂與Crane相關FileLayout_V7.2.docx = Documents\金頂與Crane相關FileLayout_V7.2.docx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "雜項", "雜項", "{04EE3558-0BF2-4823-9840-837DF93DF709}"
+	ProjectSection(SolutionItems) = preProject
+		Documents\雜項\mirle_setvaluefunction自己修改.txt = Documents\雜項\mirle_setvaluefunction自己修改.txt
+		Documents\雜項\根據buffer狀態跟新命令(檢查順序).txt = Documents\雜項\根據buffer狀態跟新命令(檢查順序).txt
+		Documents\雜項\金頂前往前確認.txt = Documents\雜項\金頂前往前確認.txt
+		Documents\雜項\金頂站口定義.txt = Documents\雜項\金頂站口定義.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,6 +175,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{04EE3558-0BF2-4823-9840-837DF93DF709} = {78FB3F71-423A-45B5-919E-7F42693B2CEF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6263D58B-FD44-44E9-9C09-215EAEA0AA01}
