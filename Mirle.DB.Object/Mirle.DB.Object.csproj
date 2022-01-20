@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GridData\CmdMst.cs" />
     <Compile Include="Service\clsDB_Proc.cs" />
     <Compile Include="clsTool.cs" />
     <Compile Include="clsWriLog.cs" />
@@ -81,6 +82,10 @@
     <ProjectReference Include="..\Mirle.Grid.U0NXMA30\Mirle.Grid.U0NXMA30.csproj">
       <Project>{39a4c47b-c53b-4057-9dc5-93b8907639e8}</Project>
       <Name>Mirle.Grid.U0NXMA30</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle.Grid\Mirle.Grid.csproj">
+      <Project>{8ab5fac9-7cc2-4eec-b583-39778e66ce1f}</Project>
+      <Name>Mirle.Grid</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.Structure\Mirle.Structure.csproj">
       <Project>{0a0d222e-0c76-4838-a8b1-6ca6f26cb225}</Project>

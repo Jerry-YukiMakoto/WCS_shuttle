@@ -15,6 +15,7 @@ using Mirle.ASRS.WCS.Library;
 using Mirle.ASRS.WCS.Controller;
 using Mirle.CENS.U0NXMA30;
 using Mirle.ASRS.Conveyors.U0NXMA30.View;
+using Mirle.Def;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -218,8 +219,8 @@ namespace Mirle.ASRS.WCS.View
             ColumnDef.CMD_MST.GridSetLocRange(ref GridCmd);
         }
 
-        delegate void degShowCmdtoGrid(ref DataGridView oGrid);
-        private void SubShowCmdtoGrid(ref DataGridView oGrid)
+        delegate void degShowCmdtoGrid(ref DataGridView oGrid, clsEnum.GridType type);
+        private void SubShowCmdtoGrid(ref DataGridView oGrid, clsEnum.GridType type)
         {
             degShowCmdtoGrid obj;
             string strSql = string.Empty;
@@ -230,34 +231,15 @@ namespace Mirle.ASRS.WCS.View
                 if (InvokeRequired)
                 {
                     obj = new degShowCmdtoGrid(SubShowCmdtoGrid);
-                    Invoke(obj, oGrid);
+                    Invoke(obj, oGrid, type);
                 }
                 else
                 {
-                    oGrid.SuspendLayout();
-                    oGrid.Rows.Clear();
-                    int iRet = clsDB_Proc.GetDB_Object().GetCmd_Mst().FunGetCmdMst_Grid(ref dtTmp);
-                    if (iRet == DBResult.Success)
+                    if(type == clsEnum.GridType.CmdMst)
                     {
-                        for (int i = 0; i < dtTmp.Rows.Count; i++)
-                        {
-                            oGrid.Rows.Add();
-                            oGrid.Rows[oGrid.RowCount - 1].HeaderCell.Value = Convert.ToString(oGrid.RowCount);
-                            oGrid[ColumnDef.CMD_MST.CmdSno.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CMDSNO"]);
-                            oGrid[ColumnDef.CMD_MST.CmdSts.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CMDSTS"]);
-                            oGrid[ColumnDef.CMD_MST.PRT.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["PRT"]);
-                            oGrid[ColumnDef.CMD_MST.CmdMode.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CmdMode"]);
-                            oGrid[ColumnDef.CMD_MST.Trace.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["Trace"]);
-                            oGrid[ColumnDef.CMD_MST.StnNo.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["StnNo"]);
-                            oGrid[ColumnDef.CMD_MST.Loc.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["Loc"]);
-                            oGrid[ColumnDef.CMD_MST.NewLoc.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["NewLoc"]);
-                            oGrid[ColumnDef.CMD_MST.EquNO.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["EquNO"]);
-                            oGrid[ColumnDef.CMD_MST.Remark.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["Remark"]);
-                            oGrid[ColumnDef.CMD_MST.CrtDate.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["CrtDate"]);
-                            oGrid[ColumnDef.CMD_MST.ExpDate.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["ExpDate"]);
-                        }
+                        DB.Object.GridData.CmdMst cmdMst = new DB.Object.GridData.CmdMst();
+                        cmdMst.SubShowCmdtoGrid(ref oGrid);
                     }
-                    oGrid.ResumeLayout();
                 }
             }
             catch (Exception ex)
