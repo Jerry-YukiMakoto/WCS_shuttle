@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31919.166
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.Conveyors", "Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj", "{20D2F96E-F248-4E52-9F5A-F1CF028F8E98}"
 EndProject
@@ -61,25 +61,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.WCS.Controller",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.WCS.Model", "Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj", "{95116D24-80F9-4BDE-94CA-7F3567C76CDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj", "{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{08D6C32B-6FB2-4B87-96FD-94DD19901C8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.Conveyors.U0NXMA30", "Mirle.ASRS.Conveyor.U0NXMA30\Mirle.ASRS.Conveyors.U0NXMA30.csproj", "{757F64C6-0FFC-4905-8857-C96BDCC8B173}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{78FB3F71-423A-45B5-919E-7F42693B2CEF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebAPI Service", "WebAPI Service", "{1C909E7F-D06C-4979-8F67-6F6A50556387}"
 	ProjectSection(SolutionItems) = preProject
-		Documents\金頂_WCS_FileLayOut_v1.0.docx = Documents\金頂_WCS_FileLayOut_v1.0.docx
-		Documents\金頂_自動倉庫工程進度_20211007.pdf = Documents\金頂_自動倉庫工程進度_20211007.pdf
-		Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0_1214與電控討論版本.xlsx = Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0_1214與電控討論版本.xlsx
-		Documents\金頂WCS、WMS_Web_Service_API_20220105.xlsx = Documents\金頂WCS、WMS_Web_Service_API_20220105.xlsx
-		Documents\金頂與Crane相關FileLayout_V7.2.docx = Documents\金頂與Crane相關FileLayout_V7.2.docx
+		Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx = Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx
+		Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx = Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx
+		Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx = Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "雜項", "雜項", "{04EE3558-0BF2-4823-9840-837DF93DF709}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "通訊協定", "通訊協定", "{B0F1BD7B-4A17-4254-9152-6DB17F5D76E7}"
 	ProjectSection(SolutionItems) = preProject
-		Documents\雜項\mirle_setvaluefunction自己修改.txt = Documents\雜項\mirle_setvaluefunction自己修改.txt
-		Documents\雜項\根據buffer狀態跟新命令(檢查順序).txt = Documents\雜項\根據buffer狀態跟新命令(檢查順序).txt
-		Documents\雜項\金頂前往前確認.txt = Documents\雜項\金頂前往前確認.txt
-		Documents\雜項\金頂站口定義.txt = Documents\雜項\金頂站口定義.txt
+		Documents\通訊協定\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx = Documents\通訊協定\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileLayout", "FileLayout", "{124CFB59-D643-4136-87B5-3019B1F4DA40}"
+	ProjectSection(SolutionItems) = preProject
+		Documents\FileLayout\金頂與Crane相關FileLayout_V7.2.docx = Documents\FileLayout\金頂與Crane相關FileLayout_V7.2.docx
 	EndProjectSection
 EndProject
 Global
@@ -177,7 +175,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{04EE3558-0BF2-4823-9840-837DF93DF709} = {78FB3F71-423A-45B5-919E-7F42693B2CEF}
+		{1C909E7F-D06C-4979-8F67-6F6A50556387} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
+		{B0F1BD7B-4A17-4254-9152-6DB17F5D76E7} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
+		{124CFB59-D643-4136-87B5-3019B1F4DA40} = {08D6C32B-6FB2-4B87-96FD-94DD19901C8F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6263D58B-FD44-44E9-9C09-215EAEA0AA01}
