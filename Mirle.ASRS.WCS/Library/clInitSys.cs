@@ -7,6 +7,7 @@ using Mirle.DataBase;
 using Mirle.Structure;
 using System.Text;
 using System.Runtime.InteropServices;
+using Mirle.ASRS.WCS.Model.PLCDefinitions;
 
 namespace Mirle.ASRS.WCS.Library
 {
@@ -40,6 +41,7 @@ namespace Mirle.ASRS.WCS.Library
                 FunApiConfig(lcsini);
                 FunDeviceConfig(lcsini);
                 FunPlcConfig(lcsini);
+                FunStnNoConfig(lcsini);
             }
             catch(Exception ex)
             {
@@ -92,42 +94,21 @@ namespace Mirle.ASRS.WCS.Library
 
         private static void FunPlcConfig(ASRSINI lcsini)
         {
-            switch (lcsini.CV.InMemorySimulator)
-            {
-                case 1:
-                    CV_Config.InMemorySimulator = true;
-                    break;
-                default:
-                    CV_Config.InMemorySimulator = false;
-                    break;
-            }
-
+            CV_Config.InMemorySimulator = lcsini.CV.InMemorySimulator == 1 ? true : false;
             CV_Config.MPLCIP = lcsini.CV.MPLCIP;
             CV_Config.MPLCNo = lcsini.CV.MPLCNo;
             CV_Config.MPLCPort = lcsini.CV.MPLCPort;
             CV_Config.MPLCTimeout = lcsini.CV.MPLCTimeout;
+            CV_Config.UseMCProtocol = lcsini.CV.UseMCProtocol == 1 ? true : false;
+        }
 
-            switch (lcsini.CV.UseMCProtocol)
-            {
-                case 1:
-                    CV_Config.UseMCProtocol = true;
-                    break;
-                default:
-                    CV_Config.UseMCProtocol = false;
-                    break;
-            }
-
-            switch (lcsini.CV.WritePLCRawData)
-            {
-                case 1:
-                    CV_Config.WritePLCRawData = true;
-                    break;
-                default:
-                    CV_Config.WritePLCRawData = false;
-                    break;
-            }
-
-            CV_Config.CycleCount_Max = lcsini.CV.CycleCount_Max;
+        private static void FunStnNoConfig(ASRSINI lcsini) 
+        {
+            string str = "000000";
+            CranePortNo.A1 = str + lcsini.StnNo.A1;
+            CranePortNo.A5 = str + lcsini.StnNo.A5;
+            CranePortNo.A7 = str + lcsini.StnNo.A7;
+            CranePortNo.A9 = str + lcsini.StnNo.A9;
         }
 
         /// <summary>

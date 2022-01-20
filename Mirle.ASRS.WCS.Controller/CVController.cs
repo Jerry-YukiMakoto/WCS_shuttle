@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
+using System.Windows.Forms;
 using Mirle.ASRS.Conveyors;
-using Mirle.ASRS.Conveyors.Signal;
 using Mirle.MPLC;
 using Mirle.MPLC.DataBlocks;
 using Mirle.MPLC.DataBlocks.DeviceRange;
 using Mirle.MPLC.MCProtocol;
 using Mirle.MPLC.SharedMemory;
+using Mirle.ASRS.Conveyors.U0NXMA30.View;
 
 namespace Mirle.ASRS.WCS.Controller
 {
@@ -73,7 +72,7 @@ namespace Mirle.ASRS.WCS.Controller
 
       
 
-        public Conveyor GetConveryor()
+        public Conveyors.Conveyor GetConveryor()
         {
             return _converyor;
         }
@@ -88,6 +87,11 @@ namespace Mirle.ASRS.WCS.Controller
             {
                 return _plcHost.IsConnected;
             }
+        }
+
+        public Form GetMainView()
+        {
+            return _mainView;
         }
 
         private bool disposedValue;

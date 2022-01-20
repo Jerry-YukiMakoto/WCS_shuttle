@@ -36,7 +36,6 @@ namespace Mirle.Def.U0NXMA30
         /// MSSQL, Oracle_Oledb, DB2, Odbc, Access, OleDb, Oracle_DB.enuDatabaseType.Oracle_OracleClient, SQLite,
         /// </summary>
         string DBMS { get; }
-
         string DbServer { get; }
         string FODbServer { get; }
         string DataBase { get; }
@@ -78,16 +77,10 @@ namespace Mirle.Def.U0NXMA30
         int MPLCTimeout { get; }
 
         [Option(DefaultValue = 0)]
-        int WritePLCRawData { get; }
-
-        [Option(DefaultValue = 0)]
         int UseMCProtocol { get; }
 
         [Option(DefaultValue = 0)]
         int InMemorySimulator { get; }
-
-        [Option(DefaultValue = 10)]
-        int CycleCount_Max { get; }
 
     }
 
@@ -95,11 +88,10 @@ namespace Mirle.Def.U0NXMA30
 
     public interface StnNoConfig
     {
-        string A3 { get; }
-        string A6 { get; }
-        string A8 { get; }
-        string A10 { get; }
-        string A4 { get; }
+        string A1 { get; }
+        string A5 { get; }
+        string A7 { get; }
+        string A9 { get; }
         string WaterLevel { get; }
     }
 }

@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="clInitSys.cs" />
     <Compile Include="ColumnInfo.cs" />
+    <Compile Include="IGrid.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

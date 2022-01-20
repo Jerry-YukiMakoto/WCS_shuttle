@@ -8,6 +8,12 @@ namespace Mirle.Def
 {
     public class clsEnum
     {
+        public enum GridType
+        {
+            CmdMst,
+            Pallet
+        }
+
         public class WmsApi
         {
             public enum CancelType

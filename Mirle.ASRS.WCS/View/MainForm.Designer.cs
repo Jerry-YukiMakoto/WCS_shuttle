@@ -92,7 +92,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.spcView);
             this.splitContainer1.Size = new System.Drawing.Size(1280, 732);
-            this.splitContainer1.SplitterDistance = 81;
+            this.splitContainer1.SplitterDistance = 80;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -112,7 +112,7 @@
             this.tlpMainSts.Name = "tlpMainSts";
             this.tlpMainSts.RowCount = 1;
             this.tlpMainSts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpMainSts.Size = new System.Drawing.Size(1280, 81);
+            this.tlpMainSts.Size = new System.Drawing.Size(1280, 80);
             this.tlpMainSts.TabIndex = 0;
             // 
             // lblTimer
@@ -124,7 +124,7 @@
             this.lblTimer.Location = new System.Drawing.Point(185, 0);
             this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(173, 81);
+            this.lblTimer.Size = new System.Drawing.Size(173, 80);
             this.lblTimer.TabIndex = 268;
             this.lblTimer.Text = "yyyy/MM/dd hh:mm:ss";
             this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -136,7 +136,7 @@
             this.picMirle.Location = new System.Drawing.Point(4, 4);
             this.picMirle.Margin = new System.Windows.Forms.Padding(4);
             this.picMirle.Name = "picMirle";
-            this.picMirle.Size = new System.Drawing.Size(173, 73);
+            this.picMirle.Size = new System.Drawing.Size(173, 72);
             this.picMirle.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picMirle.TabIndex = 267;
             this.picMirle.TabStop = false;
@@ -155,7 +155,7 @@
             this.tableLayoutPanelConn.RowCount = 2;
             this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelConn.Size = new System.Drawing.Size(174, 73);
+            this.tableLayoutPanelConn.Size = new System.Drawing.Size(174, 72);
             this.tableLayoutPanelConn.TabIndex = 0;
             // 
             // chkOnline
@@ -168,7 +168,7 @@
             this.chkOnline.Location = new System.Drawing.Point(4, 40);
             this.chkOnline.Margin = new System.Windows.Forms.Padding(4);
             this.chkOnline.Name = "chkOnline";
-            this.chkOnline.Size = new System.Drawing.Size(166, 29);
+            this.chkOnline.Size = new System.Drawing.Size(166, 28);
             this.chkOnline.TabIndex = 2;
             this.chkOnline.Text = "OnLine";
             this.chkOnline.UseVisualStyleBackColor = true;
@@ -204,8 +204,8 @@
             // spcView.Panel2
             // 
             this.spcView.Panel2.Controls.Add(this.tabControl1);
-            this.spcView.Size = new System.Drawing.Size(1280, 646);
-            this.spcView.SplitterDistance = 475;
+            this.spcView.Size = new System.Drawing.Size(1280, 647);
+            this.spcView.SplitterDistance = 473;
             this.spcView.SplitterWidth = 5;
             this.spcView.TabIndex = 0;
             // 
@@ -226,7 +226,7 @@
             // 
             this.spcMainView.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanelSideBtn);
-            this.spcMainView.Size = new System.Drawing.Size(1280, 475);
+            this.spcMainView.Size = new System.Drawing.Size(1280, 473);
             this.spcMainView.SplitterDistance = 1098;
             this.spcMainView.SplitterWidth = 5;
             this.spcMainView.TabIndex = 0;
@@ -253,7 +253,7 @@
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(175, 473);
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(175, 471);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
             // 
             // btnCraneSpeedMaintain
@@ -304,9 +304,9 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1280, 166);
-            this.tabControl1.TabIndex = 1;
+            this.tabControl1.SelectedIndex = 1;
+            this.tabControl1.Size = new System.Drawing.Size(1280, 169);
+            this.tabControl1.TabIndex = 0;
             // 
             // tabPageCmd
             // 
@@ -315,7 +315,7 @@
             this.tabPageCmd.Margin = new System.Windows.Forms.Padding(4);
             this.tabPageCmd.Name = "tabPageCmd";
             this.tabPageCmd.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageCmd.Size = new System.Drawing.Size(1240, 105);
+            this.tabPageCmd.Size = new System.Drawing.Size(1272, 140);
             this.tabPageCmd.TabIndex = 0;
             this.tabPageCmd.Text = "即時命令";
             this.tabPageCmd.UseVisualStyleBackColor = true;
@@ -329,7 +329,7 @@
             this.GridCmd.Name = "GridCmd";
             this.GridCmd.RowHeadersWidth = 62;
             this.GridCmd.RowTemplate.Height = 24;
-            this.GridCmd.Size = new System.Drawing.Size(1232, 97);
+            this.GridCmd.Size = new System.Drawing.Size(1264, 132);
             this.GridCmd.TabIndex = 0;
             // 
             // tabPagePallet
@@ -339,7 +339,7 @@
             this.tabPagePallet.Margin = new System.Windows.Forms.Padding(4);
             this.tabPagePallet.Name = "tabPagePallet";
             this.tabPagePallet.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPagePallet.Size = new System.Drawing.Size(1272, 137);
+            this.tabPagePallet.Size = new System.Drawing.Size(1272, 140);
             this.tabPagePallet.TabIndex = 1;
             this.tabPagePallet.Text = "母板相關";
             this.tabPagePallet.UseVisualStyleBackColor = true;
@@ -353,7 +353,7 @@
             this.GridPallets.Name = "GridPallets";
             this.GridPallets.RowHeadersWidth = 62;
             this.GridPallets.RowTemplate.Height = 24;
-            this.GridPallets.Size = new System.Drawing.Size(1264, 129);
+            this.GridPallets.Size = new System.Drawing.Size(1264, 132);
             this.GridPallets.TabIndex = 0;
             // 
             // MainForm

@@ -68,7 +68,6 @@
     <Compile Include="PLCDefinitions\LoadCategory.cs" />
     <Compile Include="PLCDefinitions\Path.cs" />
     <Compile Include="PLCDefinitions\PathNotice.cs" />
-    <Compile Include="PLCDefinitions\PickingDirection.cs" />
     <Compile Include="PLCDefinitions\Ready.cs" />
     <Compile Include="PLCDefinitions\StnNo.cs" />
     <Compile Include="PLCDefinitions\TrayType.cs" />

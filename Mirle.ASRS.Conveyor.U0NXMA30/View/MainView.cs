@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Reflection;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Mirle.ASRS.Conveyors;
-using Mirle.ASRS.WCS.Controller;
 using Mirle.MPLC;
 using Mirle.ASRS.Conveyor.U2NMMA30.Service;
 
@@ -25,6 +17,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
         public MainView()
         {
             InitializeComponent();
+            _plchost = plchost;
 
             _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             
