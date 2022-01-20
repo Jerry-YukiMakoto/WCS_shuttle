@@ -1,0 +1,20 @@
+        public bool SetValue(int data, ref string exmessage)
+        {
+            if (_mplc is null || string.IsNullOrWhiteSpace(Address))
+            {
+                return false;
+            }
+            else
+            {
+                try
+                {
+                    _mplc.WriteWord(Address, data);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    exmessage = ex.Message;
+                    return false;
+                }
+            }
+        }

@@ -14,39 +14,38 @@ namespace Mirle.ASRS.WCS.Controller
     public class CVController : IDisposable
     {
         private readonly PLCHost _plcHost;
-        private readonly Conveyors.Conveyor _converyor;
+        private readonly Conveyor _converyor;
+        private readonly bool _simulatorEnable;
 
-        private readonly MainView _mainView;
-
-        public CVController(string ipAddress, int tcpPort, int signalGroup, bool simulatorEnable)
+        public CVController(string ipAddress, int tcpPort, bool simulatorEnable)
         {
             if (simulatorEnable)
             {
                 var smWriter = new SMReadWriter();
-                var blockInfos = GetBlockInfos(signalGroup);
+                var blockInfos = GetBlockInfos();
                 foreach (var block in blockInfos)
                 {
                     smWriter.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
                 }
-                _converyor = new Conveyors.Conveyor(smWriter, signalGroup);
+                _converyor = new Conveyor(smWriter);
+                _simulatorEnable=simulatorEnable; 
             }
             else
             {
-                var plcHostInfo = new PLCHostInfo(signalGroup == 0 ? "BQA" : "MFG", ipAddress, tcpPort, GetBlockInfos(signalGroup));
+                var plcHostInfo = new PLCHostInfo("Gold", ipAddress, tcpPort, GetBlockInfos());
                 _plcHost = new PLCHost(plcHostInfo);
                 _plcHost.Interval = 200;
                 _plcHost.MPLCTimeout = 600;
                 _plcHost.EnableWriteRawData = true;
                 _plcHost.EnableWriteShareMemory = true;
                 var smReader = new SMReadOnlyCachedReader();
-                var blockInfos = GetBlockInfos(signalGroup);
+                var blockInfos = GetBlockInfos();
                 foreach (var block in blockInfos)
                 {
                     smReader.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
                 }
 
-                _converyor = new Conveyors.Conveyor(_plcHost, signalGroup);
-                _mainView = new MainView(_plcHost);
+                _converyor = new Conveyor(_plcHost);
                 _plcHost.Start();
             }
 
@@ -58,18 +57,10 @@ namespace Mirle.ASRS.WCS.Controller
             _converyor.Start();
         }
 
-        private IEnumerable<BlockInfo> GetBlockInfos(int signalGroup)
-        {
-            if (signalGroup == 0)
-            {
+        private IEnumerable<BlockInfo> GetBlockInfos()
+        {    
                 yield return new BlockInfo(new DDeviceRange("D101", "D210"), "Read", 0);
                 yield return new BlockInfo(new DDeviceRange("D3101", "D3210"), "Write", 1);
-            }
-            else
-            {
-                yield return new BlockInfo(new DDeviceRange("D101", "D210"), "Read", 0);
-                yield return new BlockInfo(new DDeviceRange("D3101", "D3210"), "Write", 1);
-            }
         }
 
 
@@ -88,7 +79,14 @@ namespace Mirle.ASRS.WCS.Controller
 
         public bool GetConnect()
         {
-            return _plcHost.IsConnected;
+            if (_simulatorEnable)
+            {
+                return true;
+            }
+            else
+            {
+                return _plcHost.IsConnected;
+            }
         }
 
         public Form GetMainView()

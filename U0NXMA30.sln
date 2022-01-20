@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31919.166
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.ASRS.Conveyors", "Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj", "{20D2F96E-F248-4E52-9F5A-F1CF028F8E98}"
 EndProject
@@ -65,14 +65,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebAPI Service", "WebAPI Service", "{1C909E7F-D06C-4979-8F67-6F6A50556387}"
 	ProjectSection(SolutionItems) = preProject
-		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx
-		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx
-		..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx = ..\Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx
+		Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx = Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021222.xlsx
+		Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx = Documents\WebAPI Service\金頂WCS、WMS Web Service API 2021228.xlsx
+		Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx = Documents\WebAPI Service\金頂WCS、WMS Web Service API 20220105.xlsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "通訊協定", "通訊協定", "{B0F1BD7B-4A17-4254-9152-6DB17F5D76E7}"
 	ProjectSection(SolutionItems) = preProject
-		..\Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx = ..\Documents\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx
+		Documents\通訊協定\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx = Documents\通訊協定\金頂ASRS_週邊輸送機通訊協定-V_1.0.0.0.xlsx
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirle.CENS.U0NXMA30\Mirle.CENS.U0NXMA30.csproj", "{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}"

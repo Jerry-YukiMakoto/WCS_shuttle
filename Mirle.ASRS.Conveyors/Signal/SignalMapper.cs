@@ -20,10 +20,9 @@ namespace Mirle.ASRS.Conveyors.Signal
 
         public IEnumerable<BufferSignal> BufferSignals => _bufferSignals.Values;
 
-        public SignalMapper(IMPLCProvider mplc, int signalGroup)
+        public SignalMapper(IMPLCProvider mplc)
         {
             _mplc = mplc;
-            _signalGroup = signalGroup;
 
             MappingSystem();
             MappingBuffer();
@@ -73,14 +72,11 @@ namespace Mirle.ASRS.Conveyors.Signal
                 define.Serialize(fileName);
             }
 
-            int plcIndex = 111;
-            int pcIndex = 3111;
+                    int plcIndex = 111;
+                    int pcIndex = 3111;
 
-            if (define.Exists(r => r.SignalGroup == _signalGroup))
-            {
-                var conveyor = define.Find(r => r.SignalGroup == _signalGroup);
-                if (conveyor.SignalGroup == 0)
-                {
+                    var conveyor = define.Find(r => r.SignalGroup == _signalGroup);
+
                     var readyBufferIndex = new Dictionary<int, int>();
                     readyBufferIndex.Add(1, 0);//A1
                     readyBufferIndex.Add(4, 3);//A4
@@ -93,8 +89,6 @@ namespace Mirle.ASRS.Conveyors.Signal
                     PathChangeNotice.Add(2, 1);//A2
                     PathChangeNotice.Add(3, 2);//A3
                     PathChangeNotice.Add(4, 3);//A4
-
-
 
                     for (int bufferIndex = 0; bufferIndex < conveyor.Buffers.Count; bufferIndex++)
                     {
@@ -146,13 +140,25 @@ namespace Mirle.ASRS.Conveyors.Signal
                         {
                             buffer.Switch_Ack = new Word(_mplc, $"D119");//只有A1有需要切換通知
                         }
+                        else
+                        {
+                            buffer.Switch_Ack = new Word();
+                        }
                         if (bufferIndex + 1 == 2)
                         {
                             buffer.A2LV2 = new Word(_mplc, $"D126");//A2空棧板第二層Sensor，是否有貨物在第二層 
                         }
+                        else
+                        {
+                            buffer.A2LV2 = new Word();
+                        }
                         if (bufferIndex + 1 == 4)
                         {
                             buffer.EmptyInReady = new Word(_mplc, $"D148");//A4滿版訊號 7：滿七板(即將滿板) / 8:滿8版/9:(滿9版)
+                        }
+                        else
+                        {
+                            buffer.EmptyInReady = new Word();
                         }
                         #endregion
 
@@ -165,9 +171,18 @@ namespace Mirle.ASRS.Conveyors.Signal
                             buffer.ControllerSignal.PathChangeNotice = new Word(_mplc, $"D3115");//A1出庫都要給予路徑通知，決定是否要堆疊
                             buffer.ControllerSignal.Switch_Mode = new Word(_mplc, $"D3119");//A1因為入出庫模式切換，如果可以切換，要寫入現在命令要求的模式
                         }
+                        else
+                        {
+                            buffer.ControllerSignal.PathChangeNotice = new Word();
+                            buffer.ControllerSignal.Switch_Mode = new Word();
+                        }
                         if (bufferIndex + 1 == 4)
                         {
                             buffer.ControllerSignal.A4Emptysupply = new Word(_mplc, $"D3143"); //A4通知補母版
+                        }
+                        else 
+                        {
+                            buffer.ControllerSignal.A4Emptysupply = new Word();
                         }
                         #endregion
 
@@ -177,10 +192,6 @@ namespace Mirle.ASRS.Conveyors.Signal
 
                         _bufferSignals.Add(bufferIndex + 1, buffer);
                     }
-                }
-
-            }
-
         }
 
         public SystemSignal GetSystemSignal()

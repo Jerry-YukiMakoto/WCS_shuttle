@@ -35,7 +35,6 @@ namespace Mirle.ASRS.Conveyors
         public int PathNotice => Signal.PathChangeNotice.GetValue();
         public int CmdMode => Signal.CmdMode.GetValue();
         public int Ready => Signal.Ready.GetValue();
-        public int ReadNotice => Signal.ReadNotice.GetValue();
         public int InitialNotice => Signal.InitialNotice.GetValue();
         public bool InMode => Signal.StatusSignal.InMode.IsOn() && Signal.StatusSignal.OutMode.IsOff();
         public bool OutMode => Signal.StatusSignal.InMode.IsOff() && Signal.StatusSignal.OutMode.IsOn();
@@ -44,7 +43,6 @@ namespace Mirle.ASRS.Conveyors
         public bool Manual => Signal.StatusSignal.Auto.IsOff() && Signal.StatusSignal.Manual.IsOn();
         public bool Presence => Signal.StatusSignal.Presence.IsOn();
         public bool Position => Signal.StatusSignal.Position.IsOn();
-        public int PickingDirection => Signal.PickingDirection.GetValue();
         public int Switch_Ack => Signal.Switch_Ack.GetValue();
         public int EmptyINReady => Signal.EmptyInReady.GetValue();
         public int A2LV2 => Signal.A2LV2.GetValue();
@@ -73,13 +71,11 @@ namespace Mirle.ASRS.Conveyors
                 Signal.ControllerSignal.PathChangeNotice.SetValue(0);
                 OnBufferPathNoticeChange?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
-
             if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)//待修改，需要知道什麼時候電控運送母托到A3
             {
                 Signal.ControllerSignal.A4Emptysupply.SetValue(0);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
-
             if (Signal.StatusSignal.InMode.IsOn() == true && Signal.ControllerSignal.Switch_Mode.GetValue() == 1
                 || Signal.StatusSignal.OutMode.IsOn() == true && Signal.ControllerSignal.Switch_Mode.GetValue() == 2)
             {

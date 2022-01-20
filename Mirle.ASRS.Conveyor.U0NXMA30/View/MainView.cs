@@ -10,14 +10,17 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
     public partial class MainView : Form
     {
         private readonly Conveyor _conveyor;
-        private IMPLCProvider _plchost;
-        private readonly LoggerService _loggerService;
+        private IMPLCProvider _mplc;
+        private LoggerService _loggerService;
+        private readonly bool IsConnected = ControllerReader.GetCVControllerr().GetConnect();
 
-        public MainView(IMPLCProvider plchost)
+        public MainView()
         {
             InitializeComponent();
             _plchost = plchost;
 
+            _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+            
         }
 
         private void MainView_Load(object sender, EventArgs e)
@@ -34,7 +37,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             try
             {
                 //Check PLC
-                lblPLCConnSts.BackColor = _plchost.IsConnected  ? Color.Lime : Color.Red;
+                lblPLCConnSts.BackColor =  IsConnected  ? Color.Lime : Color.Red;
                
 
                 for(int index = 0; index < splitContainer1.Panel1.Controls.Count; index++) 

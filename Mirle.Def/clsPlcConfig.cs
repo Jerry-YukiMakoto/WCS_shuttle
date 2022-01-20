@@ -15,7 +15,6 @@ namespace Mirle.Def
         public bool WritePLCRawData { get; set; }
         public bool UseMCProtocol { get; set; }
         public bool InMemorySimulator { get; set; }
-        public int SignalGroup { get; set; }
 
         /// <summary>
         /// (選用) 大循環的最多荷有數
