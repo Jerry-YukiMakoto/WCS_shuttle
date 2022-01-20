@@ -235,11 +235,14 @@ namespace Mirle.ASRS.WCS.View
                 }
                 else
                 {
-                    if(type == clsEnum.GridType.CmdMst)
+                    Gird.IGrid grid;
+                    if (type == clsEnum.GridType.CmdMst)
                     {
-                        DB.Object.GridData.CmdMst cmdMst = new DB.Object.GridData.CmdMst();
-                        cmdMst.SubShowCmdtoGrid(ref oGrid);
+                        grid = new DB.Object.GridData.CmdMst();
                     }
+                    else grid = new DB.Object.GridData.Pallet();
+
+                    grid.SubShowCmdtoGrid(ref oGrid);
                 }
             }
             catch (Exception ex)

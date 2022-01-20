@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GridData\CmdMst.cs" />
+    <Compile Include="GridData\Pallet.cs" />
     <Compile Include="Service\clsDB_Proc.cs" />
     <Compile Include="clsTool.cs" />
     <Compile Include="clsWriLog.cs" />
