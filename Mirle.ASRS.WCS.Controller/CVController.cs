@@ -56,7 +56,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
 
             _converyor.Start();
-            _PlcConnected = _plcHost.IsConnected;
+
             _mainView = new MainView(_converyor, _PlcConnected);
         }
 
