@@ -3,26 +3,24 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using Mirle.MPLC;
+using Mirle.MPLC.MCProtocol;
 using Mirle.ASRS.Conveyor.U2NMMA30.Service;
 
-namespace Mirle.ASRS.Conveyors.U0NXMA30.View
+namespace Mirle.ASRS.Conveyors.View
 {
     public partial class MainView : Form
     {
         private readonly Conveyor _conveyor;
-        private IMPLCProvider _mplc;
         private LoggerService _loggerService;
-        private readonly bool IsConnected = ControllerReader.GetCVControllerr().GetConnect();
+        private readonly bool _PlcConnected;
 
-        public MainView()
+        public MainView(Conveyor conveyor, bool PlcConnected)
         {
             InitializeComponent();
-            _plchost = plchost;
+            _PlcConnected = PlcConnected;
+            _conveyor = conveyor;
 
-            _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-            
         }
-
         private void MainView_Load(object sender, EventArgs e)
         {
             timerMainProc.Enabled = true;
@@ -37,7 +35,7 @@ namespace Mirle.ASRS.Conveyors.U0NXMA30.View
             try
             {
                 //Check PLC
-                lblPLCConnSts.BackColor =  IsConnected  ? Color.Lime : Color.Red;
+                lblPLCConnSts.BackColor = _PlcConnected ? Color.Lime : Color.Red;
                
 
                 for(int index = 0; index < splitContainer1.Panel1.Controls.Count; index++) 

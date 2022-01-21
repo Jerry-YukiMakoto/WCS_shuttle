@@ -112,10 +112,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.ASRS.Conveyor.U0NXMA30\Mirle.ASRS.Conveyors.U0NXMA30.csproj">
-      <Project>{757f64c6-0ffc-4905-8857-c96bdcc8b173}</Project>
-      <Name>Mirle.ASRS.Conveyors.U0NXMA30</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
       <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
       <Name>Mirle.ASRS.Conveyors</Name>

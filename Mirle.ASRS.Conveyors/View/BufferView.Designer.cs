@@ -1,5 +1,5 @@
 ﻿
-namespace Mirle.ASRS.Conveyors.U0NXMA30.View
+namespace Mirle.ASRS.Conveyors.View
 {
     partial class BufferView
     {

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 using Mirle.MPLC.DataType;
 
-namespace Mirle.ASRS.Conveyors.U0NXMA30.View
+namespace Mirle.ASRS.Conveyors.View
 {
     public partial class BufferView : UserControl
     {
