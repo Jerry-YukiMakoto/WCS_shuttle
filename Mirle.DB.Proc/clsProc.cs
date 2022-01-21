@@ -89,7 +89,7 @@ namespace Mirle.DB.Proc
                                 return false;
                             }
 
-                            if (CMD_MST.UpdateCmdMst(cmd.CmdSno, clsConstValue.CmdSts.strCmd_Cancel, "WMS命令取消", db) == ExecuteSQLResult.Initial)
+                            if (CMD_MST.UpdateCmdMst(cmd.CmdSno, clsConstValue.CmdSts.strCmd_Cancel, "WMS命令取消", db).ResultCode != DBResult.Success)
                             {
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
@@ -97,7 +97,7 @@ namespace Mirle.DB.Proc
 
                             if (iRet_Task == DBResult.Success)
                             {
-                                if (EQU_CMD.DeleteEquCmd(cmd.CmdSno, db) != ExecuteSQLResult.Success)
+                                if (EQU_CMD.DeleteEquCmd(cmd.CmdSno, db).ResultCode != DBResult.Success)
                                 {
                                     db.TransactionCtrl(TransactionTypes.Rollback);
                                     return false;
@@ -140,7 +140,7 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db) == GetDataResult.Success) //讀取CMD_MST
+                        if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                         {
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -188,12 +188,12 @@ namespace Mirle.DB.Proc
 
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
 
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
                                 return false;
                             }
-                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db) == ExecuteSQLResult.Success)
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db).ResultCode == DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd succeess => {cmdSno}");
                             }
@@ -226,7 +226,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                             }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
 
@@ -264,7 +264,7 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -310,12 +310,12 @@ namespace Mirle.DB.Proc
 
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
 
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
                                 return false;
                             }
-                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db) == ExecuteSQLResult.Success)
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db).ResultCode == DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd succeess => {cmdSno}");
                             }
@@ -335,7 +335,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
 
@@ -376,7 +376,7 @@ namespace Mirle.DB.Proc
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
 
-                        if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
 
@@ -418,13 +418,13 @@ namespace Mirle.DB.Proc
                             }
 
 
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
 
                                 return false;
                             }
-                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreInCreateCraneCmd, db) != ExecuteSQLResult.Success)
+                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Update CmdMst Fail => {cmdSno}");
 
@@ -438,7 +438,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
 
@@ -478,7 +478,7 @@ namespace Mirle.DB.Proc
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         
                         string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
-                        if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
 
                             #region//根據buffer狀態更新命令
@@ -531,13 +531,13 @@ namespace Mirle.DB.Proc
                             }
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
 
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
 
                                 return false;
                             }
-                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreInCreateCraneCmd, db) != ExecuteSQLResult.Success)
+                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Update CmdMst Fail => {cmdSno}");
 
@@ -551,7 +551,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
 
@@ -597,11 +597,11 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
-                        if (CMD_MST.GetCmdMstByStoreInFinish(stn1, out var dataObject,db) == GetDataResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreInFinish(stn1, out var dataObject,db).ResultCode == DBResult.Success)
                         {
                             foreach (var cmdMst in dataObject.Data)
                             {
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd,db) == GetDataResult.Success)
+                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd,db).ResultCode == DBResult.Success)
                                 {
                                     if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
                                     {
@@ -619,7 +619,7 @@ namespace Mirle.DB.Proc
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -641,26 +641,26 @@ namespace Mirle.DB.Proc
                                         }
                                         if (bflag == true)
                                         {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
-                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreInCraneCmdFinish, db) != ExecuteSQLResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreInCraneCmdFinish, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -701,7 +701,7 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreOutStart(sStnNo, out var dataObject, db) == GetDataResult.Success) //讀取CMD_MST
+                        if (CMD_MST.GetCmdMstByStoreOutStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                         {
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -779,12 +779,12 @@ namespace Mirle.DB.Proc
                                     $"{CmdMode}");
 
 
-                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Begin Fail => {cmdSno}");
                                     return false;
                                 }
-                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreOutWriteCraneCmdToCV, db) == ExecuteSQLResult.Success)
+                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreOutWriteCraneCmdToCV, db).ResultCode == DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
                                     $"{CmdMode}");
@@ -839,7 +839,7 @@ namespace Mirle.DB.Proc
                                     }
                                 }
 
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -875,7 +875,7 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreOutStart(sStnNo, out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreOutStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
@@ -926,12 +926,12 @@ namespace Mirle.DB.Proc
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
 
-                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Begin Fail => {cmdSno}");
                                     return false;
                                 }
-                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreOutWriteCraneCmdToCV, db) == ExecuteSQLResult.Success)
+                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreOutWriteCraneCmdToCV, db).ResultCode == DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
                                     $"{CmdMode}");
@@ -951,7 +951,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -991,7 +991,7 @@ namespace Mirle.DB.Proc
                         string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
                         int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
 
-                        if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             #region//站口狀態確認
                             if (_conveyor.GetBuffer(bufferIndex).Auto!=true)
@@ -1024,12 +1024,12 @@ namespace Mirle.DB.Proc
 
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer StoreOut Get Command => {cmdSno}");
 
-                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
                                     return false;
                                 }
-                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db) != ExecuteSQLResult.Success)
+                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Update CmdMst Fail => {cmdSno}");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1041,7 +1041,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Commit Fail => {cmdSno}");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1081,7 +1081,9 @@ namespace Mirle.DB.Proc
                         string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
                         int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
 
-                            if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db) == GetDataResult.Success)
+                        
+
+                            if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                             {
                                 cmdSno = dataObject[0].CmdSno;
                                 string source = dataObject[0].Loc;
@@ -1125,12 +1127,12 @@ namespace Mirle.DB.Proc
                                 
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer StoreOut Get Command => {cmdSno}");
 
-                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
                                     return false;
                                 }
-                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db) != ExecuteSQLResult.Success)
+                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Update CmdMst Fail => {cmdSno}");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1142,7 +1144,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Commit Fail => {cmdSno}");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1177,11 +1179,11 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreOutFinish(stations, out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreOutFinish(stations, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             foreach (var cmdMst in dataObject.Data)
                             {
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db) == GetDataResult.Success)
+                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db).ResultCode == DBResult.Success)
                                 {
                                     if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
                                     {
@@ -1199,7 +1201,7 @@ namespace Mirle.DB.Proc
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -1221,7 +1223,7 @@ namespace Mirle.DB.Proc
                                         }
                                         if (bflag == true)
                                         {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -1233,17 +1235,17 @@ namespace Mirle.DB.Proc
                                                     return false;
                                                 }
                                             }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -1286,7 +1288,7 @@ namespace Mirle.DB.Proc
                     {
                         int CmdMode = 1;//待確認
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                            if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db) == GetDataResult.Success) //讀取CMD_MST
+                            if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                             {
                                 string cmdSno = dataObject[0].CmdSno;
 
@@ -1327,12 +1329,12 @@ namespace Mirle.DB.Proc
 
                                     clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreIn Command");
 
-                                    if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                    if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                     {
                                         clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
                                         return false;
                                     }
-                                    if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.EmptyStoreInWriteCraneCmdToCV, db) == ExecuteSQLResult.Success)
+                                    if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.EmptyStoreInWriteCraneCmdToCV, db).ResultCode == DBResult.Success)
                                     {
                                         clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Update cmd suceess => {cmdSno}");
                                     }
@@ -1351,7 +1353,7 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
-                                    if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                    if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                     {
                                         clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1389,8 +1391,10 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
-                                                       
-                            if (CMD_MST.GetEmptyCmdMstByStoreIn(cmdSno, out var dataObject, db) == GetDataResult.Success)
+
+                        
+                            
+                            if (CMD_MST.GetEmptyCmdMstByStoreIn(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                             {
                                 string source = $"{CranePortNo.A1}";
                                 string dest = $"{dataObject[0].NewLoc}";
@@ -1421,12 +1425,12 @@ namespace Mirle.DB.Proc
 
                                 clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get Command => {cmdSno}");
 
-                                if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Begin Fail => {cmdSno}");
                                     return false;
                                 }
-                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.EmptyStoreInCreateCraneCmd, db) != ExecuteSQLResult.Success)
+                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.EmptyStoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Update CmdMst Fail => {cmdSno}");
                                    
@@ -1440,7 +1444,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
 
@@ -1482,11 +1486,11 @@ namespace Mirle.DB.Proc
                     if (iRet == DBResult.Success)
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        if (CMD_MST.GetEmptyCmdMstByStoreInFinish(stn1, out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetEmptyCmdMstByStoreInFinish(stn1, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             foreach (var cmdMst in dataObject.Data)
                             {
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db) == GetDataResult.Success)
+                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db).ResultCode == DBResult.Success)
                                 {
                                     if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
                                     {
@@ -1504,7 +1508,7 @@ namespace Mirle.DB.Proc
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -1526,26 +1530,26 @@ namespace Mirle.DB.Proc
                                         }
                                         if (bflag == true)
                                         {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
-                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.EmptyStoreInCraneCmdFinish, db) != ExecuteSQLResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.EmptyStoreInCraneCmdFinish, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -1890,7 +1894,7 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetLocToLoc(out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetLocToLoc(out var dataObject, db).ResultCode == DBResult.Success)
                         {
 
                             string source = $"{dataObject[0].Loc}";
@@ -1900,12 +1904,12 @@ namespace Mirle.DB.Proc
 
                             clsWriLog.L2LLogTrace(5, "LocToLoc", $"LocToLoc Command Received => {cmdSno}");
 
-                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command, Begin Fail => {cmdSno}");
                                 return false;
                             }
-                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.LoctoLocReady, db) != ExecuteSQLResult.Success)
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.LoctoLocReady, db).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command, Update CmdMst Fail => {cmdSno}");
                                 
@@ -1918,7 +1922,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command Commit Fail => {cmdSno}");
 
@@ -1956,11 +1960,11 @@ namespace Mirle.DB.Proc
                     if (iRet == DBResult.Success)
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        if (CMD_MST.GetLoctoLocFinish(out var dataObject, db) == GetDataResult.Success)
+                        if (CMD_MST.GetLoctoLocFinish(out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             foreach (var cmdMst in dataObject.Data)
                             {
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db) == GetDataResult.Success)
+                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db).ResultCode == DBResult.Success)
                                 {
                                     if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
                                     {
@@ -1978,7 +1982,7 @@ namespace Mirle.DB.Proc
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -2000,26 +2004,26 @@ namespace Mirle.DB.Proc
                                         }
                                         if (bflag == true)
                                         {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
+                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
-                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.LoctoLocReadyFinish, db) != ExecuteSQLResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.LoctoLocReadyFinish, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
+                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
                                             }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
+                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
+                                            {
+                                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                                             {
                                                 return false;
                                             }
@@ -2072,7 +2076,7 @@ namespace Mirle.DB.Proc
                 int iRet = clsGetDB.FunDbOpen(db);
                 if (iRet == DBResult.Success)
                 {
-                    if (CMD_MST.GetCmdMstByStoreOutcheck(StnNo.A3, out var dataObject, db) == GetDataResult.Success)
+                    if (CMD_MST.GetCmdMstByStoreOutcheck(StnNo.A3, out var dataObject, db).ResultCode == DBResult.Success)
                     {
                         int COUNT = Convert.ToInt32(dataObject[0].COUNT);
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
