@@ -1,4 +1,4 @@
-﻿namespace Mirle.ASRS.Conveyors.U0NXMA30.View
+﻿namespace Mirle.ASRS.Conveyors.View
 {
     partial class MainView
     {
@@ -35,16 +35,16 @@
             this.lbl_3F = new System.Windows.Forms.Label();
             this.lbl_2F = new System.Windows.Forms.Label();
             this.lbl_1F = new System.Windows.Forms.Label();
-            this.A1 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A2 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A3 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A4 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A5 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A6 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A7 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A8 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A9 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
-            this.A10 = new Mirle.ASRS.Conveyors.U0NXMA30.View.BufferView();
+            this.A1 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A2 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A3 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A4 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A5 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A6 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A7 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A8 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A9 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.A10 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPLCConnSts = new System.Windows.Forms.Label();
