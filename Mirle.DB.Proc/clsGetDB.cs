@@ -33,6 +33,10 @@ namespace Mirle.DB.Proc
             {
                 clsWriLog.Log.FunWriTraceLog_CV($"資料庫開啟失敗！=> {strEM}");
             }
+            else
+            {
+                clsHost.IsConn = true;
+            }
 
             return iRet;
         }

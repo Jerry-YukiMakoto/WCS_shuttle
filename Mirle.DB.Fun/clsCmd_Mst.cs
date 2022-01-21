@@ -5,6 +5,7 @@ using Mirle.Structure;
 using Mirle.DataBase;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mirle.DB.Fun
 {
@@ -19,7 +20,7 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
-            sql += $"AND STNNO = '{stations} '";
+            sql += $"AND STNNO = '{stations}'";
             return db.GetData(sql, out dataObject);
         }
 
@@ -42,9 +43,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {
@@ -66,7 +71,7 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
-            sql += $"AND STNNO = '{stations} '";
+            sql += $"AND STNNO = '{stations}'";
             return db.GetData(sql, out dataObject);
         }
 
@@ -75,7 +80,7 @@ namespace Mirle.DB.Fun
             string sql = "SELECT COUNT(CmdSno) as COUNT FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
-            sql += $"AND STNNO = '{stations} '";
+            sql += $"AND STNNO = '{stations}'";
             return db.GetData(sql, out dataObject);
         }
 
@@ -98,9 +103,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {
@@ -137,9 +146,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {
@@ -176,9 +189,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {
@@ -223,7 +240,8 @@ namespace Mirle.DB.Fun
         public ExecuteSQLResult UpdateCmdMst(string cmdSno, string trace, SqlServer db)
         {
             string sql = "UPDATE CMDMST ";
-            sql += $"SET TRACE='{trace}' ";
+            sql += $"SET TRACE='{trace}',";
+            sql += $"Remark=''";
             sql += $"WHERE CmdSno='{cmdSno}' ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Running}' ";
             return db.ExecuteSQL2(sql);
@@ -244,6 +262,7 @@ namespace Mirle.DB.Fun
             string sql = "UPDATE CMDMST ";
             sql += $"SET CmdSts='{clsConstValue.CmdSts.strCmd_Running}', ";
             sql += $"TRACE='{trace}', ";
+            sql += $"Remark='', ";
             sql += $"ExpDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
             sql += $"WHERE CmdSno='{cmdSno}' ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
@@ -263,8 +282,8 @@ namespace Mirle.DB.Fun
         {
             string sql = "UPDATE CMDMST ";
             sql += $"SET ExpDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
-            sql += $"EndDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
-            sql += $"REMARK='{REMARK}' ";
+            sql += $"EndDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ,";
+            sql += $"REMARK='{REMARK}' ,";
             sql += $"Cmd_Abnormal='{abnormal}' ";
             sql += $"WHERE CmdSno='{cmdSno}' ";
             return db.ExecuteSQL2(sql);

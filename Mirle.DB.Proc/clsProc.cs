@@ -612,7 +612,7 @@ namespace Mirle.DB.Proc
 
                                         if (equCmd[0].CompleteCode == "92")//正常完成
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
@@ -627,14 +627,14 @@ namespace Mirle.DB.Proc
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
                                         {
-                                            cmdsts = $"{CmdSts.CmdCancel}";
+                                            cmdsts = CmdSts.CmdCancel;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag = true;
@@ -1081,8 +1081,7 @@ namespace Mirle.DB.Proc
                         string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
                         int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
 
-                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}, " +
-                                    $"{CmdMode}");
+                        
 
                             if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                             {
@@ -1195,7 +1194,7 @@ namespace Mirle.DB.Proc
 
                                         if (equCmd[0].CompleteCode == "92")//正常完成
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
@@ -1210,14 +1209,14 @@ namespace Mirle.DB.Proc
                                         }
                                         else if(equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
                                         {
-                                            cmdsts = $"{CmdSts.CmdCancel}";
+                                            cmdsts = CmdSts.CmdCancel;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag=true;
@@ -1393,7 +1392,7 @@ namespace Mirle.DB.Proc
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
 
-                            clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready EmptyStoreIn");
+                        
                             
                             if (CMD_MST.GetEmptyCmdMstByStoreIn(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                             {
@@ -1479,7 +1478,7 @@ namespace Mirle.DB.Proc
             {
                 var stn1 = new List<string>()
                 {
-                    StnNo.A4
+                    StnNo.A4,
                 };
                 using (var db = clsGetDB.GetDB(_config))
                 {
@@ -1502,7 +1501,7 @@ namespace Mirle.DB.Proc
 
                                         if (equCmd[0].CompleteCode == "92")//正常完成
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
@@ -1517,14 +1516,14 @@ namespace Mirle.DB.Proc
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
                                         {
-                                            cmdsts = $"{CmdSts.CmdCancel}";
+                                            cmdsts = CmdSts.CmdCancel;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag = true;
@@ -1976,7 +1975,7 @@ namespace Mirle.DB.Proc
 
                                         if (equCmd[0].CompleteCode == "92")//正常完成
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
@@ -1991,14 +1990,14 @@ namespace Mirle.DB.Proc
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
                                         {
-                                            cmdsts = $"{CmdSts.CmdCancel}";
+                                            cmdsts = CmdSts.CmdCancel;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
-                                            cmdsts = $"{CmdSts.CompleteWaitUpdate}";
+                                            cmdsts = CmdSts.CompleteWaitUpdate;
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag = true;

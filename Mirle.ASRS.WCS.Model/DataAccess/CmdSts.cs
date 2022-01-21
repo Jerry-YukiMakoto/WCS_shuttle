@@ -1,10 +1,10 @@
 ﻿namespace Mirle.ASRS.WCS.Model.DataAccess
 {
-    public enum CmdSts
+    public struct CmdSts
     {
-        Queue = 0,
-        Transferring = 1,
-        CompleteWaitUpdate = 7,
-        CmdCancel = 8
+        public const string Queue = "0";
+        public const string Transferring = "1";
+        public const string CompleteWaitUpdate = "7";
+        public const string CmdCancel = "8";
     }
 }

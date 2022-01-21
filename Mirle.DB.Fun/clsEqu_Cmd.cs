@@ -275,6 +275,7 @@ namespace Mirle.DB.Fun
             sql += $"'{cmdSno}', ";
             sql += $"'{craneNo}', ";
             sql += $"'{cmdMode}', ";
+            sql += $"'{1}', ";
             sql += $"'{source}', ";
             sql += $"'{destination}', ";
             sql += $"'{0}', ";
