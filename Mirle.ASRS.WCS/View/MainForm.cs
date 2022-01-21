@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Data;
 using Mirle.Grid.U0NXMA30;
 using Mirle.DB.Object;
-using Mirle.DataBase;
 using WCS_API_Server;
 using Unity;
 using Mirle.Logger;
@@ -14,7 +12,6 @@ using System.Threading;
 using Mirle.ASRS.WCS.Library;
 using Mirle.ASRS.WCS.Controller;
 using Mirle.CENS.U0NXMA30;
-using Mirle.ASRS.Conveyors.U0NXMA30.View;
 using Mirle.Def;
 
 namespace Mirle.ASRS.WCS.View

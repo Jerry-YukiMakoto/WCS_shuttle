@@ -2,24 +2,26 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Mirle.ASRS.Conveyors;
+using Mirle.ASRS.Conveyors.View;
 using Mirle.MPLC;
 using Mirle.MPLC.DataBlocks;
 using Mirle.MPLC.DataBlocks.DeviceRange;
 using Mirle.MPLC.MCProtocol;
 using Mirle.MPLC.SharedMemory;
-using Mirle.ASRS.Conveyors.U0NXMA30.View;
 
 namespace Mirle.ASRS.WCS.Controller
 {
     public class CVController : IDisposable
     {
         private readonly PLCHost _plcHost;
-        private readonly Conveyor _converyor;
-        private readonly bool _simulatorEnable;
+        private readonly MainView _mainView;
+        private readonly Conveyors.Conveyor _converyor;
+        private readonly bool _InMemorySimulator;
+        private readonly bool _PlcConnected;
 
-        public CVController(string ipAddress, int tcpPort, bool simulatorEnable)
+        public CVController(string ipAddress, int tcpPort, bool InMemorySimulator)
         {
-            if (simulatorEnable)
+            if (InMemorySimulator)
             {
                 var smWriter = new SMReadWriter();
                 var blockInfos = GetBlockInfos();
@@ -27,8 +29,8 @@ namespace Mirle.ASRS.WCS.Controller
                 {
                     smWriter.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
                 }
-                _converyor = new Conveyor(smWriter);
-                _simulatorEnable=simulatorEnable; 
+                _converyor = new Conveyors.Conveyor(smWriter);
+                _InMemorySimulator = InMemorySimulator;
             }
             else
             {
@@ -44,8 +46,7 @@ namespace Mirle.ASRS.WCS.Controller
                 {
                     smReader.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
                 }
-
-                _converyor = new Conveyor(_plcHost);
+                _converyor = new Conveyors.Conveyor(_plcHost);
                 _plcHost.Start();
             }
 
@@ -55,6 +56,8 @@ namespace Mirle.ASRS.WCS.Controller
             }
 
             _converyor.Start();
+            _PlcConnected = _plcHost.IsConnected;
+            _mainView = new MainView(_converyor, _PlcConnected);
         }
 
         private IEnumerable<BlockInfo> GetBlockInfos()
@@ -79,7 +82,7 @@ namespace Mirle.ASRS.WCS.Controller
 
         public bool GetConnect()
         {
-            if (_simulatorEnable)
+            if (_InMemorySimulator)
             {
                 return true;
             }
