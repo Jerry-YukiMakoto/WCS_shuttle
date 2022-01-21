@@ -5,6 +5,7 @@ using Mirle.Structure;
 using Mirle.DataBase;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mirle.DB.Fun
 {
@@ -42,9 +43,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {
@@ -98,9 +103,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {
@@ -137,9 +146,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {
@@ -176,9 +189,13 @@ namespace Mirle.DB.Fun
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {
-                if (sql.EndsWith(","))
+                if (stations.Last() == stn)
                 {
                     sql += $" '{stn}'";
+                }
+                else if (sql.EndsWith(","))
+                {
+                    sql += $" '{stn}',";
                 }
                 else
                 {

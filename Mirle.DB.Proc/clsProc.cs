@@ -1479,7 +1479,7 @@ namespace Mirle.DB.Proc
             {
                 var stn1 = new List<string>()
                 {
-                    StnNo.A4
+                    StnNo.A4,
                 };
                 using (var db = clsGetDB.GetDB(_config))
                 {
