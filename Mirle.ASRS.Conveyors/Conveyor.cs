@@ -18,6 +18,9 @@ namespace Mirle.ASRS.Conveyors
         private readonly ThreadWorker _heartbeat;
         private readonly ThreadWorker _refresh;
 
+        private IMPLCProvider _plcHost;
+        public bool IsConnected => _plcHost.IsConnected;
+
         public delegate void SystemAlarmEventHandler(object sender, AlarmEventArgs e);
 
         public event SystemAlarmEventHandler OnSystemAlarmTrigger;
@@ -27,6 +30,7 @@ namespace Mirle.ASRS.Conveyors
 
         public Conveyor(IMPLCProvider plcHost)
         {
+            _plcHost = plcHost;
             _signal = new SignalMapper(plcHost);
 
             foreach (var buffer in _signal.BufferSignals)
@@ -75,6 +79,8 @@ namespace Mirle.ASRS.Conveyors
                     systemSignal.ControllerSignal.Heartbeat.SetValue(0);
                 }
             }
+
+            
 
             //var dt = DateTime.Now; //看來目前用不到
             //int[] bcdDatetime = new int[6];

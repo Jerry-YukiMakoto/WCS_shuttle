@@ -14,12 +14,11 @@ namespace Mirle.ASRS.Conveyors.View
         private LoggerService _loggerService;
         private readonly bool _PlcConnected;
 
-        public MainView(Conveyor conveyor, bool PlcConnected)
+        public MainView(Conveyor conveyor)
         {
             InitializeComponent();
-            _PlcConnected = PlcConnected;
+            _PlcConnected = conveyor.IsConnected;
             _conveyor = conveyor;
-
         }
         private void MainView_Load(object sender, EventArgs e)
         {

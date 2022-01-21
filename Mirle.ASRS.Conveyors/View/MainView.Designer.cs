@@ -28,13 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.timerMainProc = new System.Windows.Forms.Timer(this.components);
+            this.timerMainProc = new System.Windows.Forms.Timer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lbl_4F = new System.Windows.Forms.Label();
             this.lbl_3F = new System.Windows.Forms.Label();
             this.lbl_2F = new System.Windows.Forms.Label();
             this.lbl_1F = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblPLCConnSts = new System.Windows.Forms.Label();
             this.A1 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A2 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A3 = new Mirle.ASRS.Conveyors.View.BufferView();
@@ -45,9 +47,6 @@
             this.A8 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A9 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A10 = new Mirle.ASRS.Conveyors.View.BufferView();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblPLCConnSts = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -90,8 +89,8 @@
             // 
             this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1087, 591);
-            this.splitContainer1.SplitterDistance = 910;
+            this.splitContainer1.Size = new System.Drawing.Size(1170, 657);
+            this.splitContainer1.SplitterDistance = 979;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -138,6 +137,54 @@
             this.lbl_1F.Size = new System.Drawing.Size(46, 32);
             this.lbl_1F.TabIndex = 7;
             this.lbl_1F.Text = "1F";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblPLCConnSts, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(183, 655);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(177, 39);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "PLC Status";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblPLCConnSts
+            // 
+            this.lblPLCConnSts.BackColor = System.Drawing.Color.Red;
+            this.lblPLCConnSts.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblPLCConnSts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblPLCConnSts.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.lblPLCConnSts.ForeColor = System.Drawing.Color.Black;
+            this.lblPLCConnSts.Location = new System.Drawing.Point(2, 41);
+            this.lblPLCConnSts.Margin = new System.Windows.Forms.Padding(2);
+            this.lblPLCConnSts.Name = "lblPLCConnSts";
+            this.lblPLCConnSts.Size = new System.Drawing.Size(179, 74);
+            this.lblPLCConnSts.TabIndex = 12;
+            this.lblPLCConnSts.Text = "Connect Status";
+            this.lblPLCConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // A1
             // 
@@ -249,58 +296,11 @@
             this.A10.Size = new System.Drawing.Size(107, 81);
             this.A10.TabIndex = 6;
             // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblPLCConnSts, 0, 1);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 3);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(166, 587);
-            this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(160, 35);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "PLC Status";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblPLCConnSts
-            // 
-            this.lblPLCConnSts.BackColor = System.Drawing.Color.Red;
-            this.lblPLCConnSts.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblPLCConnSts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblPLCConnSts.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.lblPLCConnSts.ForeColor = System.Drawing.Color.Black;
-            this.lblPLCConnSts.Location = new System.Drawing.Point(2, 37);
-            this.lblPLCConnSts.Margin = new System.Windows.Forms.Padding(2);
-            this.lblPLCConnSts.Name = "lblPLCConnSts";
-            this.lblPLCConnSts.Size = new System.Drawing.Size(162, 66);
-            this.lblPLCConnSts.TabIndex = 12;
-            this.lblPLCConnSts.Text = "Connect Status";
-            this.lblPLCConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // MainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1087, 591);
+            this.ClientSize = new System.Drawing.Size(1170, 657);
             this.Controls.Add(this.splitContainer1);
             this.Name = "MainView";
             this.Text = "MainView";

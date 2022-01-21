@@ -100,7 +100,7 @@
     <Compile Include="ReportInfo\DisplayTaskStatusInfo.cs" />
     <Compile Include="ReportInfo\StackPalletsOutInfo.cs" />
     <Compile Include="ReportInfo\StackPalletsInInfo.cs" />
-    <Compile Include="ReportInfo\TaskStateUpdateRetureInfo.cs" />
+    <Compile Include="ReportInfo\TaskStateUpdateReturnInfo.cs" />
     <Compile Include="View\MainTestForm.cs">
       <SubType>Form</SubType>
     </Compile>

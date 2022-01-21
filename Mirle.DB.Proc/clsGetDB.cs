@@ -27,6 +27,7 @@ namespace Mirle.DB.Proc
         public static int FunDbOpen(SqlServer db, ref string strEM)
         {
             int iRet = db.Open(ref strEM);
+            db.CheckConnection();
             clsHost.IsConn = db.IsConnected;
             if(iRet != DBResult.Success)
             {

@@ -34,8 +34,8 @@ namespace Mirle.ASRS.WCS.Library
             try
             {
                 lcsini = new ConfigurationBuilder<ASRSINI>()
-                   .UseIniFile("Config\\ASRS.ini")
-                   .Build();
+                    .UseIniFile("Config\\ASRS.ini")
+                    .Build();
 
                 FunDbConfig(lcsini);
                 FunApiConfig(lcsini);
@@ -65,15 +65,15 @@ namespace Mirle.ASRS.WCS.Library
             DbConfig.FODBServer = lcsini.Database.FODbServer;
             DbConfig.WriteLog = true;
 
-            DbConfig_WMS.CommandTimeOut = lcsini.Database_WMS.CommandTimeOut;
-            DbConfig_WMS.ConnectTimeOut = lcsini.Database_WMS.ConnectTimeOut;
-            DbConfig_WMS.DbName = lcsini.Database_WMS.DataBase;
-            DbConfig_WMS.DbPassword = lcsini.Database_WMS.DbPswd;
-            DbConfig_WMS.DbServer = lcsini.Database_WMS.DbServer;
-            DbConfig_WMS.DBType = (DBTypes)Enum.Parse(typeof(DBTypes), lcsini.Database_WMS.DBMS);
-            DbConfig_WMS.DbUser = lcsini.Database_WMS.DbUser;
-            DbConfig_WMS.FODBServer = lcsini.Database_WMS.FODbServer;
-            DbConfig_WMS.WriteLog = true;
+            //DbConfig_WMS.CommandTimeOut = lcsini.Database_WMS.CommandTimeOut;
+            //DbConfig_WMS.ConnectTimeOut = lcsini.Database_WMS.ConnectTimeOut;
+            //DbConfig_WMS.DbName = lcsini.Database_WMS.DataBase;
+            //DbConfig_WMS.DbPassword = lcsini.Database_WMS.DbPswd;
+            //DbConfig_WMS.DbServer = lcsini.Database_WMS.DbServer;
+            //DbConfig_WMS.DBType = (DBTypes)Enum.Parse(typeof(DBTypes), lcsini.Database_WMS.DBMS);
+            //DbConfig_WMS.DbUser = lcsini.Database_WMS.DbUser;
+            //DbConfig_WMS.FODBServer = lcsini.Database_WMS.FODbServer;
+            //DbConfig_WMS.WriteLog = true;
         }
 
        

@@ -17,7 +17,7 @@ namespace Mirle.ASRS.WCS.Controller
         private readonly MainView _mainView;
         private readonly Conveyors.Conveyor _converyor;
         private readonly bool _InMemorySimulator;
-        private readonly bool _PlcConnected;
+       
 
         public CVController(string ipAddress, int tcpPort, bool InMemorySimulator)
         {
@@ -56,8 +56,7 @@ namespace Mirle.ASRS.WCS.Controller
             }
 
             _converyor.Start();
-            _PlcConnected = _plcHost.IsConnected;
-            _mainView = new MainView(_converyor, _PlcConnected);
+            _mainView = new MainView(_converyor);
         }
 
         private IEnumerable<BlockInfo> GetBlockInfos()

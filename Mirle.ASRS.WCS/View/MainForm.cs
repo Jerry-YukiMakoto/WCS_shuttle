@@ -13,6 +13,7 @@ using Mirle.ASRS.WCS.Library;
 using Mirle.ASRS.WCS.Controller;
 using Mirle.CENS.U0NXMA30;
 using Mirle.Def;
+using Mirle.DataBase;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -25,11 +26,13 @@ namespace Mirle.ASRS.WCS.View
         private WebApiHost _webApiHost;
         private UnityContainer _unityContainer;
         private static WCSManager _wcsManager;
-        private static Form mainView;
+        private static System.Timers.Timer timRead = new System.Timers.Timer();
 
         public MainForm()
         {
             InitializeComponent();
+            timRead.Elapsed += new System.Timers.ElapsedEventHandler(timRead_Elapsed);
+            timRead.Enabled = false; timRead.Interval = 500;
         }
 
         #region Event
@@ -160,11 +163,30 @@ namespace Mirle.ASRS.WCS.View
 
         #endregion 側邊欄buttons
 
-        
-
-       
-
         #region Timer
+
+        private void timRead_Elapsed(object source, System.Timers.ElapsedEventArgs e)
+        {
+            timRead.Enabled = false;
+            try
+            {
+                //chkDBConnect Thread(尚未完成)
+                var db = DB.Proc.clsGetDB.GetDB(clInitSys.DbConfig);
+                db.Open();
+                db.CheckConnection();
+                DB.Proc.clsHost.IsConn = db.IsConnected;
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+            }
+            finally
+            {
+                timRead.Enabled = true;
+            }
+        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
