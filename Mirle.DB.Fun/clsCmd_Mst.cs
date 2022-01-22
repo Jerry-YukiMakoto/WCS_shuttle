@@ -142,7 +142,7 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Running}' ";
-            sql += $"AND TRACE IN ('{Trace.EmptyStoreInCraneCmdFinish}') ";
+            sql += $"AND TRACE IN ('{Trace.EmptyStoreInCreateCraneCmd}') ";
             sql += $"AND STNNO IN (";
             foreach (var stn in stations)
             {

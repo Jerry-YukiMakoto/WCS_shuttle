@@ -1227,7 +1227,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 return false;
                                             }
-                                            if (cmdMst.IOType == "2" || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
+                                            if (cmdMst.IOType == "2" || cmdMst.IOType == "7" || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
                                             {
                                                 if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
                                                 {
