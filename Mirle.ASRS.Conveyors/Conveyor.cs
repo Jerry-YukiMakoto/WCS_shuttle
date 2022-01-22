@@ -67,6 +67,7 @@ namespace Mirle.ASRS.Conveyors
 
         private void Heartbeat()
         {
+            if (!IsConnected) return;
             var systemSignal = _signal.GetSystemSignal();
             if (systemSignal.Heartbeat.GetValue() == systemSignal.ControllerSignal.Heartbeat.GetValue())
             {
@@ -96,6 +97,7 @@ namespace Mirle.ASRS.Conveyors
 
         private void Refresh()
         {
+            if (!IsConnected) return;
             foreach (var buffer in _buffers.Values)
             {
                 buffer.Refresh();
