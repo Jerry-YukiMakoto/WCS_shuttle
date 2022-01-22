@@ -27,10 +27,10 @@ namespace Mirle.DB.Proc
         public static int FunDbOpen(SqlServer db, ref string strEM)
         {
             int iRet = db.Open(ref strEM);
-            db.CheckConnection();
-            clsHost.IsConn = db.IsConnected;
+            
             if(iRet != DBResult.Success)
             {
+                clsHost.IsConn = false;
                 clsWriLog.Log.FunWriTraceLog_CV($"資料庫開啟失敗！=> {strEM}");
             }
             else
