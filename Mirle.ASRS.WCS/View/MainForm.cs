@@ -23,6 +23,7 @@ namespace Mirle.ASRS.WCS.View
         
 
         private DB.ClearCmd.Proc.clsHost clearCmd;
+        public static clsDBConnCheck_Proc clsDBConnCheck = new clsDBConnCheck_Proc();
         private WebApiHost _webApiHost;
         private UnityContainer _unityContainer;
         private static WCSManager _wcsManager;
@@ -170,11 +171,8 @@ namespace Mirle.ASRS.WCS.View
             timRead.Enabled = false;
             try
             {
-                //chkDBConnect Thread(尚未完成)
-                var db = DB.Proc.clsGetDB.GetDB(clInitSys.DbConfig);
-                db.Open();
-                db.CheckConnection();
-                DB.Proc.clsHost.IsConn = db.IsConnected;
+                //chkDBConnect Thread
+                clsDBConnCheck.subStart();
             }
             catch (Exception ex)
             {

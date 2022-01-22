@@ -65,7 +65,7 @@ namespace Mirle.ASRS.Conveyors.View
             // lblBufferName
             // 
             this.lblBufferName.AutoSize = true;
-            this.lblBufferName.BackColor = System.Drawing.Color.LimeGreen;
+            this.lblBufferName.BackColor = System.Drawing.Color.ForestGreen;
             this.lblBufferName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblBufferName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblBufferName.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -165,7 +165,7 @@ namespace Mirle.ASRS.Conveyors.View
             this.lblPresence.Name = "lblPresence";
             this.lblPresence.Size = new System.Drawing.Size(29, 18);
             this.lblPresence.TabIndex = 11;
-            this.lblPresence.Text = "V";
+            this.lblPresence.Text = "0";
             this.lblPresence.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblOther1

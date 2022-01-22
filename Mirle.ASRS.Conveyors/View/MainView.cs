@@ -12,12 +12,10 @@ namespace Mirle.ASRS.Conveyors.View
     {
         private readonly Conveyor _conveyor;
         private LoggerService _loggerService;
-        private readonly bool _PlcConnected;
 
         public MainView(Conveyor conveyor)
         {
             InitializeComponent();
-            _PlcConnected = conveyor.IsConnected;
             _conveyor = conveyor;
         }
         private void MainView_Load(object sender, EventArgs e)
@@ -34,19 +32,35 @@ namespace Mirle.ASRS.Conveyors.View
             try
             {
                 //Check PLC
-                lblPLCConnSts.BackColor = _PlcConnected ? Color.Lime : Color.Red;
-               
+                lblPLCConnSts.BackColor = _conveyor.IsConnected ? Color.Lime : Color.Red;
 
-                for(int index = 0; index < splitContainer1.Panel1.Controls.Count; index++) 
-                {
-                    if(splitContainer1.Panel1.Controls[index] is BufferView bufferView)
+               if(!_conveyor.IsConnected)
+               {
+                    for (int index = 0; index < splitContainer1.Panel1.Controls.Count; index++)
                     {
-                        if(_conveyor.TryGetBuffer(bufferView.BufferIndex, out var buffer))
+                        if (splitContainer1.Panel1.Controls[index] is BufferView bufferView)
                         {
-                            bufferView.Refresh_Buffer(buffer);
+                            if (_conveyor.TryGetBuffer(bufferView.BufferIndex, out var buffer))
+                            {
+                                bufferView.Refresh_BufferPLCError(buffer);
+                            }
                         }
                     }
                 }
+               else 
+               {
+                    for (int index = 0; index < splitContainer1.Panel1.Controls.Count; index++)
+                    {
+                        if (splitContainer1.Panel1.Controls[index] is BufferView bufferView)
+                        {
+                            if (_conveyor.TryGetBuffer(bufferView.BufferIndex, out var buffer))
+                            {
+                                bufferView.Refresh_Buffer(buffer);
+                            }
+                        }
+                    }
+               }
+                
             }
             catch (Exception ex)
             {

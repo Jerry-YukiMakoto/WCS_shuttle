@@ -12,6 +12,9 @@ namespace Mirle.DB.Object.GridData
     {
         public void SubShowCmdtoGrid(ref DataGridView oGrid)
         {
+            oGrid.SuspendLayout();
+            oGrid.Rows.Clear();
+            //母板相關訊息填入
 
         }
     }
