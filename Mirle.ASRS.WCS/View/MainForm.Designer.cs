@@ -44,11 +44,8 @@
             this.btnCraneSpeedMaintain = new System.Windows.Forms.Button();
             this.btnCmdMaintain = new System.Windows.Forms.Button();
             this.btnSendAPITest = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPageCmd = new System.Windows.Forms.TabPage();
             this.GridCmd = new System.Windows.Forms.DataGridView();
-            this.tabPagePallet = new System.Windows.Forms.TabPage();
-            this.GridPallets = new System.Windows.Forms.DataGridView();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -64,11 +61,7 @@
             this.spcMainView.Panel2.SuspendLayout();
             this.spcMainView.SuspendLayout();
             this.tableLayoutPanelSideBtn.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPageCmd.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridCmd)).BeginInit();
-            this.tabPagePallet.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.GridPallets)).BeginInit();
             this.SuspendLayout();
             // 
             // timer1
@@ -91,8 +84,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.spcView);
-            this.splitContainer1.Size = new System.Drawing.Size(1183, 726);
-            this.splitContainer1.SplitterDistance = 78;
+            this.splitContainer1.Size = new System.Drawing.Size(1080, 709);
+            this.splitContainer1.SplitterDistance = 75;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -112,7 +105,7 @@
             this.tlpMainSts.Name = "tlpMainSts";
             this.tlpMainSts.RowCount = 1;
             this.tlpMainSts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpMainSts.Size = new System.Drawing.Size(1183, 78);
+            this.tlpMainSts.Size = new System.Drawing.Size(1080, 75);
             this.tlpMainSts.TabIndex = 0;
             // 
             // lblTimer
@@ -121,10 +114,10 @@
             this.lblTimer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTimer.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTimer.ForeColor = System.Drawing.Color.Black;
-            this.lblTimer.Location = new System.Drawing.Point(171, 0);
+            this.lblTimer.Location = new System.Drawing.Point(156, 0);
             this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(159, 78);
+            this.lblTimer.Size = new System.Drawing.Size(144, 75);
             this.lblTimer.TabIndex = 268;
             this.lblTimer.Text = "yyyy/MM/dd hh:mm:ss";
             this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -136,7 +129,7 @@
             this.picMirle.Location = new System.Drawing.Point(4, 4);
             this.picMirle.Margin = new System.Windows.Forms.Padding(4);
             this.picMirle.Name = "picMirle";
-            this.picMirle.Size = new System.Drawing.Size(159, 70);
+            this.picMirle.Size = new System.Drawing.Size(144, 67);
             this.picMirle.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picMirle.TabIndex = 267;
             this.picMirle.TabStop = false;
@@ -149,13 +142,13 @@
             this.tableLayoutPanelConn.Controls.Add(this.chkOnline, 0, 1);
             this.tableLayoutPanelConn.Controls.Add(this.lblDBConn, 0, 0);
             this.tableLayoutPanelConn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelConn.Location = new System.Drawing.Point(1018, 4);
+            this.tableLayoutPanelConn.Location = new System.Drawing.Point(929, 4);
             this.tableLayoutPanelConn.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanelConn.Name = "tableLayoutPanelConn";
             this.tableLayoutPanelConn.RowCount = 2;
             this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelConn.Size = new System.Drawing.Size(161, 70);
+            this.tableLayoutPanelConn.Size = new System.Drawing.Size(147, 67);
             this.tableLayoutPanelConn.TabIndex = 0;
             // 
             // chkOnline
@@ -165,10 +158,10 @@
             this.chkOnline.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkOnline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chkOnline.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkOnline.Location = new System.Drawing.Point(4, 39);
+            this.chkOnline.Location = new System.Drawing.Point(4, 37);
             this.chkOnline.Margin = new System.Windows.Forms.Padding(4);
             this.chkOnline.Name = "chkOnline";
-            this.chkOnline.Size = new System.Drawing.Size(153, 27);
+            this.chkOnline.Size = new System.Drawing.Size(139, 26);
             this.chkOnline.TabIndex = 2;
             this.chkOnline.Text = "OnLine";
             this.chkOnline.UseVisualStyleBackColor = true;
@@ -183,7 +176,7 @@
             this.lblDBConn.Location = new System.Drawing.Point(4, 0);
             this.lblDBConn.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblDBConn.Name = "lblDBConn";
-            this.lblDBConn.Size = new System.Drawing.Size(153, 35);
+            this.lblDBConn.Size = new System.Drawing.Size(139, 33);
             this.lblDBConn.TabIndex = 1;
             this.lblDBConn.Text = "DB Sts";
             this.lblDBConn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -203,9 +196,9 @@
             // 
             // spcView.Panel2
             // 
-            this.spcView.Panel2.Controls.Add(this.tabControl1);
-            this.spcView.Size = new System.Drawing.Size(1183, 643);
-            this.spcView.SplitterDistance = 470;
+            this.spcView.Panel2.Controls.Add(this.GridCmd);
+            this.spcView.Size = new System.Drawing.Size(1080, 629);
+            this.spcView.SplitterDistance = 458;
             this.spcView.SplitterWidth = 5;
             this.spcView.TabIndex = 0;
             // 
@@ -226,8 +219,8 @@
             // 
             this.spcMainView.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanelSideBtn);
-            this.spcMainView.Size = new System.Drawing.Size(1183, 470);
-            this.spcMainView.SplitterDistance = 1038;
+            this.spcMainView.Size = new System.Drawing.Size(1080, 458);
+            this.spcMainView.SplitterDistance = 947;
             this.spcMainView.SplitterWidth = 5;
             this.spcMainView.TabIndex = 0;
             // 
@@ -253,7 +246,7 @@
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(138, 468);
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(126, 456);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
             // 
             // btnCraneSpeedMaintain
@@ -263,7 +256,7 @@
             this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 117);
             this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4);
             this.btnCraneSpeedMaintain.Name = "btnCraneSpeedMaintain";
-            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(130, 61);
+            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(118, 61);
             this.btnCraneSpeedMaintain.TabIndex = 6;
             this.btnCraneSpeedMaintain.Text = "Crane Speed Maintain";
             this.btnCraneSpeedMaintain.UseVisualStyleBackColor = true;
@@ -276,7 +269,7 @@
             this.btnCmdMaintain.Location = new System.Drawing.Point(4, 48);
             this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
-            this.btnCmdMaintain.Size = new System.Drawing.Size(130, 61);
+            this.btnCmdMaintain.Size = new System.Drawing.Size(118, 61);
             this.btnCmdMaintain.TabIndex = 4;
             this.btnCmdMaintain.Text = "Command Maintain";
             this.btnCmdMaintain.UseVisualStyleBackColor = true;
@@ -289,79 +282,39 @@
             this.btnSendAPITest.Location = new System.Drawing.Point(4, 4);
             this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4);
             this.btnSendAPITest.Name = "btnSendAPITest";
-            this.btnSendAPITest.Size = new System.Drawing.Size(130, 36);
+            this.btnSendAPITest.Size = new System.Drawing.Size(118, 36);
             this.btnSendAPITest.TabIndex = 3;
             this.btnSendAPITest.Text = "Send API Test";
             this.btnSendAPITest.UseVisualStyleBackColor = true;
             this.btnSendAPITest.Visible = false;
             this.btnSendAPITest.Click += new System.EventHandler(this.btnSendAPITest_Click);
             // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabPageCmd);
-            this.tabControl1.Controls.Add(this.tabPagePallet);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 1;
-            this.tabControl1.Size = new System.Drawing.Size(1183, 168);
-            this.tabControl1.TabIndex = 0;
-            // 
-            // tabPageCmd
-            // 
-            this.tabPageCmd.Controls.Add(this.GridCmd);
-            this.tabPageCmd.Location = new System.Drawing.Point(4, 25);
-            this.tabPageCmd.Margin = new System.Windows.Forms.Padding(4);
-            this.tabPageCmd.Name = "tabPageCmd";
-            this.tabPageCmd.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPageCmd.Size = new System.Drawing.Size(1175, 139);
-            this.tabPageCmd.TabIndex = 0;
-            this.tabPageCmd.Text = "即時命令";
-            this.tabPageCmd.UseVisualStyleBackColor = true;
-            // 
             // GridCmd
             // 
             this.GridCmd.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.GridCmd.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GridCmd.Location = new System.Drawing.Point(4, 4);
+            this.GridCmd.Location = new System.Drawing.Point(0, 0);
             this.GridCmd.Margin = new System.Windows.Forms.Padding(4);
             this.GridCmd.Name = "GridCmd";
             this.GridCmd.RowHeadersWidth = 62;
             this.GridCmd.RowTemplate.Height = 24;
-            this.GridCmd.Size = new System.Drawing.Size(1167, 131);
+            this.GridCmd.Size = new System.Drawing.Size(1080, 166);
             this.GridCmd.TabIndex = 0;
             // 
-            // tabPagePallet
+            // tabControl1
             // 
-            this.tabPagePallet.Controls.Add(this.GridPallets);
-            this.tabPagePallet.Location = new System.Drawing.Point(4, 25);
-            this.tabPagePallet.Margin = new System.Windows.Forms.Padding(4);
-            this.tabPagePallet.Name = "tabPagePallet";
-            this.tabPagePallet.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPagePallet.Size = new System.Drawing.Size(1272, 140);
-            this.tabPagePallet.TabIndex = 1;
-            this.tabPagePallet.Text = "母板相關";
-            this.tabPagePallet.UseVisualStyleBackColor = true;
-            // 
-            // GridPallets
-            // 
-            this.GridPallets.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.GridPallets.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GridPallets.Location = new System.Drawing.Point(4, 4);
-            this.GridPallets.Margin = new System.Windows.Forms.Padding(4);
-            this.GridPallets.Name = "GridPallets";
-            this.GridPallets.RowHeadersWidth = 62;
-            this.GridPallets.RowTemplate.Height = 24;
-            this.GridPallets.Size = new System.Drawing.Size(1264, 132);
-            this.GridPallets.TabIndex = 0;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(200, 100);
+            this.tabControl1.TabIndex = 0;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(946, 581);
+            this.ClientSize = new System.Drawing.Size(1080, 709);
             this.Controls.Add(this.splitContainer1);
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
@@ -385,11 +338,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.spcMainView)).EndInit();
             this.spcMainView.ResumeLayout(false);
             this.tableLayoutPanelSideBtn.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
-            this.tabPageCmd.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.GridCmd)).EndInit();
-            this.tabPagePallet.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.GridPallets)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -399,8 +348,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Label lblDBConn;
         private System.Windows.Forms.SplitContainer spcView;
-        private System.Windows.Forms.DataGridView GridCmd;
-        private System.Windows.Forms.DataGridView GridPallets;
         private System.Windows.Forms.CheckBox chkOnline;
         private System.Windows.Forms.SplitContainer spcMainView;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelSideBtn;
@@ -412,8 +359,7 @@
         private System.Windows.Forms.Button btnCmdMaintain;
         private System.Windows.Forms.Button btnSendAPITest;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPageCmd;
-        private System.Windows.Forms.TabPage tabPagePallet;
+        private System.Windows.Forms.DataGridView GridCmd;
     }
 }
 
