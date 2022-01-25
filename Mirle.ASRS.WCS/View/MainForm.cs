@@ -257,8 +257,8 @@ namespace Mirle.ASRS.WCS.View
             ColumnDef.CMD_MST.GridSetLocRange(ref GridCmd);
         }
 
-        delegate void degShowCmdtoGrid(ref DataGridView oGrid, clsEnum.GridType type);
-        private void SubShowCmdtoGrid(ref DataGridView oGrid, clsEnum.GridType type)
+        delegate void degShowCmdtoGrid(ref DataGridView oGrid);
+        private void SubShowCmdtoGrid(ref DataGridView oGrid)
         {
             degShowCmdtoGrid obj;
             try
@@ -266,17 +266,12 @@ namespace Mirle.ASRS.WCS.View
                 if (InvokeRequired)
                 {
                     obj = new degShowCmdtoGrid(SubShowCmdtoGrid);
-                    Invoke(obj, oGrid, type);
+                    Invoke(obj, oGrid);
                 }
                 else
                 {
                     Gird.IGrid grid;
-                    if (type == clsEnum.GridType.CmdMst)
-                    {
-                        grid = new DB.Object.GridData.CmdMst();
-                    }
-                    else grid = new DB.Object.GridData.Pallet();
-
+                    grid = new DB.Object.GridData.CmdMst();
                     grid.SubShowCmdtoGrid(ref oGrid);
                 }
             }

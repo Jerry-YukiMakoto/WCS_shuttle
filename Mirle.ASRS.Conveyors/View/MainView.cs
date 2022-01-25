@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Linq;
 using Mirle.MPLC;
 using Mirle.MPLC.MCProtocol;
 using Mirle.ASRS.Conveyor.U2NMMA30.Service;
@@ -12,6 +13,7 @@ namespace Mirle.ASRS.Conveyors.View
     {
         private readonly Conveyor _conveyor;
         private LoggerService _loggerService;
+        private static int bufferCount = 10;
 
         public MainView(Conveyor conveyor)
         {
@@ -36,9 +38,9 @@ namespace Mirle.ASRS.Conveyors.View
 
                if(!_conveyor.IsConnected)
                {
-                    for (int index = 0; index < splitContainer1.Panel1.Controls.Count; index++)
+                    for (int index = 1; index <= bufferCount; index++)
                     {
-                        if (splitContainer1.Panel1.Controls[index] is BufferView bufferView)
+                        if (splitContainer1.Panel1.Controls.Find("A" + index, true).FirstOrDefault() is BufferView bufferView)
                         {
                             if (_conveyor.TryGetBuffer(bufferView.BufferIndex, out var buffer))
                             {
@@ -49,9 +51,9 @@ namespace Mirle.ASRS.Conveyors.View
                 }
                else 
                {
-                    for (int index = 0; index < splitContainer1.Panel1.Controls.Count; index++)
+                    for (int index = 1; index <= bufferCount; index++)
                     {
-                        if (splitContainer1.Panel1.Controls[index] is BufferView bufferView)
+                        if (splitContainer1.Panel1.Controls.Find("A"+ index, true).FirstOrDefault() is BufferView bufferView)
                         {
                             if (_conveyor.TryGetBuffer(bufferView.BufferIndex, out var buffer))
                             {
