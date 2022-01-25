@@ -156,10 +156,31 @@ namespace Mirle.ASRS.WCS.View
             }
         }
 
+        private Form test;
+        private void test_Click(object sender, EventArgs e)
+        {
+            if (test == null)
+            {
+                test = new Form1();
+                test.FormClosed += new FormClosedEventHandler(funtest_FormClosed);
+                test.Show();
+            }
+            else
+            {
+                test.BringToFront();
+            }
+        }
+
         private void funCmdMaintain_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (cmdMaintance != null)
                 cmdMaintance = null;
+        }
+
+        private void funtest_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (test != null)
+                test = null;
         }
 
         #endregion 側邊欄buttons

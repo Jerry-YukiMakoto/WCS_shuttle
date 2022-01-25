@@ -13,10 +13,11 @@ namespace Mirle.DB.Fun
     {
         public bool CheckExecutionEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination, SqlServer db)
         {
+            var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             if (GetEquCmd(cmdSno, out var equCmd, db) == GetDataResult.Success)
             {
-                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                if (equCmd[0].CmdSts == CmdSts.Queue.GetHashCode().ToString() || equCmd[0].CmdSts == CmdSts.Transferring.GetHashCode().ToString())
+                
+                if (equCmd[0].CmdSts == CmdSts.Queue.ToString() || equCmd[0].CmdSts == CmdSts.Transferring.ToString())
                 {
                     clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Command On Equ Execute, Please Check => {cmdSno}, " +
                     $"{craneNo}, " +
@@ -41,6 +42,10 @@ namespace Mirle.DB.Fun
                 {
                     int intCraneCount = 0;
                     intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
+                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Other Command running On Equ, Please Check => {cmdSno}, " +
+                   $"{craneNo}, " +
+                   $"{source}, " +
+                   $"{destination}");
                     return intCraneCount == 0 ? false : true;
                 }
                 else
