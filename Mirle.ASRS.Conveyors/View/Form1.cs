@@ -46,17 +46,47 @@ namespace Mirle.ASRS.WCS.Controller
 
         private void buttonwrite(object sender, EventArgs e)
         {
-            string text = textBox1.Text;
-            int text1 = int.Parse(textBox2.Text);
-            
-            
-            if (checkBox1.Checked)
+            int text1 = int.Parse(textBox1.Text);
+
+            int text2 = 0;
+            if (textBox2.Text != "")
             {
-                _test.SetBitOn("D"+text);
+                text2 = int.Parse(textBox2.Text);
             }
-            else
+           
+
+
+            if (CMD.Checked)
             {
-                _test.WriteWord("D" + text, text1);
+                _test.WriteWord("D" + (101+text1*10), text2);
+            }
+            if(mode.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10+1), text2);
+            }
+            if(Auto.Checked)
+            {
+                _test.SetBitOn("D" + (101 + text1 * 10 + 2.5));
+            }
+            if (presence.Checked)
+            {
+                _test.SetBitOn("D" + (101 + text1 * 10 + 2.7));
+            }
+            if (initialnotice.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10 + 9),text2);
+            }
+            if (ready.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10 + 3), text2);
+            }
+            if (path.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10 + 4), text2);
+            }
+            if (switchmode.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10 + 8), text2);
             }
         }
 
