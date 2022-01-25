@@ -1016,8 +1016,7 @@ namespace Mirle.DB.Proc
                             }
                             #endregion
 
-                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}, " +
-                                    $"{CmdMode}");
+                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}");
 
                                 string source = dataObject[0].Loc;
                                 string dest = $"{CranePortNo.A1}";

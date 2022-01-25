@@ -42,6 +42,10 @@ namespace Mirle.ASRS.WCS.Controller
             this.switchmode = new System.Windows.Forms.CheckBox();
             this.bufferindex = new System.Windows.Forms.Label();
             this.content = new System.Windows.Forms.Label();
+            this.Outmode = new System.Windows.Forms.CheckBox();
+            this.Inmode = new System.Windows.Forms.CheckBox();
+            this.error = new System.Windows.Forms.CheckBox();
+            this.emptynumber = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // test
@@ -73,6 +77,8 @@ namespace Mirle.ASRS.WCS.Controller
             // CMD
             // 
             this.CMD.AutoSize = true;
+            this.CMD.Checked = true;
+            this.CMD.CheckState = System.Windows.Forms.CheckState.Checked;
             this.CMD.Location = new System.Drawing.Point(237, 75);
             this.CMD.Name = "CMD";
             this.CMD.Size = new System.Drawing.Size(72, 22);
@@ -83,6 +89,8 @@ namespace Mirle.ASRS.WCS.Controller
             // mode
             // 
             this.mode.AutoSize = true;
+            this.mode.Checked = true;
+            this.mode.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mode.Location = new System.Drawing.Point(237, 133);
             this.mode.Name = "mode";
             this.mode.Size = new System.Drawing.Size(71, 22);
@@ -93,6 +101,8 @@ namespace Mirle.ASRS.WCS.Controller
             // Auto
             // 
             this.Auto.AutoSize = true;
+            this.Auto.Checked = true;
+            this.Auto.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Auto.Location = new System.Drawing.Point(237, 189);
             this.Auto.Name = "Auto";
             this.Auto.Size = new System.Drawing.Size(67, 22);
@@ -103,6 +113,8 @@ namespace Mirle.ASRS.WCS.Controller
             // initialnotice
             // 
             this.initialnotice.AutoSize = true;
+            this.initialnotice.Checked = true;
+            this.initialnotice.CheckState = System.Windows.Forms.CheckState.Checked;
             this.initialnotice.Location = new System.Drawing.Point(237, 240);
             this.initialnotice.Name = "initialnotice";
             this.initialnotice.Size = new System.Drawing.Size(117, 22);
@@ -113,6 +125,8 @@ namespace Mirle.ASRS.WCS.Controller
             // presence
             // 
             this.presence.AutoSize = true;
+            this.presence.Checked = true;
+            this.presence.CheckState = System.Windows.Forms.CheckState.Checked;
             this.presence.Location = new System.Drawing.Point(237, 298);
             this.presence.Name = "presence";
             this.presence.Size = new System.Drawing.Size(95, 22);
@@ -123,6 +137,8 @@ namespace Mirle.ASRS.WCS.Controller
             // ready
             // 
             this.ready.AutoSize = true;
+            this.ready.Checked = true;
+            this.ready.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ready.Location = new System.Drawing.Point(237, 351);
             this.ready.Name = "ready";
             this.ready.Size = new System.Drawing.Size(72, 22);
@@ -133,6 +149,8 @@ namespace Mirle.ASRS.WCS.Controller
             // path
             // 
             this.path.AutoSize = true;
+            this.path.Checked = true;
+            this.path.CheckState = System.Windows.Forms.CheckState.Checked;
             this.path.Location = new System.Drawing.Point(237, 411);
             this.path.Name = "path";
             this.path.Size = new System.Drawing.Size(63, 22);
@@ -143,7 +161,9 @@ namespace Mirle.ASRS.WCS.Controller
             // switchmode
             // 
             this.switchmode.AutoSize = true;
-            this.switchmode.Location = new System.Drawing.Point(237, 458);
+            this.switchmode.Checked = true;
+            this.switchmode.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.switchmode.Location = new System.Drawing.Point(237, 469);
             this.switchmode.Name = "switchmode";
             this.switchmode.Size = new System.Drawing.Size(116, 22);
             this.switchmode.TabIndex = 12;
@@ -165,15 +185,67 @@ namespace Mirle.ASRS.WCS.Controller
             this.content.Font = new System.Drawing.Font("新細明體", 15F);
             this.content.Location = new System.Drawing.Point(512, 235);
             this.content.Name = "content";
-            this.content.Size = new System.Drawing.Size(155, 45);
+            this.content.Size = new System.Drawing.Size(103, 30);
             this.content.TabIndex = 14;
             this.content.Text = "輸入值";
+            // 
+            // Outmode
+            // 
+            this.Outmode.AutoSize = true;
+            this.Outmode.Checked = true;
+            this.Outmode.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Outmode.Location = new System.Drawing.Point(237, 564);
+            this.Outmode.Name = "Outmode";
+            this.Outmode.Size = new System.Drawing.Size(96, 22);
+            this.Outmode.TabIndex = 15;
+            this.Outmode.Text = "Outmode";
+            this.Outmode.UseVisualStyleBackColor = true;
+            // 
+            // Inmode
+            // 
+            this.Inmode.AutoSize = true;
+            this.Inmode.Checked = true;
+            this.Inmode.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Inmode.Location = new System.Drawing.Point(237, 511);
+            this.Inmode.Name = "Inmode";
+            this.Inmode.Size = new System.Drawing.Size(85, 22);
+            this.Inmode.TabIndex = 16;
+            this.Inmode.Text = "Inmode";
+            this.Inmode.UseVisualStyleBackColor = true;
+            // 
+            // error
+            // 
+            this.error.AutoSize = true;
+            this.error.Checked = true;
+            this.error.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.error.Location = new System.Drawing.Point(415, 469);
+            this.error.Name = "error";
+            this.error.Size = new System.Drawing.Size(68, 22);
+            this.error.TabIndex = 17;
+            this.error.Text = "error";
+            this.error.UseVisualStyleBackColor = true;
+            // 
+            // emptynumber
+            // 
+            this.emptynumber.AutoSize = true;
+            this.emptynumber.Checked = true;
+            this.emptynumber.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.emptynumber.Location = new System.Drawing.Point(415, 520);
+            this.emptynumber.Name = "emptynumber";
+            this.emptynumber.Size = new System.Drawing.Size(191, 33);
+            this.emptynumber.TabIndex = 18;
+            this.emptynumber.Text = "emptynumber";
+            this.emptynumber.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(945, 660);
+            this.Controls.Add(this.emptynumber);
+            this.Controls.Add(this.error);
+            this.Controls.Add(this.Inmode);
+            this.Controls.Add(this.Outmode);
             this.Controls.Add(this.content);
             this.Controls.Add(this.bufferindex);
             this.Controls.Add(this.switchmode);
@@ -210,5 +282,9 @@ namespace Mirle.ASRS.WCS.Controller
         private System.Windows.Forms.CheckBox switchmode;
         private System.Windows.Forms.Label bufferindex;
         private System.Windows.Forms.Label content;
+        private System.Windows.Forms.CheckBox Outmode;
+        private System.Windows.Forms.CheckBox Inmode;
+        private System.Windows.Forms.CheckBox error;
+        private System.Windows.Forms.CheckBox emptynumber;
     }
 }

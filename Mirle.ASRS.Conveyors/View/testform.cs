@@ -53,8 +53,6 @@ namespace Mirle.ASRS.WCS.Controller
             {
                 text2 = int.Parse(textBox2.Text);
             }
-           
-
 
             if (CMD.Checked)
             {
@@ -88,8 +86,22 @@ namespace Mirle.ASRS.WCS.Controller
             {
                 _test.WriteWord("D" + (101 + text1 * 10 + 8), text2);
             }
+            if (Inmode.Checked)
+            {
+                _test.SetBitOn("D" + (101 + text1 * 10 + 2.1));
+            }
+            if (Outmode.Checked)
+            {
+                _test.SetBitOn("D" + (101 + text1 * 10 + 2.2));
+            }
+            if (error.Checked)
+            {
+                _test.SetBitOn("D" + (101 + text1 * 10 + 2.4));
+            }
+            if (emptynumber.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10 + 7), text2);
+            }
         }
-
-
     }
 }

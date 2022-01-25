@@ -82,11 +82,11 @@
     <Compile Include="View\BufferView.Designer.cs">
       <DependentUpon>BufferView.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\Form1.cs">
+    <Compile Include="View\testform.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="View\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="View\testform.Designer.cs">
+      <DependentUpon>testform.cs</DependentUpon>
     </Compile>
     <Compile Include="View\MainView.cs">
       <SubType>Form</SubType>
@@ -107,9 +107,11 @@
     <EmbeddedResource Include="View\BufferView.resx">
       <DependentUpon>BufferView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\Form1.resx" />
     <EmbeddedResource Include="View\MainView.resx">
       <DependentUpon>MainView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\testform.resx">
+      <DependentUpon>testform.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
