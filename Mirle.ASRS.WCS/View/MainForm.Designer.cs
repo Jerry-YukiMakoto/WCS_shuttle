@@ -41,12 +41,12 @@
             this.spcView = new System.Windows.Forms.SplitContainer();
             this.spcMainView = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanelSideBtn = new System.Windows.Forms.TableLayoutPanel();
+            this.testbutton = new System.Windows.Forms.Button();
             this.btnCraneSpeedMaintain = new System.Windows.Forms.Button();
             this.btnCmdMaintain = new System.Windows.Forms.Button();
             this.btnSendAPITest = new System.Windows.Forms.Button();
             this.GridCmd = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.testbutton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -85,8 +85,9 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.spcView);
+            this.splitContainer1.Panel2.Margin = new System.Windows.Forms.Padding(50, 0, 0, 0);
             this.splitContainer1.Size = new System.Drawing.Size(1215, 851);
-            this.splitContainer1.SplitterDistance = 90;
+            this.splitContainer1.SplitterDistance = 89;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -106,7 +107,7 @@
             this.tlpMainSts.Name = "tlpMainSts";
             this.tlpMainSts.RowCount = 1;
             this.tlpMainSts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpMainSts.Size = new System.Drawing.Size(1215, 90);
+            this.tlpMainSts.Size = new System.Drawing.Size(1215, 89);
             this.tlpMainSts.TabIndex = 0;
             // 
             // lblTimer
@@ -118,7 +119,7 @@
             this.lblTimer.Location = new System.Drawing.Point(176, 0);
             this.lblTimer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(164, 90);
+            this.lblTimer.Size = new System.Drawing.Size(164, 89);
             this.lblTimer.TabIndex = 268;
             this.lblTimer.Text = "yyyy/MM/dd hh:mm:ss";
             this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -130,7 +131,7 @@
             this.picMirle.Location = new System.Drawing.Point(4, 5);
             this.picMirle.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.picMirle.Name = "picMirle";
-            this.picMirle.Size = new System.Drawing.Size(164, 80);
+            this.picMirle.Size = new System.Drawing.Size(164, 79);
             this.picMirle.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picMirle.TabIndex = 267;
             this.picMirle.TabStop = false;
@@ -149,7 +150,7 @@
             this.tableLayoutPanelConn.RowCount = 2;
             this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanelConn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelConn.Size = new System.Drawing.Size(165, 80);
+            this.tableLayoutPanelConn.Size = new System.Drawing.Size(165, 79);
             this.tableLayoutPanelConn.TabIndex = 0;
             // 
             // chkOnline
@@ -159,7 +160,7 @@
             this.chkOnline.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkOnline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chkOnline.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkOnline.Location = new System.Drawing.Point(4, 45);
+            this.chkOnline.Location = new System.Drawing.Point(4, 44);
             this.chkOnline.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkOnline.Name = "chkOnline";
             this.chkOnline.Size = new System.Drawing.Size(157, 30);
@@ -177,7 +178,7 @@
             this.lblDBConn.Location = new System.Drawing.Point(4, 0);
             this.lblDBConn.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblDBConn.Name = "lblDBConn";
-            this.lblDBConn.Size = new System.Drawing.Size(157, 40);
+            this.lblDBConn.Size = new System.Drawing.Size(157, 39);
             this.lblDBConn.TabIndex = 1;
             this.lblDBConn.Text = "DB Sts";
             this.lblDBConn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -198,7 +199,7 @@
             // spcView.Panel2
             // 
             this.spcView.Panel2.Controls.Add(this.GridCmd);
-            this.spcView.Size = new System.Drawing.Size(1215, 755);
+            this.spcView.Size = new System.Drawing.Size(1215, 756);
             this.spcView.SplitterDistance = 549;
             this.spcView.SplitterWidth = 6;
             this.spcView.TabIndex = 0;
@@ -221,42 +222,62 @@
             this.spcMainView.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanelSideBtn);
             this.spcMainView.Size = new System.Drawing.Size(1215, 549);
-            this.spcMainView.SplitterDistance = 1065;
+            this.spcMainView.SplitterDistance = 978;
             this.spcMainView.SplitterWidth = 6;
             this.spcMainView.TabIndex = 0;
             // 
             // tableLayoutPanelSideBtn
             // 
             this.tableLayoutPanelSideBtn.BackColor = System.Drawing.SystemColors.Control;
-            this.tableLayoutPanelSideBtn.ColumnCount = 1;
-            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelSideBtn.ColumnCount = 7;
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanelSideBtn.Controls.Add(this.testbutton, 0, 5);
             this.tableLayoutPanelSideBtn.Controls.Add(this.btnCraneSpeedMaintain, 0, 3);
             this.tableLayoutPanelSideBtn.Controls.Add(this.btnCmdMaintain, 0, 2);
             this.tableLayoutPanelSideBtn.Controls.Add(this.btnSendAPITest, 0, 1);
             this.tableLayoutPanelSideBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelSideBtn.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanelSideBtn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tableLayoutPanelSideBtn.Name = "tableLayoutPanelSideBtn";
             this.tableLayoutPanelSideBtn.RowCount = 7;
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(142, 547);
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(344, 821);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
+            // 
+            // testbutton
+            // 
+            this.testbutton.AutoSize = true;
+            this.testbutton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.testbutton.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.testbutton.Location = new System.Drawing.Point(4, 549);
+            this.testbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.testbutton.Name = "testbutton";
+            this.testbutton.Size = new System.Drawing.Size(219, 126);
+            this.testbutton.TabIndex = 7;
+            this.testbutton.Text = "test";
+            this.testbutton.UseVisualStyleBackColor = true;
+            this.testbutton.Click += new System.EventHandler(this.test_Click);
             // 
             // btnCraneSpeedMaintain
             // 
+            this.btnCraneSpeedMaintain.AutoSize = true;
             this.btnCraneSpeedMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCraneSpeedMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 141);
+            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 277);
             this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCraneSpeedMaintain.Name = "btnCraneSpeedMaintain";
-            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(134, 73);
+            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(219, 126);
             this.btnCraneSpeedMaintain.TabIndex = 6;
             this.btnCraneSpeedMaintain.Text = "Crane Speed Maintain";
             this.btnCraneSpeedMaintain.UseVisualStyleBackColor = true;
@@ -264,12 +285,13 @@
             // 
             // btnCmdMaintain
             // 
+            this.btnCmdMaintain.AutoSize = true;
             this.btnCmdMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCmdMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCmdMaintain.Location = new System.Drawing.Point(4, 58);
+            this.btnCmdMaintain.Location = new System.Drawing.Point(4, 141);
             this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
-            this.btnCmdMaintain.Size = new System.Drawing.Size(134, 73);
+            this.btnCmdMaintain.Size = new System.Drawing.Size(219, 126);
             this.btnCmdMaintain.TabIndex = 4;
             this.btnCmdMaintain.Text = "Command Maintain";
             this.btnCmdMaintain.UseVisualStyleBackColor = true;
@@ -277,12 +299,13 @@
             // 
             // btnSendAPITest
             // 
+            this.btnSendAPITest.AutoSize = true;
             this.btnSendAPITest.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnSendAPITest.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSendAPITest.Location = new System.Drawing.Point(4, 5);
             this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSendAPITest.Name = "btnSendAPITest";
-            this.btnSendAPITest.Size = new System.Drawing.Size(134, 43);
+            this.btnSendAPITest.Size = new System.Drawing.Size(219, 126);
             this.btnSendAPITest.TabIndex = 3;
             this.btnSendAPITest.Text = "Send API Test";
             this.btnSendAPITest.UseVisualStyleBackColor = true;
@@ -298,7 +321,7 @@
             this.GridCmd.Name = "GridCmd";
             this.GridCmd.RowHeadersWidth = 62;
             this.GridCmd.RowTemplate.Height = 24;
-            this.GridCmd.Size = new System.Drawing.Size(1215, 200);
+            this.GridCmd.Size = new System.Drawing.Size(1215, 201);
             this.GridCmd.TabIndex = 0;
             // 
             // tabControl1
@@ -308,19 +331,6 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(200, 100);
             this.tabControl1.TabIndex = 0;
-            // 
-            // testbutton
-            // 
-            this.testbutton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.testbutton.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testbutton.Location = new System.Drawing.Point(4, 224);
-            this.testbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.testbutton.Name = "testbutton";
-            this.testbutton.Size = new System.Drawing.Size(134, 73);
-            this.testbutton.TabIndex = 7;
-            this.testbutton.Text = "test";
-            this.testbutton.UseVisualStyleBackColor = true;
-            this.testbutton.Click += new System.EventHandler(this.test_Click);
             // 
             // MainForm
             // 
@@ -351,6 +361,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.spcMainView)).EndInit();
             this.spcMainView.ResumeLayout(false);
             this.tableLayoutPanelSideBtn.ResumeLayout(false);
+            this.tableLayoutPanelSideBtn.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridCmd)).EndInit();
             this.ResumeLayout(false);
 
