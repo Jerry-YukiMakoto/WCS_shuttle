@@ -46,6 +46,11 @@ namespace Mirle.ASRS.WCS.Controller
             this.Inmode = new System.Windows.Forms.CheckBox();
             this.error = new System.Windows.Forms.CheckBox();
             this.emptynumber = new System.Windows.Forms.CheckBox();
+            this.Autooff = new System.Windows.Forms.CheckBox();
+            this.presenceOFF = new System.Windows.Forms.CheckBox();
+            this.outmodeoff = new System.Windows.Forms.CheckBox();
+            this.InmodeOFF = new System.Windows.Forms.CheckBox();
+            this.errorOff = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // test
@@ -79,9 +84,10 @@ namespace Mirle.ASRS.WCS.Controller
             this.CMD.AutoSize = true;
             this.CMD.Checked = true;
             this.CMD.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CMD.Font = new System.Drawing.Font("新細明體", 11F);
             this.CMD.Location = new System.Drawing.Point(237, 75);
             this.CMD.Name = "CMD";
-            this.CMD.Size = new System.Drawing.Size(72, 22);
+            this.CMD.Size = new System.Drawing.Size(83, 26);
             this.CMD.TabIndex = 3;
             this.CMD.Text = "CMD";
             this.CMD.UseVisualStyleBackColor = true;
@@ -91,9 +97,10 @@ namespace Mirle.ASRS.WCS.Controller
             this.mode.AutoSize = true;
             this.mode.Checked = true;
             this.mode.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mode.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.mode.Location = new System.Drawing.Point(237, 133);
             this.mode.Name = "mode";
-            this.mode.Size = new System.Drawing.Size(71, 22);
+            this.mode.Size = new System.Drawing.Size(81, 26);
             this.mode.TabIndex = 6;
             this.mode.Text = "mode";
             this.mode.UseVisualStyleBackColor = true;
@@ -103,9 +110,10 @@ namespace Mirle.ASRS.WCS.Controller
             this.Auto.AutoSize = true;
             this.Auto.Checked = true;
             this.Auto.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Auto.Location = new System.Drawing.Point(237, 189);
+            this.Auto.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.Auto.Location = new System.Drawing.Point(237, 187);
             this.Auto.Name = "Auto";
-            this.Auto.Size = new System.Drawing.Size(67, 22);
+            this.Auto.Size = new System.Drawing.Size(77, 26);
             this.Auto.TabIndex = 7;
             this.Auto.Text = "Auto";
             this.Auto.UseVisualStyleBackColor = true;
@@ -115,9 +123,10 @@ namespace Mirle.ASRS.WCS.Controller
             this.initialnotice.AutoSize = true;
             this.initialnotice.Checked = true;
             this.initialnotice.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.initialnotice.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.initialnotice.Location = new System.Drawing.Point(237, 240);
             this.initialnotice.Name = "initialnotice";
-            this.initialnotice.Size = new System.Drawing.Size(117, 22);
+            this.initialnotice.Size = new System.Drawing.Size(135, 26);
             this.initialnotice.TabIndex = 8;
             this.initialnotice.Text = "initialnotice";
             this.initialnotice.UseVisualStyleBackColor = true;
@@ -127,9 +136,10 @@ namespace Mirle.ASRS.WCS.Controller
             this.presence.AutoSize = true;
             this.presence.Checked = true;
             this.presence.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.presence.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.presence.Location = new System.Drawing.Point(237, 298);
             this.presence.Name = "presence";
-            this.presence.Size = new System.Drawing.Size(95, 22);
+            this.presence.Size = new System.Drawing.Size(107, 26);
             this.presence.TabIndex = 9;
             this.presence.Text = "presence";
             this.presence.UseVisualStyleBackColor = true;
@@ -139,9 +149,10 @@ namespace Mirle.ASRS.WCS.Controller
             this.ready.AutoSize = true;
             this.ready.Checked = true;
             this.ready.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ready.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.ready.Location = new System.Drawing.Point(237, 351);
             this.ready.Name = "ready";
-            this.ready.Size = new System.Drawing.Size(72, 22);
+            this.ready.Size = new System.Drawing.Size(122, 39);
             this.ready.TabIndex = 10;
             this.ready.Text = "ready";
             this.ready.UseVisualStyleBackColor = true;
@@ -192,8 +203,6 @@ namespace Mirle.ASRS.WCS.Controller
             // Outmode
             // 
             this.Outmode.AutoSize = true;
-            this.Outmode.Checked = true;
-            this.Outmode.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Outmode.Location = new System.Drawing.Point(237, 564);
             this.Outmode.Name = "Outmode";
             this.Outmode.Size = new System.Drawing.Size(96, 22);
@@ -204,8 +213,6 @@ namespace Mirle.ASRS.WCS.Controller
             // Inmode
             // 
             this.Inmode.AutoSize = true;
-            this.Inmode.Checked = true;
-            this.Inmode.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Inmode.Location = new System.Drawing.Point(237, 511);
             this.Inmode.Name = "Inmode";
             this.Inmode.Size = new System.Drawing.Size(85, 22);
@@ -218,7 +225,7 @@ namespace Mirle.ASRS.WCS.Controller
             this.error.AutoSize = true;
             this.error.Checked = true;
             this.error.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.error.Location = new System.Drawing.Point(415, 469);
+            this.error.Location = new System.Drawing.Point(517, 411);
             this.error.Name = "error";
             this.error.Size = new System.Drawing.Size(68, 22);
             this.error.TabIndex = 17;
@@ -228,20 +235,75 @@ namespace Mirle.ASRS.WCS.Controller
             // emptynumber
             // 
             this.emptynumber.AutoSize = true;
-            this.emptynumber.Checked = true;
-            this.emptynumber.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.emptynumber.Location = new System.Drawing.Point(415, 520);
+            this.emptynumber.Location = new System.Drawing.Point(517, 469);
             this.emptynumber.Name = "emptynumber";
-            this.emptynumber.Size = new System.Drawing.Size(191, 33);
+            this.emptynumber.Size = new System.Drawing.Size(127, 22);
             this.emptynumber.TabIndex = 18;
             this.emptynumber.Text = "emptynumber";
             this.emptynumber.UseVisualStyleBackColor = true;
+            // 
+            // Autooff
+            // 
+            this.Autooff.AutoSize = true;
+            this.Autooff.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.Autooff.Location = new System.Drawing.Point(347, 182);
+            this.Autooff.Name = "Autooff";
+            this.Autooff.Size = new System.Drawing.Size(101, 26);
+            this.Autooff.TabIndex = 19;
+            this.Autooff.Text = "Autooff";
+            this.Autooff.UseVisualStyleBackColor = true;
+            // 
+            // presenceOFF
+            // 
+            this.presenceOFF.AutoSize = true;
+            this.presenceOFF.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.presenceOFF.Location = new System.Drawing.Point(347, 298);
+            this.presenceOFF.Name = "presenceOFF";
+            this.presenceOFF.Size = new System.Drawing.Size(144, 26);
+            this.presenceOFF.TabIndex = 20;
+            this.presenceOFF.Text = "presenceOFF";
+            this.presenceOFF.UseVisualStyleBackColor = true;
+            // 
+            // outmodeoff
+            // 
+            this.outmodeoff.AutoSize = true;
+            this.outmodeoff.Location = new System.Drawing.Point(347, 564);
+            this.outmodeoff.Name = "outmodeoff";
+            this.outmodeoff.Size = new System.Drawing.Size(126, 22);
+            this.outmodeoff.TabIndex = 21;
+            this.outmodeoff.Text = "OutmodeOFF";
+            this.outmodeoff.UseVisualStyleBackColor = true;
+            // 
+            // InmodeOFF
+            // 
+            this.InmodeOFF.AutoSize = true;
+            this.InmodeOFF.Location = new System.Drawing.Point(347, 511);
+            this.InmodeOFF.Name = "InmodeOFF";
+            this.InmodeOFF.Size = new System.Drawing.Size(115, 22);
+            this.InmodeOFF.TabIndex = 22;
+            this.InmodeOFF.Text = "InmodeOFF";
+            this.InmodeOFF.UseVisualStyleBackColor = true;
+            // 
+            // errorOff
+            // 
+            this.errorOff.AutoSize = true;
+            this.errorOff.Location = new System.Drawing.Point(601, 411);
+            this.errorOff.Name = "errorOff";
+            this.errorOff.Size = new System.Drawing.Size(98, 22);
+            this.errorOff.TabIndex = 23;
+            this.errorOff.Text = "errorOFF";
+            this.errorOff.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(945, 660);
+            this.ClientSize = new System.Drawing.Size(986, 679);
+            this.Controls.Add(this.errorOff);
+            this.Controls.Add(this.InmodeOFF);
+            this.Controls.Add(this.outmodeoff);
+            this.Controls.Add(this.presenceOFF);
+            this.Controls.Add(this.Autooff);
             this.Controls.Add(this.emptynumber);
             this.Controls.Add(this.error);
             this.Controls.Add(this.Inmode);
@@ -286,5 +348,10 @@ namespace Mirle.ASRS.WCS.Controller
         private System.Windows.Forms.CheckBox Inmode;
         private System.Windows.Forms.CheckBox error;
         private System.Windows.Forms.CheckBox emptynumber;
+        private System.Windows.Forms.CheckBox Autooff;
+        private System.Windows.Forms.CheckBox presenceOFF;
+        private System.Windows.Forms.CheckBox outmodeoff;
+        private System.Windows.Forms.CheckBox InmodeOFF;
+        private System.Windows.Forms.CheckBox errorOff;
     }
 }

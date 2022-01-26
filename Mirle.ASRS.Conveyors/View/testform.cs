@@ -102,6 +102,26 @@ namespace Mirle.ASRS.WCS.Controller
             {
                 _test.WriteWord("D" + (101 + text1 * 10 + 7), text2);
             }
+            if (errorOff.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.4));
+            }
+            if (InmodeOFF.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.1));
+            }
+            if (outmodeoff.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.2));
+            }
+            if (Autooff.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.5));
+            }
+            if (presenceOFF.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.7));
+            }
         }
     }
 }
