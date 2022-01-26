@@ -172,19 +172,26 @@ namespace Mirle.ASRS.Conveyors.View
             if (InvokeRequired)
             {
                 var action = new Action<Label, string, bool, bool>(Refresh);
-                Invoke(action, label, error);
+                Invoke(action, label, presence, error);
             }
             else
             {
                 label.Text = bufferName;
 
-                //紅色異常
-                label.BackColor = error ? Color.Red : Color.ForestGreen;
-
-                //荷有橘底黑字
-                label.BackColor = presence ? Color.Orange : Color.ForestGreen;
-                label.ForeColor = presence ? Color.Black : Color.White;
-
+                if (presence) //荷有橘底黑字
+                {
+                    label.BackColor = Color.Orange;
+                    label.ForeColor = Color.Black;
+                }
+                else if(error) //紅色異常
+                {
+                    label.BackColor = Color.Red;
+                    label.ForeColor = Color.Black;
+                }
+                else
+                {
+                    label.BackColor = Color.ForestGreen;
+                }
             }
         }
 
