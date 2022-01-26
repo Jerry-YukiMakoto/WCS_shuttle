@@ -178,14 +178,14 @@ namespace Mirle.ASRS.Conveyors.View
             {
                 label.Text = bufferName;
 
-                if (presence) //荷有橘底黑字
-                {
-                    label.BackColor = Color.Orange;
-                    label.ForeColor = Color.Black;
-                }
-                else if(error) //紅色異常
+                if (error) //紅色異常
                 {
                     label.BackColor = Color.Red;
+                    label.ForeColor = Color.Black;
+                }
+                else if (presence) //荷有橘底黑字
+                {
+                    label.BackColor = Color.Orange;
                     label.ForeColor = Color.Black;
                 }
                 else
