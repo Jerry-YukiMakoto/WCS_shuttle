@@ -51,6 +51,7 @@ namespace Mirle.ASRS.WCS.Controller
             this.outmodeoff = new System.Windows.Forms.CheckBox();
             this.InmodeOFF = new System.Windows.Forms.CheckBox();
             this.errorOff = new System.Windows.Forms.CheckBox();
+            this.A2LV2 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // test
@@ -121,8 +122,6 @@ namespace Mirle.ASRS.WCS.Controller
             // initialnotice
             // 
             this.initialnotice.AutoSize = true;
-            this.initialnotice.Checked = true;
-            this.initialnotice.CheckState = System.Windows.Forms.CheckState.Checked;
             this.initialnotice.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.initialnotice.Location = new System.Drawing.Point(237, 240);
             this.initialnotice.Name = "initialnotice";
@@ -134,8 +133,6 @@ namespace Mirle.ASRS.WCS.Controller
             // presence
             // 
             this.presence.AutoSize = true;
-            this.presence.Checked = true;
-            this.presence.CheckState = System.Windows.Forms.CheckState.Checked;
             this.presence.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.presence.Location = new System.Drawing.Point(237, 298);
             this.presence.Name = "presence";
@@ -147,12 +144,10 @@ namespace Mirle.ASRS.WCS.Controller
             // ready
             // 
             this.ready.AutoSize = true;
-            this.ready.Checked = true;
-            this.ready.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ready.Font = new System.Drawing.Font("新細明體", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.ready.Location = new System.Drawing.Point(237, 351);
             this.ready.Name = "ready";
-            this.ready.Size = new System.Drawing.Size(122, 39);
+            this.ready.Size = new System.Drawing.Size(81, 26);
             this.ready.TabIndex = 10;
             this.ready.Text = "ready";
             this.ready.UseVisualStyleBackColor = true;
@@ -160,8 +155,6 @@ namespace Mirle.ASRS.WCS.Controller
             // path
             // 
             this.path.AutoSize = true;
-            this.path.Checked = true;
-            this.path.CheckState = System.Windows.Forms.CheckState.Checked;
             this.path.Location = new System.Drawing.Point(237, 411);
             this.path.Name = "path";
             this.path.Size = new System.Drawing.Size(63, 22);
@@ -172,8 +165,6 @@ namespace Mirle.ASRS.WCS.Controller
             // switchmode
             // 
             this.switchmode.AutoSize = true;
-            this.switchmode.Checked = true;
-            this.switchmode.CheckState = System.Windows.Forms.CheckState.Checked;
             this.switchmode.Location = new System.Drawing.Point(237, 469);
             this.switchmode.Name = "switchmode";
             this.switchmode.Size = new System.Drawing.Size(116, 22);
@@ -223,8 +214,6 @@ namespace Mirle.ASRS.WCS.Controller
             // error
             // 
             this.error.AutoSize = true;
-            this.error.Checked = true;
-            this.error.CheckState = System.Windows.Forms.CheckState.Checked;
             this.error.Location = new System.Drawing.Point(517, 411);
             this.error.Name = "error";
             this.error.Size = new System.Drawing.Size(68, 22);
@@ -294,11 +283,22 @@ namespace Mirle.ASRS.WCS.Controller
             this.errorOff.Text = "errorOFF";
             this.errorOff.UseVisualStyleBackColor = true;
             // 
+            // A2LV2
+            // 
+            this.A2LV2.AutoSize = true;
+            this.A2LV2.Location = new System.Drawing.Point(517, 511);
+            this.A2LV2.Name = "A2LV2";
+            this.A2LV2.Size = new System.Drawing.Size(126, 33);
+            this.A2LV2.TabIndex = 24;
+            this.A2LV2.Text = "A2LV2";
+            this.A2LV2.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(986, 679);
+            this.Controls.Add(this.A2LV2);
             this.Controls.Add(this.errorOff);
             this.Controls.Add(this.InmodeOFF);
             this.Controls.Add(this.outmodeoff);
@@ -322,7 +322,7 @@ namespace Mirle.ASRS.WCS.Controller
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.test);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "TestPLC";
             this.Load += new System.EventHandler(this.SimMainView_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -353,5 +353,6 @@ namespace Mirle.ASRS.WCS.Controller
         private System.Windows.Forms.CheckBox outmodeoff;
         private System.Windows.Forms.CheckBox InmodeOFF;
         private System.Windows.Forms.CheckBox errorOff;
+        private System.Windows.Forms.CheckBox A2LV2;
     }
 }
