@@ -101,6 +101,12 @@
     <Compile Include="ReportInfo\StackPalletsOutInfo.cs" />
     <Compile Include="ReportInfo\StackPalletsInInfo.cs" />
     <Compile Include="ReportInfo\TaskStateUpdateReturnInfo.cs" />
+    <Compile Include="View\DisplayTaskStatusForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\DisplayTaskStatusForm.Designer.cs">
+      <DependentUpon>DisplayTaskStatusForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\MainTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +116,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportInfo\TaskStateUpdateInfo.cs" />
     <Compile Include="ReportInfo\ReturnMsgInfo.cs" />
+    <Compile Include="View\StackPalletsOutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\StackPalletsOutForm.Designer.cs">
+      <DependentUpon>StackPalletsOutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\StackPalletsInForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\StackPalletsInForm.Designer.cs">
+      <DependentUpon>StackPalletsInForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\TaskStateUpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,6 +150,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="View\DisplayTaskStatusForm.resx">
+      <DependentUpon>DisplayTaskStatusForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\MainTestForm.resx">
+      <DependentUpon>MainTestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\StackPalletsOutForm.resx">
+      <DependentUpon>StackPalletsOutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\StackPalletsInForm.resx">
+      <DependentUpon>StackPalletsInForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\TaskStateUpdateForm.resx">
       <DependentUpon>TaskStateUpdateForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -13,7 +13,7 @@ namespace Mirle.ASRS.WCS
         public clsDBConnCheck_Proc()
         {
             timRead.Elapsed += new System.Timers.ElapsedEventHandler(timRead_Elapsed);
-            timRead.Enabled = false; timRead.Interval = 5000;
+            timRead.Enabled = false; timRead.Interval = 100;
         }
 
         public void subStart()
@@ -26,7 +26,7 @@ namespace Mirle.ASRS.WCS
             timRead.Enabled = false;
             try
             {
-                clsDB_Proc.ChkDBConn();
+                //clsDB_Proc.GetDBIsConn();
             }
             catch (Exception ex)
             {

@@ -4,7 +4,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using Mirle.DataBase;
-using Mirle.Gird;
+using Mirle.Grid;
 using Mirle.Grid.U0NXMA30;
 
 namespace Mirle.DB.Object.GridData

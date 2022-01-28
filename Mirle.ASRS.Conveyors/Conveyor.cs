@@ -31,7 +31,7 @@ namespace Mirle.ASRS.Conveyors
         public Conveyor(IMPLCProvider plcHost)
         {
             _plcHost = plcHost;
-            _signal = new SignalMapper(plcHost);
+            _signal = new SignalMapper(_plcHost);
 
             foreach (var buffer in _signal.BufferSignals)
             {

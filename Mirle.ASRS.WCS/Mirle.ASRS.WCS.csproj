@@ -149,6 +149,9 @@
       <DependentUpon>CraneSpeedMaintainView.cs</DependentUpon>
     </Compile>
     <Compile Include="WCSManager.cs" />
+    <EmbeddedResource Include="View\frmCmdMaintance.resx">
+      <DependentUpon>frmCmdMaintance.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

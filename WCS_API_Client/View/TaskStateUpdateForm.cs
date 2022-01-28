@@ -9,7 +9,6 @@ namespace WCS_API_Client.View
 {
     public partial class TaskStateUpdateForm : Form
     {
-        
         private TaskStateUpdate taskStateUpdate;
         public TaskStateUpdateForm(WebApiConfig Config)
         {
@@ -24,6 +23,8 @@ namespace WCS_API_Client.View
             TaskStateUpdateInfo info = new TaskStateUpdateInfo
             {
                 taskNo = txtTaskNo.Text,
+                palletNo = txtPalletNo.Text,
+                businessType = txtBusinessType.Text,
                 state = txtStatus.Text,
                 errMsg = txtErrMsg.Text
             };

@@ -89,7 +89,7 @@ namespace Mirle.DB.Proc
                                 return false;
                             }
 
-                            if (CMD_MST.UpdateCmdMst(cmd.CmdSno, clsConstValue.CmdSts.strCmd_Cancel, "WMS命令取消", db).ResultCode != DBResult.Success)
+                            if (CMD_MST.UpdateCmdMstRemark(cmd.CmdSno, clsConstValue.CmdSts.strCmd_Cancel, "WMS命令取消", db).ResultCode != DBResult.Success)
                             {
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
@@ -2102,6 +2102,8 @@ namespace Mirle.DB.Proc
             }
         }
         #endregion
+
+  
 
     }
 }
