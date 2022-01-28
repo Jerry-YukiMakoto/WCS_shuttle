@@ -11,6 +11,9 @@ namespace Mirle.DB.Fun
 {
     public class clsEqu_Cmd
     {
+        /// <summary>
+        /// 檢查是否有執行中命令；有執行中命令傳回true，否則傳回false
+        /// </summary>
         public bool CheckExecutionEquCmd(int bufferIndex, string bufferName, int craneNo, string cmdSno, EquCmdMode equCmdMode, string source, string destination, SqlServer db)
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();

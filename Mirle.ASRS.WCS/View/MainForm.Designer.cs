@@ -240,13 +240,13 @@
             this.tableLayoutPanelSideBtn.Name = "tableLayoutPanelSideBtn";
             this.tableLayoutPanelSideBtn.RowCount = 7;
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(242, 486);
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(229, 547);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
             // 
             // testbutton
@@ -254,10 +254,10 @@
             this.testbutton.AutoSize = true;
             this.testbutton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.testbutton.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testbutton.Location = new System.Drawing.Point(4, 324);
-            this.testbutton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.testbutton.Location = new System.Drawing.Point(4, 369);
+            this.testbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.testbutton.Name = "testbutton";
-            this.testbutton.Size = new System.Drawing.Size(234, 72);
+            this.testbutton.Size = new System.Drawing.Size(219, 81);
             this.testbutton.TabIndex = 7;
             this.testbutton.Text = "test";
             this.testbutton.UseVisualStyleBackColor = true;
@@ -268,10 +268,10 @@
             this.btnCraneSpeedMaintain.AutoSize = true;
             this.btnCraneSpeedMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCraneSpeedMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 164);
-            this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 187);
+            this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCraneSpeedMaintain.Name = "btnCraneSpeedMaintain";
-            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(234, 72);
+            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(219, 81);
             this.btnCraneSpeedMaintain.TabIndex = 6;
             this.btnCraneSpeedMaintain.Text = "Crane Speed Maintain";
             this.btnCraneSpeedMaintain.UseVisualStyleBackColor = true;
@@ -282,10 +282,10 @@
             this.btnCmdMaintain.AutoSize = true;
             this.btnCmdMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCmdMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCmdMaintain.Location = new System.Drawing.Point(4, 84);
-            this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCmdMaintain.Location = new System.Drawing.Point(4, 96);
+            this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
-            this.btnCmdMaintain.Size = new System.Drawing.Size(234, 72);
+            this.btnCmdMaintain.Size = new System.Drawing.Size(219, 81);
             this.btnCmdMaintain.TabIndex = 4;
             this.btnCmdMaintain.Text = "Command Maintain";
             this.btnCmdMaintain.UseVisualStyleBackColor = true;
@@ -299,7 +299,7 @@
             this.btnSendAPITest.Location = new System.Drawing.Point(4, 4);
             this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSendAPITest.Name = "btnSendAPITest";
-            this.btnSendAPITest.Size = new System.Drawing.Size(234, 72);
+            this.btnSendAPITest.Size = new System.Drawing.Size(219, 81);
             this.btnSendAPITest.TabIndex = 3;
             this.btnSendAPITest.Text = "Send API Test";
             this.btnSendAPITest.UseVisualStyleBackColor = true;
@@ -336,7 +336,7 @@
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "金頂自動倉儲系統";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);

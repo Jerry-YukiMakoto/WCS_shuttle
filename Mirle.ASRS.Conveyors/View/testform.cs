@@ -46,7 +46,11 @@ namespace Mirle.ASRS.WCS.Controller
 
         private void buttonwrite(object sender, EventArgs e)
         {
-            int text1 = int.Parse(textBox1.Text);
+            int text1 = 0;
+            if (textBox1.Text != "")
+            {
+                text1 = int.Parse(textBox1.Text);
+            }
 
             int text2 = 0;
             if (textBox2.Text != "")
@@ -101,6 +105,30 @@ namespace Mirle.ASRS.WCS.Controller
             if (emptynumber.Checked)
             {
                 _test.WriteWord("D" + (101 + text1 * 10 + 7), text2);
+            }
+            if (errorOff.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.4));
+            }
+            if (InmodeOFF.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.1));
+            }
+            if (outmodeoff.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.2));
+            }
+            if (Autooff.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.5));
+            }
+            if (presenceOFF.Checked)
+            {
+                _test.SetBitOff("D" + (101 + text1 * 10 + 2.7));
+            }
+            if (emptynumber.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10 + 5), text2);
             }
         }
     }

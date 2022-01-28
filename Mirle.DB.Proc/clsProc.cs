@@ -142,10 +142,14 @@ namespace Mirle.DB.Proc
                     {
                         if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                         {
+
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             int IOType = Convert.ToInt32(dataObject[0].IOType);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+
+                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
+                                    $"{CmdMode}");
 
                             #region//根據buffer狀態更新命令
                             if (_conveyor.GetBuffer(bufferIndex).Auto != true)
@@ -186,7 +190,7 @@ namespace Mirle.DB.Proc
                             //&& _conveyor.GetBuffer(bufferIndex + 1).Presence == true) //在一般入庫時要確認A4是否有空棧板，沒有則不寫入命令=>目前不加入條件因為會與空棧版入庫衝突
                             #endregion
 
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
@@ -270,6 +274,9 @@ namespace Mirle.DB.Proc
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
+                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
+                                    $"{CmdMode}");
+
                             #region//根據buffer狀態更新命令
                             if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                             {
@@ -308,7 +315,7 @@ namespace Mirle.DB.Proc
                             }
                             #endregion
 
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive StoreIn Command");
+                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
@@ -378,7 +385,7 @@ namespace Mirle.DB.Proc
 
                         if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
+                            //clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
 
                             #region//根據buffer狀態更新命令
                             if (_conveyor.GetBuffer(bufferIndex).Auto != true)
@@ -403,7 +410,7 @@ namespace Mirle.DB.Proc
                             }
                             #endregion
 
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreIn=> {cmdSno}");
 
                             string source = $"{CranePortNo.A1}";
                             string IOType = dataObject[0].IOType;
@@ -504,7 +511,7 @@ namespace Mirle.DB.Proc
                             }
                             #endregion
 
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready StoreIn");
+                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreIn=> {cmdSno}");
 
                             string source = "";
                             if (bufferIndex == 5)
@@ -777,6 +784,8 @@ namespace Mirle.DB.Proc
 
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
+                            int LastCargoOrNotchek = LastCargoOrNot();
+
 
 
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
@@ -786,15 +795,15 @@ namespace Mirle.DB.Proc
                                 }
                                 if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreOutWriteCraneCmdToCV, db).ResultCode == DBResult.Success)
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
-                                    $"{CmdMode}");
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
+                                $"{CmdMode}");
                                 }
                                 else
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}, " +
-                                    $"{CmdMode}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}, " +
+                                $"{CmdMode}");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
                                 }
                                 var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                 Result = WritePlccheck;
@@ -805,7 +814,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                                if (IOType == IOtype.Cycle || LastCargoOrNot() == 1)//Iotype如果是盤點或是空棧板整版出或是出庫命令的最後一版，直接到A3
+                                if (IOType == IOtype.Cycle || LastCargoOrNotchek == 1)//Iotype如果是盤點或是空棧板整版出或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
@@ -838,14 +847,13 @@ namespace Mirle.DB.Proc
                                         return false;
                                     }
                                 }
-
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
+                                if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                                {
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
-                            }
-                            else return true;
+                                }
+                                else return true;
                         }
                         else return false;
                     }
@@ -1016,12 +1024,10 @@ namespace Mirle.DB.Proc
                             }
                             #endregion
 
-                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}");
-
                                 string source = dataObject[0].Loc;
                                 string dest = $"{CranePortNo.A1}";
 
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer StoreOut Get Command => {cmdSno}");
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
 
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
@@ -1124,7 +1130,7 @@ namespace Mirle.DB.Proc
                                         break;
                                 }
                                 
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer StoreOut Get Command => {cmdSno}");
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
 
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
@@ -1285,11 +1291,11 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        int CmdMode = 1;//待確認
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                             {
                                 string cmdSno = dataObject[0].CmdSno;
+                                int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
 
                                 clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreIn Command => {cmdSno}");
 
@@ -1422,7 +1428,7 @@ namespace Mirle.DB.Proc
                                 #endregion
 
 
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get Command => {cmdSno}");
+                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready EmptyStoreIn => {cmdSno}");
 
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
@@ -2079,7 +2085,7 @@ namespace Mirle.DB.Proc
                     {
                         int COUNT = Convert.ToInt32(dataObject[0].COUNT);
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        if (_conveyor.GetBuffer(2).A2LV2 == 0 && COUNT == 0 && _conveyor.GetBuffer(2).CommandId == 0 && _conveyor.GetBuffer(1).CommandId == 0)
+                        if (_conveyor.GetBuffer(2).A2LV2 == 0 && COUNT == 1 && _conveyor.GetBuffer(2).CommandId == 0 && _conveyor.GetBuffer(1).CommandId == 0)
                         {
                             return 1;
                         }
