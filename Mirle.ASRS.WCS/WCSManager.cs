@@ -18,7 +18,6 @@ namespace Mirle.ASRS.WCS
     {
         private readonly Conveyors.Conveyor _conveyor;
         private readonly LoggerManager _loggerManager;
-        private readonly EmptyReport emptyReport = new EmptyReport();
 
         private readonly Timer _emptyInReport = new Timer();
         private readonly Timer _emptyOutReport = new Timer();
@@ -44,25 +43,73 @@ namespace Mirle.ASRS.WCS
             _storeInProcess.Elapsed += StoreInProcess;
             _otherProcess.Elapsed += OtherProcess;
             
-            _emptyInReport.Elapsed += emptyReport.EmptyInWMS;
-            _emptyOutReport.Elapsed += emptyReport.EmptyOutWMS;
+            _emptyInReport.Elapsed += EmptyStoreInProcess;
+            _emptyOutReport.Elapsed += EmptyStoreOutProcess;
 
         }
 
         public void Start()
         {
+            _emptyInReport.Start();
+            _emptyOutReport.Start();
             _storeOutProcess.Start();
             _storeInProcess.Start();
             _otherProcess.Start();
         }
         public void Stop()
         {
+            _emptyInReport.Stop();
+            _emptyOutReport.Stop();
             _storeOutProcess.Stop();
             _storeInProcess.Stop();
             _otherProcess.Stop();
         }
 
-        
+        private void EmptyStoreInProcess(object sender, ElapsedEventArgs e)
+        {
+            _emptyInReport.Stop();
+            try
+            {
+                if (IsConnected)
+                {
+                    clsEmptyStoreIn.EmptyInWMS();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
+            finally
+            {
+                _emptyInReport.Start();
+            }
+        }
+
+        private void EmptyStoreOutProcess(object sender, ElapsedEventArgs e)
+        {
+            _emptyOutReport.Stop();
+            try
+            {
+                if (IsConnected)
+                {
+                    clsEmptyStoreOut.EmptyOutWMS();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
+            finally
+            {
+                _emptyOutReport.Start();
+            }
+        }
+
+
         private void StoreOutProcess(object sender, ElapsedEventArgs e)
         {
             _storeOutProcess.Stop();

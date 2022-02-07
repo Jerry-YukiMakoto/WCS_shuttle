@@ -15,6 +15,7 @@ namespace Mirle.DB.Proc
         private readonly clsCmd_Mst_His CMD_MST_HIS;
         private readonly clsUnitStsLog unitStsLog;
         private readonly clsUnitModeDef unitModeDef;
+        private readonly EmptyReport emptyReport;
         private static object _Lock = new object();
         private static bool _IsConn = false;
         public static bool IsConn
@@ -46,6 +47,7 @@ namespace Mirle.DB.Proc
             CMD_MST_HIS = new clsCmd_Mst_His(config);
             unitStsLog = new clsUnitStsLog(config);
             unitModeDef = new clsUnitModeDef(config);
+            emptyReport = new EmptyReport(config);
         }
 
         public clsProc GetProcess()
@@ -100,5 +102,11 @@ namespace Mirle.DB.Proc
         {
             return Process.GetLstPort();
         }
+
+        public EmptyReport GetEmptyReport()
+        {
+            return emptyReport;
+        }
+
     }
 }
