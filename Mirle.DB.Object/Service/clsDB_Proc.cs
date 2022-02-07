@@ -20,11 +20,7 @@ namespace Mirle.DB.Object
         {
             return wcs;
         }
-        
-        public static bool ChkDBConn()
-        {
-            return Proc.clsHost.IsConn;
-        }
+
 
     }
 }

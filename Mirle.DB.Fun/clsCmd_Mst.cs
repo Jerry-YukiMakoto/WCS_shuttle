@@ -269,6 +269,16 @@ namespace Mirle.DB.Fun
             return db.ExecuteSQL2(sql);
         }
 
+        public ExecuteSQLResult UpdateCmdMstRemark(string cmdSno, string cmdSts, string REMARK, SqlServer db)
+        {
+            string sql = "UPDATE CMDMST ";
+            sql += $"SET EndDate='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ,";
+            sql += $"CmdSts='{cmdSts}' ,";
+            sql += $"REMARK='{REMARK}' ";
+            sql += $"WHERE CmdSno='{cmdSno}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
         public ExecuteSQLResult UpdateCmdMstRemark(string cmdSno, string REMARK, SqlServer db)
         {
             string sql = "UPDATE CMDMST ";

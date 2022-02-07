@@ -23,17 +23,13 @@ namespace Mirle.ASRS.WCS.View
         
 
         private DB.ClearCmd.Proc.clsHost clearCmd;
-        public static clsDBConnCheck_Proc clsDBConnCheck = new clsDBConnCheck_Proc();
         private WebApiHost _webApiHost;
         private UnityContainer _unityContainer;
         private static WCSManager _wcsManager;
-        private static System.Timers.Timer timRead = new System.Timers.Timer();
 
         public MainForm()
         {
             InitializeComponent();
-            timRead.Elapsed += new System.Timers.ElapsedEventHandler(timRead_Elapsed);
-            timRead.Enabled = false; timRead.Interval = 500;
         }
 
         #region Event
@@ -187,26 +183,6 @@ namespace Mirle.ASRS.WCS.View
 
         #region Timer
 
-        private void timRead_Elapsed(object source, System.Timers.ElapsedEventArgs e)
-        {
-            timRead.Enabled = false;
-            try
-            {
-                //chkDBConnect Thread
-                clsDBConnCheck.subStart();
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-            }
-            finally
-            {
-                timRead.Enabled = true;
-            }
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
@@ -247,9 +223,6 @@ namespace Mirle.ASRS.WCS.View
             ChangeSubForm(ControllerReader.GetCVControllerr().GetMainView());
         }
 
-        //將兩個Grids整合成Interface再去call
-        //設置time_elapsed去定時更新Grid擷取的內容
-        //頁面切換觸發(Ref. Micron SNG)
         #region Grid顯示
         private void GridInit()
         {
@@ -270,7 +243,7 @@ namespace Mirle.ASRS.WCS.View
                 }
                 else
                 {
-                    Gird.IGrid grid;
+                    Grid.IGrid grid;
                     grid = new DB.Object.GridData.CmdMst();
                     grid.SubShowCmdtoGrid(ref oGrid);
                 }
