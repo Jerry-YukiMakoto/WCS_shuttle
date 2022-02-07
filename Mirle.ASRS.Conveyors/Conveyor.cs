@@ -81,18 +81,16 @@ namespace Mirle.ASRS.Conveyors
                 }
             }
 
-            
+            var dt = DateTime.Now; 
+            int[] bcdDatetime = new int[6];
+            bcdDatetime[0] = dt.Year.ConvertBase10ToBCD();
+            bcdDatetime[1] = dt.Year.ConvertBase10ToBCD();
+            bcdDatetime[2] = dt.Day.ConvertBase10ToBCD();
+            bcdDatetime[3] = dt.Hour.ConvertBase10ToBCD();
+            bcdDatetime[4] = dt.Minute.ConvertBase10ToBCD();
+            bcdDatetime[5] = dt.Second.ConvertBase10ToBCD();
 
-            //var dt = DateTime.Now; //看來目前用不到
-            //int[] bcdDatetime = new int[6];
-            //bcdDatetime[0] = dt.Year.ToBCD();
-            //bcdDatetime[1] = dt.Year.ToBCD();
-            //bcdDatetime[2] = dt.Day.ToBCD();
-            //bcdDatetime[3] = dt.Hour.ToBCD();
-            //bcdDatetime[4] = dt.Minute.ToBCD();
-            //bcdDatetime[5] = dt.Second.ToBCD();
-
-            //systemSignal.ControllerSignal.SystemTimeCalibration.SetValue(bcdDatetime);
+            systemSignal.ControllerSignal.SystemTimeCalibration.SetValue(bcdDatetime);
         }
 
         private void Refresh()

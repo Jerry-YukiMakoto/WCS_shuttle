@@ -43,12 +43,14 @@ namespace Mirle.DB.Fun
             {
                 if (checkCraneNoReapeat(out var dataObject, db) == GetDataResult.Success)
                 {
-                    int intCraneCount = 0;
-                    intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
+                    int intCraneCount = int.Parse(dataObject[0].COUNT.ToString());
+                    if (intCraneCount != 0)
+                    {
                     clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Exists Other Command running On Equ, Please Check => {cmdSno}, " +
-                   $"{craneNo}, " +
-                   $"{source}, " +
-                   $"{destination}");
+                     $"{craneNo}, " +
+                     $"{source}, " +
+                     $"{destination}");
+                    }
                     return intCraneCount == 0 ? false : true;
                 }
                 else

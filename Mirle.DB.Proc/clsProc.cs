@@ -536,7 +536,7 @@ namespace Mirle.DB.Proc
                             {
                                 dest = $"{dataObject[0].NewLoc}";
                             }
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
+                            //clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
@@ -785,7 +785,6 @@ namespace Mirle.DB.Proc
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
                             int LastCargoOrNotchek = LastCargoOrNot();
-
 
 
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
@@ -2060,7 +2059,7 @@ namespace Mirle.DB.Proc
         private bool CheckEmptyWillBefullOrNot()
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0))
+            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0) || _conveyor.GetBuffer(4).EmptyINReady == 9)
             {
                 return true;
             }
