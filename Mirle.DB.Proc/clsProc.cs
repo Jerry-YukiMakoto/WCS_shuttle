@@ -536,7 +536,7 @@ namespace Mirle.DB.Proc
                             {
                                 dest = $"{dataObject[0].NewLoc}";
                             }
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
+                            //clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
@@ -787,7 +787,6 @@ namespace Mirle.DB.Proc
                             int LastCargoOrNotchek = LastCargoOrNot();
 
 
-
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Begin Fail => {cmdSno}");
@@ -913,7 +912,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3)//為了不跟盤點命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -997,7 +996,6 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
-                        int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
 
                         if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
@@ -1084,7 +1082,6 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
-                        int CmdMode = _conveyor.GetBuffer(bufferIndex).CmdMode;
 
                         
 
@@ -2062,7 +2059,7 @@ namespace Mirle.DB.Proc
         private bool CheckEmptyWillBefullOrNot()
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0))
+            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0) || _conveyor.GetBuffer(4).EmptyINReady == 9)
             {
                 return true;
             }

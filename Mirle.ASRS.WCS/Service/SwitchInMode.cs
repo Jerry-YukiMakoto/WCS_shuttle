@@ -29,12 +29,12 @@ namespace Mirle.ASRS.WCS.Service
                         bool Result = WritePlccheck;
                         if (Result != true)
                         {
-                            var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, $"Normal-StoreOut Switchmode fail");
+                            var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, $"Normal-StoreIn Switchmode fail");
                             _loggerManager.WriteLogTrace(log);   
                         }
                         else
                         {
-                            var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, "Normal-StoreOut Switchmode Complete");
+                            var log = new StoreOutLogTrace(_conveyor.GetBuffer(1).BufferIndex, _conveyor.GetBuffer(1).BufferName, "Normal-StoreIn Switchmode Complete");
                             _loggerManager.WriteLogTrace(log);
                         }
                     }

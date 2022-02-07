@@ -52,6 +52,8 @@ namespace Mirle.ASRS.WCS.Controller
             this.InmodeOFF = new System.Windows.Forms.CheckBox();
             this.errorOff = new System.Windows.Forms.CheckBox();
             this.A2LV2 = new System.Windows.Forms.CheckBox();
+            this.showwritevalue = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // test
@@ -288,16 +290,36 @@ namespace Mirle.ASRS.WCS.Controller
             this.A2LV2.AutoSize = true;
             this.A2LV2.Location = new System.Drawing.Point(517, 511);
             this.A2LV2.Name = "A2LV2";
-            this.A2LV2.Size = new System.Drawing.Size(126, 33);
+            this.A2LV2.Size = new System.Drawing.Size(84, 22);
             this.A2LV2.TabIndex = 24;
             this.A2LV2.Text = "A2LV2";
             this.A2LV2.UseVisualStyleBackColor = true;
+            // 
+            // showwritevalue
+            // 
+            this.showwritevalue.Location = new System.Drawing.Point(67, 165);
+            this.showwritevalue.Multiline = true;
+            this.showwritevalue.Name = "showwritevalue";
+            this.showwritevalue.Size = new System.Drawing.Size(104, 48);
+            this.showwritevalue.TabIndex = 25;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("微軟正黑體", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label1.Location = new System.Drawing.Point(12, 216);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(234, 21);
+            this.label1.TabIndex = 26;
+            this.label1.Text = "命令號,模式,路徑,初始,切換模式";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(986, 679);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.showwritevalue);
             this.Controls.Add(this.A2LV2);
             this.Controls.Add(this.errorOff);
             this.Controls.Add(this.InmodeOFF);
@@ -354,5 +376,7 @@ namespace Mirle.ASRS.WCS.Controller
         private System.Windows.Forms.CheckBox InmodeOFF;
         private System.Windows.Forms.CheckBox errorOff;
         private System.Windows.Forms.CheckBox A2LV2;
+        private System.Windows.Forms.TextBox showwritevalue;
+        private System.Windows.Forms.Label label1;
     }
 }
