@@ -14,7 +14,12 @@ namespace Mirle.DB.Proc
         private DB.Fun.clsCmd_Mst CMD_MST = new DB.Fun.clsCmd_Mst();
         private clsDbConfig _config = new clsDbConfig();
 
-        public void EmptyInWMS(object sender, ElapsedEventArgs e)//確認空棧板入庫狀態，狀態正確才上報WMS，要求搬運命令
+        public EmptyReport(clsDbConfig config)
+        {
+            _config = config;
+        }
+
+        public void EmptyInWMS()//確認空棧板入庫狀態，狀態正確才上報WMS，要求搬運命令
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             
@@ -47,7 +52,7 @@ namespace Mirle.DB.Proc
         
 
 
-        public void EmptyOutWMS(object sender, ElapsedEventArgs e)//確認空棧板出庫狀態，狀態正確才上報WMS，要求搬運命令
+        public void EmptyOutWMS()//確認空棧板出庫狀態，狀態正確才上報WMS，要求搬運命令
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             
