@@ -23,23 +23,25 @@ namespace Mirle.DB.Proc
                 locationFrom = StnNo.A4
             };
 
-            using var db = clsGetDB.GetDB(_config);
-            int iRet = clsGetDB.FunDbOpen(db);
-            if (iRet == DBResult.Success)
+            using (var db = clsGetDB.GetDB(_config))
             {
-                if (_conveyor.GetBuffer(4).EmptyINReady == 9 && _conveyor.GetBuffer(4).Ready == 1)
+                int iRet = clsGetDB.FunDbOpen(db);
+                if (iRet == DBResult.Success)
                 {
-                    if (CMD_MST.EmptyInOutCheck(IOtype.EmptyStoreIn,out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                    if (_conveyor.GetBuffer(4).EmptyINReady == 9 && _conveyor.GetBuffer(4).Ready == 1)
                     {
-                        //做上報WMS的動作
-                        clsWmsApi.GetApiProcess().GetStackPalletsIn().FunReport(info);
+                        if (CMD_MST.EmptyInOutCheck(IOtype.EmptyStoreIn, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                        {
+                            //做上報WMS的動作
+                            clsWmsApi.GetApiProcess().GetStackPalletsIn().FunReport(info);
+                        }
                     }
                 }
-            }
-            else
-            {
-                string strEM = "Error: 開啟DB失敗！";
-                DB.Fun.clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                else
+                {
+                    string strEM = "Error: 開啟DB失敗！";
+                    DB.Fun.clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                }
             }
         }
         
@@ -54,23 +56,25 @@ namespace Mirle.DB.Proc
                 locationTo = StnNo.A4
             };
 
-            using var db = clsGetDB.GetDB(_config);
-            int iRet = clsGetDB.FunDbOpen(db);
-            if (iRet == DBResult.Success)
+            using (var db = clsGetDB.GetDB(_config))
             {
-                if (_conveyor.GetBuffer(4).Presence == false && _conveyor.GetBuffer(4).Ready == 2)
+                int iRet = clsGetDB.FunDbOpen(db);
+                if (iRet == DBResult.Success)
                 {
-                    if (CMD_MST.EmptyInOutCheck(IOtype.EmptyStroeOut,out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                    if (_conveyor.GetBuffer(4).Presence == false && _conveyor.GetBuffer(4).Ready == 2)
                     {
-                        //做上報WMS的動作
-                        clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);
+                        if (CMD_MST.EmptyInOutCheck(IOtype.EmptyStroeOut, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                        {
+                            //做上報WMS的動作
+                            clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);
+                        }
                     }
                 }
-            }
-            else
-            {
-                string strEM = "Error: 開啟DB失敗！";
-                DB.Fun.clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                else
+                {
+                    string strEM = "Error: 開啟DB失敗！";
+                    DB.Fun.clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                }
             }
         }
     }
