@@ -26,10 +26,13 @@ namespace Mirle.ASRS.WCS.View
         private WebApiHost _webApiHost;
         private UnityContainer _unityContainer;
         private static WCSManager _wcsManager;
+        private static System.Timers.Timer timRead = new System.Timers.Timer();
 
         public MainForm()
         {
             InitializeComponent();
+            timRead.Elapsed += new System.Timers.ElapsedEventHandler(timRead_Elapsed);
+            timRead.Enabled = false; timRead.Interval = 500;
         }
 
         #region Event
@@ -43,6 +46,7 @@ namespace Mirle.ASRS.WCS.View
             GridInit();
 
             Library.clsWriLog.Log.FunWriTraceLog_CV("WCS程式已開啟");
+            timRead.Start();
             timer1.Start();
         }
 
@@ -182,6 +186,25 @@ namespace Mirle.ASRS.WCS.View
         #endregion 側邊欄buttons
 
         #region Timer
+
+        private void timRead_Elapsed(object source, System.Timers.ElapsedEventArgs e)
+        {
+            timRead.Enabled = false;
+            try
+            {
+                SubShowCmdtoGrid(ref GridCmd);
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+            }
+            finally
+            {
+                timRead.Enabled = true;
+            }
+        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
