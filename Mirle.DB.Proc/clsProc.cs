@@ -999,7 +999,7 @@ namespace Mirle.DB.Proc
 
                         if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
-                            #region//站口狀態確認
+                                #region//站口狀態確認
                             if (_conveyor.GetBuffer(bufferIndex).Auto!=true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
@@ -1022,8 +1022,21 @@ namespace Mirle.DB.Proc
                             }
                             #endregion
 
+                                #region 擋下出庫命令，當儲位是外儲位檢查內儲位現在是否有命令(庫對庫)，如果有就擋下
                                 string source = dataObject[0].Loc;
                                 string dest = $"{CranePortNo.A1}";
+                                int checkcource = Int32.Parse(source.Substring(0, 2));
+                                bool bcheck;
+                                if (checkcource > 2)
+                                {
+                                    bcheck = funChkInsideLoc(source, db);
+                                    if (bcheck == true)
+                                    {
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
+                                        return false;
+                                    }
+                                }
+                                #endregion
 
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
 
@@ -1090,7 +1103,7 @@ namespace Mirle.DB.Proc
                                 cmdSno = dataObject[0].CmdSno;
                                 string source = dataObject[0].Loc;
                                 string dest = "";
-
+                                
                                 #region//站口狀態確認
                                 if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                                 {
@@ -1111,6 +1124,20 @@ namespace Mirle.DB.Proc
                                 {
                                     CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
                                     return false;
+                                }
+                            #endregion
+
+                                #region 擋下出庫命令，當儲位是外儲位檢查內儲位現在是否有命令(庫對庫)，如果有就擋下
+                                int checkcource = Int32.Parse(source.Substring(0, 2));
+                                bool bcheck;
+                                if (checkcource > 2)
+                                {
+                                    bcheck = funChkInsideLoc(source, db);
+                                    if (bcheck == true)
+                                    {
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
+                                    return false;
+                                    }
                                 }
                                 #endregion
 
@@ -2106,7 +2133,30 @@ namespace Mirle.DB.Proc
         }
         #endregion
 
-  
+        #region//判斷是否是外儲位，是的話檢查內儲位是否有命令，如果有命令傳回true擋下命令
+        private bool funChkInsideLoc(string Loc, SqlServer db)
+        {
+            string sInsideLoc = "";
+
+            if (Loc.Substring(0, 2) == "03")
+            {
+                sInsideLoc = "01";
+            }
+            else if (Loc.Substring(0, 2) == "04")
+            {
+                sInsideLoc = "02";
+            }
+            sInsideLoc = sInsideLoc + Loc.Substring(2, 5);
+            if(CMD_MST.GetCmdMstByLOC(sInsideLoc, out var dataObject, db).ResultCode==DBResult.NoDataSelect)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        #endregion
 
     }
 }

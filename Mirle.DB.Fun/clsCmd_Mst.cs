@@ -84,6 +84,14 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
+        public GetDataResult GetCmdMstByLOC(string sInsideLoc, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE LOC = '{sInsideLoc}'";
+            sql += $"AND CmdSts IN ('{clsConstValue.CmdSts.strCmd_Initial}','{clsConstValue.CmdSts.strCmd_Running}') ";
+            return db.GetData(sql, out dataObject);
+        }
+
         public GetDataResult GetCmdMstByStoreOutCrane(string CmdSno, out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM CMDMST ";
