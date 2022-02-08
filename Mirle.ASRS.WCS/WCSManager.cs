@@ -50,11 +50,12 @@ namespace Mirle.ASRS.WCS
 
         public void Start()
         {
+            _otherProcess.Start();
             _emptyInReport.Start();
             _emptyOutReport.Start();
             _storeOutProcess.Start();
             _storeInProcess.Start();
-            _otherProcess.Start();
+            
         }
         public void Stop()
         {
@@ -182,6 +183,10 @@ namespace Mirle.ASRS.WCS
             {
                 if (IsConnected)
                 {
+                    clsOther.clsL2L.Other_LocToLoc();
+
+                    clsOther.clsL2L.Other_LocToLocfinish();
+
                     clsOther.clsEmptyPallets.EmptyStoreIn_A1_WriteCV();
 
                     clsOther.clsEmptyPallets.EmptyStoreIn_A1_CreateEquCmd();
@@ -193,10 +198,6 @@ namespace Mirle.ASRS.WCS
                     //clsOther.clsEmptyPallets.EmptyStoreOut_A1_CreateEquCmd();
 
                     //clsOther.clsEmptyPallets.EmptyStoreOut_EquCmdFinish();
-
-                    clsOther.clsL2L.Other_LocToLoc();
-
-                    clsOther.clsL2L.Other_LocToLocfinish();
                 }
             }
             catch (Exception ex)
