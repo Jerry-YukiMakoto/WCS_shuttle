@@ -20,11 +20,12 @@ namespace WCS_API_Server
                 case clsConstValue.IoType.PalletStockOut:
                     cvtCmd = clsConstValue.CmdMode.StockOut;
                     break;
-                
-                case clsConstValue.IoType.Cycle:
+
+                case clsConstValue.IoType.CycleIn:
+                case clsConstValue.IoType.CycleOut:
                     cvtCmd = clsConstValue.CmdMode.Cycle;
                     break;
-                    
+
                 default:
                     cvtCmd = businessType; //庫對庫
                     break;

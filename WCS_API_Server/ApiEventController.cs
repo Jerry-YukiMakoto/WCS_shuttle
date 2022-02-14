@@ -42,6 +42,7 @@ namespace WCS_API_Server
                 cmd.Loc = Body.locationFrom;
                 cmd.NewLoc = Body.locationTo;
                 cmd.Prt = Body.priority;
+                cmd.Stack2Out = Body.WhetherAllout;//新增確認是否是2板出庫
                 cmd.CrtDate = Body.deliveryTime;
                 cmd.Userid = "WMS";
                 #endregion
