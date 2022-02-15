@@ -50,26 +50,26 @@ namespace WCS_API_Server
                 //寫入DB
                 if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))
                     throw new Exception(strEM);
-                
+
                 rMsg.success = true;
                 rMsg.errMsg = "";
                 clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_ADD end!");
                 return Json(rMsg);
-                
+
                 //return Ok();
             }
             catch (Exception ex)
             {
-               
-                rMsg.success=false;
+
+                rMsg.success = false;
                 rMsg.errMsg = ex.Message;
 
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName+"."+cmet.Name, ex.Message);
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
 
                 return Json(rMsg);
-                
-                
+
+
                 //return BadRequest();
             }
     

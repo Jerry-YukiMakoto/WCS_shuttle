@@ -348,8 +348,8 @@ namespace Mirle.DB.Fun
             string sSQL = "";
             try
             {
-                sSQL = "INSERT INTO CMD_MST (CmdSno, CmdSts, PRT, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, Loc, NewLoc,";
-                sSQL += "CrtDate, ExpDate, EndDate, UserID, EquNO) values(";
+                sSQL = "INSERT INTO CMDMST (CmdSno, CmdSts, PRT, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, Loc, NewLoc,";
+                sSQL += "CrtDate, ExpDate, EndDate, Remark, UserID, EquNO) values(";
                 sSQL += "'" + stuCmdMst.CmdSno + "', ";
                 sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', ";
                 sSQL += "'" + stuCmdMst.Prt + "', 'NA', '', ";
@@ -359,6 +359,7 @@ namespace Mirle.DB.Fun
                 sSQL += "'" + stuCmdMst.Loc + "', ";
                 sSQL += "'" + stuCmdMst.NewLoc + "', ";
                 sSQL += "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '', '', ";
+                sSQL += "'WMS下命令', ";
                 sSQL += "'" +stuCmdMst.Userid+"', ";
                 sSQL += "'" + stuCmdMst.EquNo + "')";
 
