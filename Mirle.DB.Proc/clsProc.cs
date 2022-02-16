@@ -1032,6 +1032,7 @@ namespace Mirle.DB.Proc
                                     bcheck = funChkInsideLoc(source, db);
                                     if (bcheck == true)
                                     {
+                                        CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.InsideLocWait, db);
                                         clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
                                         return false;
                                     }
@@ -1135,8 +1136,9 @@ namespace Mirle.DB.Proc
                                     bcheck = funChkInsideLoc(source, db);
                                     if (bcheck == true)
                                     {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
-                                    return false;
+                                        CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.InsideLocWait, db);
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
+                                        return false;
                                     }
                                 }
                                 #endregion

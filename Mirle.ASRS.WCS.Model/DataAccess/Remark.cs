@@ -16,5 +16,6 @@
         public const string A4EmptyisEmpty = "沒有空棧板，入庫作業暫停";
         public const string NotStoreInReady = "不是StoreInReady狀態";
         public const string NotStoreOutReady = "不是StoreOutReady狀態";
+        public const string InsideLocWait = "內儲位有命令，請等待命令做完";
     }
 }
