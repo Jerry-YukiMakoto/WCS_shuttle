@@ -146,6 +146,7 @@ namespace Mirle.DB.Proc
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             int IOType = Convert.ToInt32(dataObject[0].IOType);
+                            int pickup = Convert.ToInt32(dataObject[0].pickup);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
@@ -172,7 +173,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 6)//為了不跟撿料命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -218,7 +219,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (IOType == IOtype.NormalstorIn)
+                            if (IOType == IOtype.NormalstorIn && pickup==1)
                             {
                                 WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                 Result = WritePlccheck;
@@ -298,7 +299,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 6)//為了不跟撿料命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -760,7 +761,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 6)//為了不跟減料命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -912,7 +913,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3)//為了不跟盤點命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 6)//為了不跟撿料命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -1346,7 +1347,7 @@ namespace Mirle.DB.Proc
                                     CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                     return false;
                                 }
-                                if (_conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 3).CmdMode == 3)//為了不跟盤點命令衝突的條件
+                                if (_conveyor.GetBuffer(bufferIndex - 1).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 3).CmdMode == 6)//為了不跟撿料命令衝突的條件
                                 {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;

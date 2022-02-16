@@ -19,9 +19,9 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string LoadType { get; private set; }
         public string TrayId { get; private set; }
         public string Trace { get; private set; }
-
         public string IOType { get; private set; }
         public string COUNT { get; internal set; }
+        public string pickup { get; internal set; }
 
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
@@ -64,6 +64,10 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             if (row.Table.Columns.Contains("COUNT"))
             {
                 COUNT = Convert.ToString(row["COUNT"]);
+            }
+            if (row.Table.Columns.Contains("pickup"))
+            {
+                pickup = Convert.ToString(row["pickup"]);
             }
             return this;
         }
