@@ -74,7 +74,7 @@
             this.splitContainer1.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -103,7 +103,7 @@
             this.tlpMainSts.Controls.Add(this.tableLayoutPanelConn, 3, 0);
             this.tlpMainSts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpMainSts.Location = new System.Drawing.Point(0, 0);
-            this.tlpMainSts.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tlpMainSts.Margin = new System.Windows.Forms.Padding(4);
             this.tlpMainSts.Name = "tlpMainSts";
             this.tlpMainSts.RowCount = 1;
             this.tlpMainSts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -129,7 +129,7 @@
             this.picMirle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.picMirle.Image = ((System.Drawing.Image)(resources.GetObject("picMirle.Image")));
             this.picMirle.Location = new System.Drawing.Point(4, 4);
-            this.picMirle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.picMirle.Margin = new System.Windows.Forms.Padding(4);
             this.picMirle.Name = "picMirle";
             this.picMirle.Size = new System.Drawing.Size(172, 70);
             this.picMirle.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -186,8 +186,9 @@
             // 
             this.spcView.BackColor = System.Drawing.SystemColors.Control;
             this.spcView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.spcView.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.spcView.Location = new System.Drawing.Point(0, 0);
-            this.spcView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.spcView.Margin = new System.Windows.Forms.Padding(4);
             this.spcView.Name = "spcView";
             this.spcView.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -199,7 +200,7 @@
             // 
             this.spcView.Panel2.Controls.Add(this.GridCmd);
             this.spcView.Size = new System.Drawing.Size(1275, 672);
-            this.spcView.SplitterDistance = 488;
+            this.spcView.SplitterDistance = 487;
             this.spcView.SplitterWidth = 5;
             this.spcView.TabIndex = 0;
             // 
@@ -208,8 +209,10 @@
             this.spcMainView.BackColor = System.Drawing.SystemColors.Control;
             this.spcMainView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.spcMainView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.spcMainView.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.spcMainView.IsSplitterFixed = true;
             this.spcMainView.Location = new System.Drawing.Point(0, 0);
-            this.spcMainView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.spcMainView.Margin = new System.Windows.Forms.Padding(4);
             this.spcMainView.Name = "spcMainView";
             // 
             // spcMainView.Panel1
@@ -220,8 +223,8 @@
             // 
             this.spcMainView.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanelSideBtn);
-            this.spcMainView.Size = new System.Drawing.Size(1275, 488);
-            this.spcMainView.SplitterDistance = 1026;
+            this.spcMainView.Size = new System.Drawing.Size(1275, 487);
+            this.spcMainView.SplitterDistance = 1099;
             this.spcMainView.SplitterWidth = 5;
             this.spcMainView.TabIndex = 0;
             // 
@@ -232,8 +235,8 @@
             this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanelSideBtn.Controls.Add(this.testbutton, 0, 5);
             this.tableLayoutPanelSideBtn.Controls.Add(this.btnCraneSpeedMaintain, 0, 3);
-            this.tableLayoutPanelSideBtn.Controls.Add(this.btnCmdMaintain, 0, 2);
-            this.tableLayoutPanelSideBtn.Controls.Add(this.btnSendAPITest, 0, 1);
+            this.tableLayoutPanelSideBtn.Controls.Add(this.btnCmdMaintain, 0, 1);
+            this.tableLayoutPanelSideBtn.Controls.Add(this.btnSendAPITest, 0, 4);
             this.tableLayoutPanelSideBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelSideBtn.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanelSideBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -246,7 +249,7 @@
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(229, 547);
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(169, 485);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
             // 
             // testbutton
@@ -254,10 +257,10 @@
             this.testbutton.AutoSize = true;
             this.testbutton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.testbutton.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testbutton.Location = new System.Drawing.Point(4, 369);
+            this.testbutton.Location = new System.Drawing.Point(4, 325);
             this.testbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.testbutton.Name = "testbutton";
-            this.testbutton.Size = new System.Drawing.Size(219, 81);
+            this.testbutton.Size = new System.Drawing.Size(161, 70);
             this.testbutton.TabIndex = 7;
             this.testbutton.Text = "test";
             this.testbutton.UseVisualStyleBackColor = true;
@@ -268,10 +271,10 @@
             this.btnCraneSpeedMaintain.AutoSize = true;
             this.btnCraneSpeedMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCraneSpeedMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 187);
+            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 165);
             this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCraneSpeedMaintain.Name = "btnCraneSpeedMaintain";
-            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(219, 81);
+            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(161, 70);
             this.btnCraneSpeedMaintain.TabIndex = 6;
             this.btnCraneSpeedMaintain.Text = "Crane Speed Maintain";
             this.btnCraneSpeedMaintain.UseVisualStyleBackColor = true;
@@ -282,10 +285,10 @@
             this.btnCmdMaintain.AutoSize = true;
             this.btnCmdMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCmdMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCmdMaintain.Location = new System.Drawing.Point(4, 96);
+            this.btnCmdMaintain.Location = new System.Drawing.Point(5, 6);
             this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
-            this.btnCmdMaintain.Size = new System.Drawing.Size(219, 81);
+            this.btnCmdMaintain.Size = new System.Drawing.Size(161, 70);
             this.btnCmdMaintain.TabIndex = 4;
             this.btnCmdMaintain.Text = "Command Maintain";
             this.btnCmdMaintain.UseVisualStyleBackColor = true;
@@ -296,10 +299,10 @@
             this.btnSendAPITest.AutoSize = true;
             this.btnSendAPITest.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnSendAPITest.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSendAPITest.Location = new System.Drawing.Point(4, 4);
-            this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSendAPITest.Location = new System.Drawing.Point(5, 305);
+            this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4);
             this.btnSendAPITest.Name = "btnSendAPITest";
-            this.btnSendAPITest.Size = new System.Drawing.Size(219, 81);
+            this.btnSendAPITest.Size = new System.Drawing.Size(161, 72);
             this.btnSendAPITest.TabIndex = 3;
             this.btnSendAPITest.Text = "Send API Test";
             this.btnSendAPITest.UseVisualStyleBackColor = true;
@@ -311,11 +314,11 @@
             this.GridCmd.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.GridCmd.Dock = System.Windows.Forms.DockStyle.Fill;
             this.GridCmd.Location = new System.Drawing.Point(0, 0);
-            this.GridCmd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GridCmd.Margin = new System.Windows.Forms.Padding(4);
             this.GridCmd.Name = "GridCmd";
             this.GridCmd.RowHeadersWidth = 62;
             this.GridCmd.RowTemplate.Height = 24;
-            this.GridCmd.Size = new System.Drawing.Size(1275, 179);
+            this.GridCmd.Size = new System.Drawing.Size(1275, 180);
             this.GridCmd.TabIndex = 0;
             // 
             // tabControl1

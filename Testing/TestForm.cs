@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WCS_API_Server;
 using Unity;
+using Mirle.DB.Object;
+using Mirle.ASRS.WCS.Library;
 
 
 namespace test
@@ -24,6 +26,8 @@ namespace test
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            clInitSys.FunLoadIniSys();
+            clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS);
             _unityContainer = new UnityContainer();
             _unityContainer.RegisterInstance(new WMSWCSController());
             _webApiHost = new WebApiHost(new Startup(_unityContainer), "127.0.0.1:9000");
@@ -39,8 +43,9 @@ namespace test
                 locationFrom = textBox3.Text,
                 locationTo = textBox4.Text,
                 priority = textBox5.Text,
-                deliveryTime = textBox6.Text,
-            };
+                //deliveryTime = textBox6.Text,
+                deliveryTime = DateTime.Now.ToString("dd-MM-yyyy"),
+        };
 
             FunReport(info);
         }
@@ -63,7 +68,6 @@ namespace test
                     var result2 = client.PostAsJsonAsync(add2, info).Result;
                     try
                     {
-
                         FunTest(result2.ReasonPhrase);
                     }
                     catch (Exception ex)

@@ -85,12 +85,24 @@ namespace Mirle.Def
             /// </summary>
             public const string PalletStockOut = "7";
             /// <summary>
-            /// 盤點
+            /// 盤點入庫
             /// </summary>
-            public const string Cycle = "8";
+            public const string CycleIn = "8";
+            /// <summary>
+            /// 盤點出庫
+            /// </summary>
+            public const string CycleOut = "9";
+            /// <summary>
+            /// 手動空棧板入庫
+            /// </summary>
+            public const string ManualPalletStockIn = "10";
+            /// <summary>
+            /// 手動空棧板出庫
+            /// </summary>
+            public const string ManualPalletStockOut = "11";
         }
 
-            public class LocSts
+        public class LocSts
         {
             /// <summary>
             /// 空儲位
