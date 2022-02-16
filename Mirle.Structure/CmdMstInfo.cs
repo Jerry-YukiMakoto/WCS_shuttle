@@ -43,8 +43,8 @@ namespace Mirle.Structure
         public string ticketId { get; set; }
         public string manualStockIn { get; set; }
         /// <summary>
-        /// 雙棧板出庫
+        /// 整板出庫
         /// </summary>
-        public string Stack2Out { get; set; }
+        public string PickUp { get; set; }
     }
 }

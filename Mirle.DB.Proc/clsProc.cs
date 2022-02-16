@@ -13,6 +13,7 @@ using WCS_API_Client.ReportInfo;
 using System.Data;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.WCS.Model.DataAccess;
+using Mirle.CENS.U0NXMA30;
 
 namespace Mirle.DB.Proc
 {
@@ -424,6 +425,19 @@ namespace Mirle.DB.Proc
                                 dest = $"{dataObject[0].NewLoc}";
                             }
 
+                            //填入訊息
+                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                            {
+                                //lineId = ,
+                                //taskNo =,
+                                //businessType = ,
+                                //state = "12",
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
@@ -623,6 +637,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "13",
+                                            };
+                                            if(!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
@@ -638,6 +666,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "15",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
@@ -645,6 +687,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "14",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         if (bflag == true)
                                         {

@@ -5,7 +5,7 @@ namespace WCS_API_Server
 {
     public static class BusinessToCmd
     {
-        public static string ConvertToCmd(string businessType)
+        public static string ConvertToCmd(string businessType, string WhetherAllout)
         {
             string cvtCmd;
           
@@ -17,6 +17,12 @@ namespace WCS_API_Server
                     break;
                 
                 case clsConstValue.IoType.NormalStockOut:
+                    if(WhetherAllout == "0") //檢料
+                        cvtCmd = "6";
+                    else
+                        cvtCmd = clsConstValue.CmdMode.StockOut;
+                    break;
+
                 case clsConstValue.IoType.PalletStockOut:
                     cvtCmd = clsConstValue.CmdMode.StockOut;
                     break;

@@ -62,6 +62,7 @@
     <Compile Include="clsUnitModeDef.cs" />
     <Compile Include="clsUnitStsLog.cs" />
     <Compile Include="clsWriLog.cs" />
+    <Compile Include="DisplayTask.cs" />
     <Compile Include="EmptyReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

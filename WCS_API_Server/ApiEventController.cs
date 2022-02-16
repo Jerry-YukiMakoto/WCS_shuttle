@@ -36,13 +36,13 @@ namespace WCS_API_Server
                 string strEM = "";
 
                 cmd.CmdSno = Body.taskNo;
-                cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType);
+                cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType, Body.WhetherAllout);
                 cmd.IoType = Body.bussinessType;
                 cmd.taskNo = Body.taskNo;
                 cmd.Loc = Body.locationFrom;
                 cmd.NewLoc = Body.locationTo;
                 cmd.Prt = Body.priority;
-                cmd.Stack2Out = Body.WhetherAllout;//新增確認是否是2板出庫
+                cmd.PickUp = Body.WhetherAllout;
                 cmd.CrtDate = Body.deliveryTime;
                 cmd.Userid = "WMS";
                 #endregion
