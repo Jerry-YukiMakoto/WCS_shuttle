@@ -49,28 +49,63 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public void TaskEnd(string sCmdSno, string sLocationID)
+        public void TaskEnd()
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-            {
-                //填入回報訊息
-                locationID = sLocationID,
-                taskNo = sCmdSno,
-                state = "2", //任務結束
-            };
-
-
             using (var db = clsGetDB.GetDB(_config))
             {
                 int iRet = clsGetDB.FunDbOpen(db);
                 if (iRet == DBResult.Success)
                 {
-                    //if (填入條件)
-                    //{
-                        //做上報WMS的動作
-                        clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
-                    //}
+                    for (int i = 6; i <= 10; i += 2)
+                    {
+                        int cmdsno = _conveyor.GetBuffer(i).CommandId;
+                        bool position = _conveyor.GetBuffer(i).Position;
+                        if (cmdsno != 0 && position)
+                        {
+
+                            if(CMD_MST.GetCmdMstByStoreOutFinish(cmdsno.ToString(), out var dataObject, db).ResultCode==DBResult.Success)
+                            {
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    lineId = "1",
+                                    locationID = ((i - 2) / 2).ToString(),
+                                    taskNo = cmdsno.ToString(),
+                                    state = "2", //任務結束
+                                };
+                                if(!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return;
+                                }
+                                CMD_MST.UpdateCmdMstRemark(cmdsno.ToString(), Remark.WMSReportComplete, db);
+                            }
+                        }
+                    }
+
+                    int cmdsno1 = _conveyor.GetBuffer(2).CommandId;
+                    bool position1 = _conveyor.GetBuffer(2).Position;
+                    if (cmdsno1 != 0 && position1)
+                    {
+
+                        if (CMD_MST.GetCmdMstByStoreOutFinish(cmdsno1.ToString(), out var dataObject, db).ResultCode == DBResult.Success)
+                        {
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                lineId = "1",
+                                locationID = "1",
+                                taskNo = cmdsno1.ToString(),
+                                state = "2", //任務結束
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
+                            CMD_MST.UpdateCmdMstRemark(cmdsno1.ToString(), Remark.WMSReportComplete, db);
+                        }
+                    }
+
                 }
                 else
                 {

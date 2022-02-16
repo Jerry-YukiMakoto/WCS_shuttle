@@ -75,6 +75,16 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
+        public GetDataResult GetCmdMstByStoreOutFinish(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.CMDFInish}') ";
+            sql += $"AND Cmdsno='{cmdsno}' ";
+            sql += $"AND Remark<>'{Remark.WMSReportComplete}' ";
+            sql += $"AND Iotype =='{IOtype.NormalstoreOut}' ";
+            return db.GetData(sql, out dataObject);
+        }
+
         public GetDataResult GetCmdMstByStoreOutcheck(string stations, out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT COUNT(CmdSno) as COUNT FROM CMDMST ";

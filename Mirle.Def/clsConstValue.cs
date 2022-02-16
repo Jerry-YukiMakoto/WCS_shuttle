@@ -60,6 +60,8 @@ namespace Mirle.Def
             /// 庫對庫
             /// </summary>
             public const string L2L = "5";
+
+            public const string CMDFInish = "7";
             /// <summary>
             /// 置物
             /// </summary>

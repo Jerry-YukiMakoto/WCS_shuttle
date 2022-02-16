@@ -17,5 +17,6 @@
         public const string NotStoreInReady = "不是StoreInReady狀態";
         public const string NotStoreOutReady = "不是StoreOutReady狀態";
         public const string InsideLocWait = "內儲位有命令，請等待命令做完";
+        public const string WMSReportComplete = "WMS出庫回報完成";
     }
 }

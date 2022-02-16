@@ -21,7 +21,9 @@ namespace Mirle.ASRS.WCS
 
         private readonly Timer _emptyInReport = new Timer();
         private readonly Timer _emptyOutReport = new Timer();
-        
+
+        private readonly Timer _KanBanstoreOutrepotfinish = new Timer();
+
         private readonly Timer _storeInProcess = new Timer();
         private readonly Timer _storeOutProcess = new Timer();
         private readonly Timer _otherProcess = new Timer();
@@ -38,6 +40,7 @@ namespace Mirle.ASRS.WCS
             
             _emptyInReport.Interval = 500;
             _emptyOutReport.Interval = 500;
+            _KanBanstoreOutrepotfinish.Interval = 500;
 
             _storeOutProcess.Elapsed += StoreOutProcess;
             _storeInProcess.Elapsed += StoreInProcess;
@@ -45,6 +48,7 @@ namespace Mirle.ASRS.WCS
             
             _emptyInReport.Elapsed += EmptyStoreInProcess;
             _emptyOutReport.Elapsed += EmptyStoreOutProcess;
+            _KanBanstoreOutrepotfinish.Elapsed += KanBanstoreOutrepotfinish;
 
         }
 
@@ -96,6 +100,28 @@ namespace Mirle.ASRS.WCS
                 if (IsConnected)
                 {
                     clsEmptyStoreOut.EmptyOutWMS();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
+            finally
+            {
+                _emptyOutReport.Start();
+            }
+        }
+
+        private void KanBanstoreOutrepotfinish(object sender, ElapsedEventArgs e)
+        {
+            _emptyOutReport.Stop();
+            try
+            {
+                if (IsConnected)
+                {
+                    clsStoreOutReportFinish.StoreOutReportFinish();
                 }
             }
             catch (Exception ex)

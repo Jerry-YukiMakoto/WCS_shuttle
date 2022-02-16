@@ -239,7 +239,37 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else return true;
+                            else
+                            {
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    lineId = "1",
+                                    locationID = "1",
+                                    taskNo = cmdSno.ToString(),
+                                    state = "1", //任務開始
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return false;
+                                }
+                                //填入訊息
+                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                                {
+                                    lineId = "1",
+                                    taskNo = cmdSno,
+                                    palletNo = cmdSno,
+                                    businessType = IOType.ToString(),
+                                    state = "12",
+                                    errMsg = ""
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
                         }
                         else return false;
 
@@ -273,6 +303,7 @@ namespace Mirle.DB.Proc
                         if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             string cmdSno = dataObject[0].CmdSno;
+                            string IOType = dataObject[0].IOType;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
@@ -351,8 +382,37 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-
-                            return true;
+                            else
+                            {
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    lineId = "1",
+                                    locationID = ((bufferIndex-2)/2).ToString(),
+                                    taskNo = cmdSno.ToString(),
+                                    state = "1", //任務開始
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return false;
+                                }
+                                //填入訊息
+                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                                {
+                                    lineId = "1",
+                                    taskNo = cmdSno,
+                                    palletNo = cmdSno,
+                                    businessType = IOType.ToString(),
+                                    state = "12",
+                                    errMsg = ""
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
                         }
                         else return false;
                     }
@@ -641,6 +701,24 @@ namespace Mirle.DB.Proc
                         {
                             foreach (var cmdMst in dataObject.Data)
                             {
+                                string locationId = cmdMst.StnNo;
+                                if(locationId==StnNo.A3)
+                                {
+                                    locationId = "1";
+                                }
+                                else if(locationId==StnNo.A6)
+                                {
+                                    locationId = "2";
+                                }
+                                else if(locationId == StnNo.A8)
+                                {
+                                    locationId = "3";
+                                }
+                                else if(locationId == StnNo.A10)
+                                {
+                                    locationId = "4";
+                                }
+
                                 if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd,db).ResultCode == DBResult.Success)
                                 {
                                     if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
@@ -658,16 +736,30 @@ namespace Mirle.DB.Proc
                                             bflag = true;
 
                                             //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "13",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "13",
+                                                errMsg =""
                                             };
-                                            if(!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            if(!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+                                                lineId = "1",
+                                                locationID = locationId,
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                            {
                                                 return false;
                                             }
                                         }
@@ -689,14 +781,28 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "15",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "15",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+                                                lineId = "1",
+                                                locationID = locationId,
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
                                                 return false;
                                             }
                                         }
@@ -710,14 +816,28 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "14",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "14",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+                                                lineId = "1",
+                                                locationID = locationId,
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
                                                 return false;
                                             }
                                         }
@@ -927,7 +1047,38 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                                 }
-                                else return true;
+                            else
+                            {
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    lineId = "1",
+                                    locationID = "1",
+                                    taskNo = cmdSno.ToString(),
+                                    state = "1", //任務開始
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                //填入訊息
+                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                                {
+                                    lineId = "1",
+                                    taskNo = cmdSno,
+                                    palletNo = cmdSno,
+                                    businessType = IOType.ToString(),
+                                    state = "12",
+                                    errMsg = ""
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
                         }
                         else return false;
                     }
@@ -961,6 +1112,7 @@ namespace Mirle.DB.Proc
                         {
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string iotype = dataObject[0].IOType;
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}, " +
@@ -1039,7 +1191,37 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else return true;
+                            else
+                            {
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    lineId = "1",
+                                    locationID = ((bufferIndex - 1) / 2).ToString(),
+                                    taskNo = cmdSno.ToString(),
+                                    state = "1", //任務開始
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return false;
+                                }
+                                //填入訊息
+                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                                {
+                                    lineId = "1",
+                                    taskNo =cmdSno,
+                                    palletNo =cmdSno,
+                                    businessType = iotype,
+                                    state = "12",
+                                    errMsg =""
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
                         }
                         else return false;
                     }
@@ -1139,23 +1321,8 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                else 
-                                {
-                                    //填入訊息
-                                    TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                    {
-                                        //lineId = ,
-                                        //taskNo =,
-                                        //businessType = ,
-                                        //state = "12",
-                                    };
-                                    if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                    {
-                                        db.TransactionCtrl(TransactionTypes.Rollback);
-                                        return false;
-                                    }
-                                    return true;
-                                } 
+                                else return true;
+                                
                         }
                         return false;
                     }
@@ -1341,10 +1508,12 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "13",
+                                                lineId ="1" ,
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "13",
+                                                errMsg =""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
@@ -1370,10 +1539,12 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "15",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "15",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
@@ -1391,10 +1562,12 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "14",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "14",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
@@ -1471,7 +1644,8 @@ namespace Mirle.DB.Proc
                             if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                             {
                                 string cmdSno = dataObject[0].CmdSno;
-                                int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string iotype = dataObject[0].IOType;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
 
                                 clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreIn Command => {cmdSno}");
 
@@ -1540,8 +1714,39 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
-                                    return true;
+                            else
+                            {
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    lineId = "1",
+                                    locationID = "1",
+                                    taskNo = cmdSno.ToString(),
+                                    state = "1", //任務開始
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                //填入訊息
+                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                                {
+                                    lineId = "1",
+                                    taskNo = cmdSno,
+                                    palletNo = cmdSno,
+                                    businessType = iotype,
+                                    state = "12",
+                                    errMsg = ""
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
                             }
+                        }
                             return true;
                     }
                     else
@@ -1630,23 +1835,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else
-                            {
-                                //填入訊息
-                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                {
-                                    //lineId = ,
-                                    //taskNo =,
-                                    //businessType = ,
-                                    //state = "12",
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                return true;
-                            }
+                             return true;
                         }
                         return true;
                     }
@@ -1704,14 +1893,28 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "13",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "13",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+                                                lineId = "1",
+                                                locationID = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
                                                 return false;
                                             }
                                         }
@@ -1733,14 +1936,28 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "15",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "15",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+                                                lineId = "1",
+                                                locationID = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
                                                 return false;
                                             }
                                         }
@@ -1754,14 +1971,28 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "14",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "14",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+                                                lineId = "1",
+                                                locationID = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
                                                 return false;
                                             }
                                         }
@@ -2137,6 +2368,7 @@ namespace Mirle.DB.Proc
                             string source = $"{dataObject[0].Loc}";
                             string dest = $"{dataObject[0].NewLoc}";
                             string cmdSno = $"{dataObject[0].CmdSno}";
+                            string IOtype = $"{dataObject[0].IOType}";
 
 
                             clsWriLog.L2LLogTrace(5, "LocToLoc", $"LocToLoc Command Received => {cmdSno}");
@@ -2171,10 +2403,12 @@ namespace Mirle.DB.Proc
                                 //填入訊息
                                 TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                 {
-                                    //lineId = ,
-                                    //taskNo =,
-                                    //businessType = ,
-                                    //state = "12",
+                                    lineId = "1",
+                                    taskNo = cmdSno,
+                                    palletNo = cmdSno,
+                                    businessType = IOtype,
+                                    state = "12",
+                                    errMsg = ""
                                 };
                                 if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                 {
@@ -2236,10 +2470,12 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "13",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "13",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
@@ -2265,10 +2501,12 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "15",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "15",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
@@ -2286,10 +2524,12 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                //lineId = ,
-                                                //taskNo =,
-                                                //businessType = ,
-                                                //state = "14",
+                                                lineId = "1",
+                                                taskNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.CmdSno,
+                                                businessType = cmdMst.IOType,
+                                                state = "14",
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
