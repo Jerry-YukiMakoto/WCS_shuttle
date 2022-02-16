@@ -13,6 +13,7 @@ using WCS_API_Client.ReportInfo;
 using System.Data;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.WCS.Model.DataAccess;
+using Mirle.CENS.U0NXMA30;
 
 namespace Mirle.DB.Proc
 {
@@ -425,7 +426,6 @@ namespace Mirle.DB.Proc
                                 dest = $"{dataObject[0].NewLoc}";
                             }
 
-
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
@@ -453,7 +453,23 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else return true;
+                            else
+                            {
+                                //填入訊息
+                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                {
+                                    //lineId = ,
+                                    //taskNo =,
+                                    //businessType = ,
+                                    //state = "12",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
                         }
                         else return false;
                     }
@@ -566,7 +582,23 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else return true;
+                            else
+                            {
+                                //填入訊息
+                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                {
+                                    //lineId = ,
+                                    //taskNo =,
+                                    //businessType = ,
+                                    //state = "12",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
                         }
                         else return false;
                     }
@@ -624,6 +656,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "13",
+                                            };
+                                            if(!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
@@ -639,6 +685,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "15",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
@@ -646,6 +706,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "14",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         if (bflag == true)
                                         {
@@ -1041,7 +1115,7 @@ namespace Mirle.DB.Proc
                                 #endregion
 
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
-
+                                
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                                 {
                                     clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
@@ -1065,7 +1139,23 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                else return true;
+                                else 
+                                {
+                                    //填入訊息
+                                    TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                    {
+                                        //lineId = ,
+                                        //taskNo =,
+                                        //businessType = ,
+                                        //state = "12",
+                                    };
+                                    if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                    {
+                                        db.TransactionCtrl(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+                                    return true;
+                                } 
                         }
                         return false;
                     }
@@ -1100,89 +1190,106 @@ namespace Mirle.DB.Proc
 
                         
 
-                            if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
+                        {
+                            cmdSno = dataObject[0].CmdSno;
+                            string source = dataObject[0].Loc;
+                            string dest = "";
+                                
+                            #region//站口狀態確認
+                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                             {
-                                cmdSno = dataObject[0].CmdSno;
-                                string source = dataObject[0].Loc;
-                                string dest = "";
-                                
-                                #region//站口狀態確認
-                                if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                    return false;
-                                }
-                            #endregion
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
+                                return false;
+                            }
+                        #endregion
 
-                                #region 擋下出庫命令，當儲位是外儲位檢查內儲位現在是否有命令(庫對庫)，如果有就擋下
-                                int checkcource = Int32.Parse(source.Substring(0, 2));
-                                bool bcheck;
-                                if (checkcource > 2)
+                            #region 擋下出庫命令，當儲位是外儲位檢查內儲位現在是否有命令(庫對庫)，如果有就擋下
+                            int checkcource = Int32.Parse(source.Substring(0, 2));
+                            bool bcheck;
+                            if (checkcource > 2)
+                            {
+                                bcheck = funChkInsideLoc(source, db);
+                                if (bcheck == true)
                                 {
-                                    bcheck = funChkInsideLoc(source, db);
-                                    if (bcheck == true)
-                                    {
-                                        CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.InsideLocWait, db);
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
-                                        return false;
-                                    }
-                                }
-                                #endregion
-
-                                switch (bufferIndex)
-                                {
-                                    case 5:
-                                        dest = $"{CranePortNo.A5}";
-                                        break;
-                                    case 7:
-                                        dest = $"{CranePortNo.A7}";
-                                        break;
-                                    case 9:
-                                        dest = $"{CranePortNo.A9}";
-                                        break;
-                                }
-                                
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
-
-                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
-                                    return false;
-                                }
-                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Update CmdMst Fail => {cmdSno}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Commit Fail => {cmdSno}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.InsideLocWait, db);
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
                                     return false;
                                 }
                             }
+                            #endregion
+
+                            switch (bufferIndex)
+                            {
+                                case 5:
+                                    dest = $"{CranePortNo.A5}";
+                                    break;
+                                case 7:
+                                    dest = $"{CranePortNo.A7}";
+                                    break;
+                                case 9:
+                                    dest = $"{CranePortNo.A9}";
+                                    break;
+                            }
+                                
+                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Update CmdMst Fail => {cmdSno}");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Commit Fail => {cmdSno}");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            else
+                            {
+                                //填入訊息
+                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                {
+                                    //lineId = ,
+                                    //taskNo =,
+                                    //businessType = ,
+                                    //state = "12",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }
                             return true;
                     }
                     else
@@ -1230,6 +1337,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "13",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
@@ -1245,6 +1366,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "15",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
@@ -1252,6 +1387,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag=true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "14",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         if (bflag == true)
                                         {
@@ -1423,69 +1572,83 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+ 
+                        if (CMD_MST.GetEmptyCmdMstByStoreIn(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
+                        {
+                            string source = $"{CranePortNo.A1}";
+                            string dest = $"{dataObject[0].NewLoc}";
 
-                        
-                            
-                            if (CMD_MST.GetEmptyCmdMstByStoreIn(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
+                            #region//站口狀態確認
+                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                             {
-                                string source = $"{CranePortNo.A1}";
-                                string dest = $"{dataObject[0].NewLoc}";
-
-                                #region//站口狀態確認
-                                if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex).InMode != true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex).Presence == false)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
-                                    return false;
-                                }
-                                #endregion
-
-
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready EmptyStoreIn => {cmdSno}");
-
-                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Begin Fail => {cmdSno}");
-                                    return false;
-                                }
-                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.EmptyStoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Update CmdMst Fail => {cmdSno}");
-                                   
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
-                                {
-                                    clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Insert EquCmd Fail => {cmdSno}");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
+                                return false;
                             }
-                            return true;
-                        
+                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
+                                return false;
+                            }
+                            if (_conveyor.GetBuffer(bufferIndex).Presence == false)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
+                                return false;
+                            }
+                            #endregion
+
+
+                            clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready EmptyStoreIn => {cmdSno}");
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Begin Fail => {cmdSno}");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.EmptyStoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Update CmdMst Fail => {cmdSno}");
+                                   
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                            {
+                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Insert EquCmd Fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            else
+                            {
+                                //填入訊息
+                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                {
+                                    //lineId = ,
+                                    //taskNo =,
+                                    //businessType = ,
+                                    //state = "12",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }
+                        return true;
                     }
                     else
                     {
@@ -1537,6 +1700,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "13",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
@@ -1552,6 +1729,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "15",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
@@ -1559,6 +1750,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "14",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         if (bflag == true)
                                         {
@@ -1961,7 +2166,23 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            return true;
+                            else
+                            {
+                                //填入訊息
+                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                {
+                                    //lineId = ,
+                                    //taskNo =,
+                                    //businessType = ,
+                                    //state = "12",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                                return true;
+                            }
                         }
                         else return false;
                     }
@@ -2011,6 +2232,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = "NA";
                                             remark = "存取車搬送命令完成";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "13",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode.StartsWith("W"))
                                         {
@@ -2026,6 +2261,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
                                             remark = "存取車地上盤強制取消命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "15",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
@@ -2033,6 +2282,20 @@ namespace Mirle.DB.Proc
                                             cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
                                             remark = "存取車地上盤強制完成命令";
                                             bflag = true;
+
+                                            //填入訊息
+                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
+                                            {
+                                                //lineId = ,
+                                                //taskNo =,
+                                                //businessType = ,
+                                                //state = "14",
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                return false;
+                                            }
                                         }
                                         if (bflag == true)
                                         {
