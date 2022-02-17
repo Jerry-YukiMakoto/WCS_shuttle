@@ -35,7 +35,7 @@ namespace Mirle.DB.Proc
                 {
                     if (_conveyor.GetBuffer(4).EmptyINReady == 9 && _conveyor.GetBuffer(4).Ready == 1)
                     {
-                        if (CMD_MST.EmptyInOutCheck(IOtype.EmptyStoreIn, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockIn, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
                         {
                             //做上報WMS的動作
                             clsWmsApi.GetApiProcess().GetStackPalletsIn().FunReport(info);
@@ -68,7 +68,7 @@ namespace Mirle.DB.Proc
                 {
                     if (_conveyor.GetBuffer(4).Presence == false && _conveyor.GetBuffer(4).Ready == 2)
                     {
-                        if (CMD_MST.EmptyInOutCheck(IOtype.EmptyStroeOut, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
                         {
                             //做上報WMS的動作
                             clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);

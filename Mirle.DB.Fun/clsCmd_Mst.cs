@@ -81,7 +81,7 @@ namespace Mirle.DB.Fun
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.CMDFInish}') ";
             sql += $"AND Cmdsno='{cmdsno}' ";
             sql += $"AND Remark<>'{Remark.WMSReportComplete}' ";
-            sql += $"AND Iotype =='{IOtype.NormalstoreOut}' ";
+            sql += $"AND Iotype =='{clsConstValue.IoType.NormalStockOut}' ";
             return db.GetData(sql, out dataObject);
         }
 
@@ -395,7 +395,7 @@ namespace Mirle.DB.Fun
             }
         }
 
-        public GetDataResult EmptyInOutCheck(int Iotype,out DataObject<CmdMst> dataObject, SqlServer db)
+        public GetDataResult EmptyInOutCheck(string Iotype,out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM CMDMST";
             sql += $"WHERE IOtype='{Iotype}' ";

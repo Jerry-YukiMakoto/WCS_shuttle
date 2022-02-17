@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OEEParamConfig.cs" />
     <Compile Include="clsConstValue.cs" />
     <Compile Include="clsDbConfig.cs" />
     <Compile Include="clsEnum.cs" />
