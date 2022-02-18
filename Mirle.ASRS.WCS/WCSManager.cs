@@ -59,7 +59,8 @@ namespace Mirle.ASRS.WCS
             _emptyOutReport.Start();
             _storeOutProcess.Start();
             _storeInProcess.Start();
-            
+            _KanBanstoreOutrepotfinish.Start();
+
         }
         public void Stop()
         {
@@ -68,6 +69,7 @@ namespace Mirle.ASRS.WCS
             _storeOutProcess.Stop();
             _storeInProcess.Stop();
             _otherProcess.Stop();
+            _KanBanstoreOutrepotfinish.Stop();
         }
 
         private void EmptyStoreInProcess(object sender, ElapsedEventArgs e)
@@ -116,7 +118,7 @@ namespace Mirle.ASRS.WCS
 
         private void KanBanstoreOutrepotfinish(object sender, ElapsedEventArgs e)
         {
-            _emptyOutReport.Stop();
+            _KanBanstoreOutrepotfinish.Stop();
             try
             {
                 if (IsConnected)
@@ -132,7 +134,7 @@ namespace Mirle.ASRS.WCS
             }
             finally
             {
-                _emptyOutReport.Start();
+                _KanBanstoreOutrepotfinish.Start();
             }
         }
 

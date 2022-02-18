@@ -146,7 +146,7 @@ namespace Mirle.DB.Proc
 
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-                            int IOType = Convert.ToInt32(dataObject[0].IOType);
+                            string IOType = dataObject[0].IOType;
                             int pickup = Convert.ToInt32(dataObject[0].pickup);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
@@ -220,7 +220,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (IOType == IOtype.NormalstorIn && pickup==1)
+                            if (IOType == clsConstValue.IoType.NormalStockIn && pickup==1)
                             {
                                 WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                 Result = WritePlccheck;
@@ -259,7 +259,7 @@ namespace Mirle.DB.Proc
                                     lineId = "1",
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
-                                    businessType = IOType.ToString(),
+                                    businessType = IOType,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -991,7 +991,7 @@ namespace Mirle.DB.Proc
                                         return false;
                                     }
                                 }
-                                else if(IOType == IOtype.EmptyStroeOut)
+                                else if(IOType == clsConstValue.IoType.PalletStockOut)
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path3_toA4).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
@@ -1040,7 +1040,7 @@ namespace Mirle.DB.Proc
                                     lineId = "1",
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
-                                    businessType = IOType.ToString(),
+                                    businessType = IOType,
                                     state = "12",
                                     errMsg = ""
                                 };
