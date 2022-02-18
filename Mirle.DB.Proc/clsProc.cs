@@ -477,7 +477,8 @@ namespace Mirle.DB.Proc
                             string source = $"{CranePortNo.A1}";
                             string IOType = dataObject[0].IOType;
                             string dest = "";
-                            if (IOType == IOtype.Cycle.ToString())//如果是盤點，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            int pickup = Convert.ToInt32(dataObject[0].pickup);
+                            if (IOType == IOtype.NormalstoreOut.ToString() && pickup==0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
@@ -513,23 +514,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else
-                            {
-                                //填入訊息
-                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                {
-                                    //lineId = ,
-                                    //taskNo =,
-                                    //businessType = ,
-                                    //state = "12",
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                return true;
-                            }
+                            return true;
                         }
                         else return false;
                     }
@@ -605,7 +590,8 @@ namespace Mirle.DB.Proc
                             }
                             string IOType = dataObject[0].IOType;
                             string dest = "";
-                            if (IOType == IOtype.Cycle.ToString())//如果是盤點，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            int pickup = Convert.ToInt32(dataObject[0].pickup);
+                            if (IOType == IOtype.NormalstoreOut.ToString() && pickup == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
@@ -642,23 +628,8 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else
-                            {
-                                //填入訊息
-                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                {
-                                    //lineId = ,
-                                    //taskNo =,
-                                    //businessType = ,
-                                    //state = "12",
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                return true;
-                            }
+                            else return true;
+                            
                         }
                         else return false;
                     }
@@ -908,6 +879,7 @@ namespace Mirle.DB.Proc
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             int IOType = Convert.ToInt32(dataObject[0].IOType);
+                            int pickup = Convert.ToInt32(dataObject[0].pickup);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             bool Result;
 
@@ -1008,7 +980,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                                if (IOType == IOtype.Cycle || LastCargoOrNotchek == 1)//Iotype如果是盤點或是空棧板整版出或是出庫命令的最後一版，直接到A3
+                                if ((IOType == IOtype.NormalstoreOut && pickup == 0 ) || IOType == IOtype.EmptyStoreOutbyWMS || IOType == IOtype.Cycle)//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
@@ -1439,23 +1411,8 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else
-                            {
-                                //填入訊息
-                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                {
-                                    //lineId = ,
-                                    //taskNo =,
-                                    //businessType = ,
-                                    //state = "12",
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                return true;
-                            }
+                            return true;
+                            
                         }
                             return true;
                     }
@@ -1581,7 +1538,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 return false;
                                             }
-                                            if (cmdMst.IOType == "2" || cmdMst.IOType == "7" || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
+                                            if ((cmdMst.IOType != "2" && cmdMst.pickup != "0") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
                                             {
                                                 if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
                                                 {
@@ -2603,7 +2560,7 @@ namespace Mirle.DB.Proc
         }
         #endregion
 
-        #region//判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1
+        #region//判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1:現在沒有用這個作為判斷，現在用WMS傳我們的pickup參數作為判斷
         private int LastCargoOrNot()
         {
             using (var db = clsGetDB.GetDB(_config))
