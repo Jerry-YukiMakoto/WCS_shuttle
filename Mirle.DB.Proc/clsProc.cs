@@ -478,7 +478,7 @@ namespace Mirle.DB.Proc
                             string IOType = dataObject[0].IOType;
                             string dest = "";
                             int pickup = Convert.ToInt32(dataObject[0].pickup);
-                            if (IOType == IOtype.NormalstoreOut.ToString() && pickup==0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            if (IOType == clsConstValue.IoType.NormalStockOut && pickup==0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
@@ -591,7 +591,7 @@ namespace Mirle.DB.Proc
                             string IOType = dataObject[0].IOType;
                             string dest = "";
                             int pickup = Convert.ToInt32(dataObject[0].pickup);
-                            if (IOType == IOtype.NormalstoreOut.ToString() && pickup == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            if (IOType == clsConstValue.IoType.NormalStockOut && pickup == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
@@ -878,7 +878,7 @@ namespace Mirle.DB.Proc
                         {
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-                            int IOType = Convert.ToInt32(dataObject[0].IOType);
+                            string IOType = dataObject[0].IOType;
                             int pickup = Convert.ToInt32(dataObject[0].pickup);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             bool Result;
@@ -980,7 +980,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                                if ((IOType == IOtype.NormalstoreOut && pickup == 0 ) || IOType == IOtype.EmptyStoreOutbyWMS || IOType == IOtype.Cycle)//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
+                                if ((IOType == clsConstValue.IoType.NormalStockOut && pickup == 0 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || IOType == clsConstValue.IoType.CycleOut)//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
