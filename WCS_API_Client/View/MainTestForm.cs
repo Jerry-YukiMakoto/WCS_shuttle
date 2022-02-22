@@ -28,6 +28,7 @@ namespace WCS_API_Client.View
                 taskStateUpdate = new TaskStateUpdateForm(_config);
                 taskStateUpdate.TopMost = true;
                 taskStateUpdate.FormClosed += new FormClosedEventHandler(funTaskStatusUpdate_FormClosed);
+                taskStateUpdate.Show();
             }
             else
             {

@@ -200,7 +200,7 @@
             // 
             this.spcView.Panel2.Controls.Add(this.GridCmd);
             this.spcView.Size = new System.Drawing.Size(1275, 672);
-            this.spcView.SplitterDistance = 487;
+            this.spcView.SplitterDistance = 486;
             this.spcView.SplitterWidth = 5;
             this.spcView.TabIndex = 0;
             // 
@@ -223,8 +223,8 @@
             // 
             this.spcMainView.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanelSideBtn);
-            this.spcMainView.Size = new System.Drawing.Size(1275, 487);
-            this.spcMainView.SplitterDistance = 1099;
+            this.spcMainView.Size = new System.Drawing.Size(1275, 486);
+            this.spcMainView.SplitterDistance = 1098;
             this.spcMainView.SplitterWidth = 5;
             this.spcMainView.TabIndex = 0;
             // 
@@ -249,7 +249,7 @@
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(169, 485);
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(170, 484);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
             // 
             // testbutton
@@ -260,7 +260,7 @@
             this.testbutton.Location = new System.Drawing.Point(4, 325);
             this.testbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.testbutton.Name = "testbutton";
-            this.testbutton.Size = new System.Drawing.Size(161, 70);
+            this.testbutton.Size = new System.Drawing.Size(162, 70);
             this.testbutton.TabIndex = 7;
             this.testbutton.Text = "test";
             this.testbutton.UseVisualStyleBackColor = true;
@@ -274,7 +274,7 @@
             this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 165);
             this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCraneSpeedMaintain.Name = "btnCraneSpeedMaintain";
-            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(161, 70);
+            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(162, 70);
             this.btnCraneSpeedMaintain.TabIndex = 6;
             this.btnCraneSpeedMaintain.Text = "Crane Speed Maintain";
             this.btnCraneSpeedMaintain.UseVisualStyleBackColor = true;
@@ -285,10 +285,10 @@
             this.btnCmdMaintain.AutoSize = true;
             this.btnCmdMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCmdMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCmdMaintain.Location = new System.Drawing.Point(5, 6);
+            this.btnCmdMaintain.Location = new System.Drawing.Point(4, 5);
             this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
-            this.btnCmdMaintain.Size = new System.Drawing.Size(161, 70);
+            this.btnCmdMaintain.Size = new System.Drawing.Size(162, 70);
             this.btnCmdMaintain.TabIndex = 4;
             this.btnCmdMaintain.Text = "Command Maintain";
             this.btnCmdMaintain.UseVisualStyleBackColor = true;
@@ -299,14 +299,13 @@
             this.btnSendAPITest.AutoSize = true;
             this.btnSendAPITest.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnSendAPITest.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSendAPITest.Location = new System.Drawing.Point(5, 305);
+            this.btnSendAPITest.Location = new System.Drawing.Point(4, 244);
             this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4);
             this.btnSendAPITest.Name = "btnSendAPITest";
-            this.btnSendAPITest.Size = new System.Drawing.Size(161, 72);
+            this.btnSendAPITest.Size = new System.Drawing.Size(162, 72);
             this.btnSendAPITest.TabIndex = 3;
             this.btnSendAPITest.Text = "Send API Test";
             this.btnSendAPITest.UseVisualStyleBackColor = true;
-            this.btnSendAPITest.Visible = false;
             this.btnSendAPITest.Click += new System.EventHandler(this.btnSendAPITest_Click);
             // 
             // GridCmd
@@ -318,7 +317,7 @@
             this.GridCmd.Name = "GridCmd";
             this.GridCmd.RowHeadersWidth = 62;
             this.GridCmd.RowTemplate.Height = 24;
-            this.GridCmd.Size = new System.Drawing.Size(1275, 180);
+            this.GridCmd.Size = new System.Drawing.Size(1275, 181);
             this.GridCmd.TabIndex = 0;
             // 
             // tabControl1
