@@ -6,7 +6,7 @@ namespace test
 {
     public class MoveTaskAddInfo
     {
-        public string lineId { get; set; } //倉別
+        public string lineId { get; set; } = "1"; //線別
         public string taskNo { get; set; } //任務號
         public string bussinessType { get; set; } //任務類型
         public string locationFrom { get; set; } //起始儲位(站口)

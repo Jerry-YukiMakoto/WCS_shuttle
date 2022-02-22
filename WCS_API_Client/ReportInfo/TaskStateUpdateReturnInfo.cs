@@ -8,7 +8,7 @@ namespace WCS_API_Client.ReportInfo
 {
     public class TaskStateUpdateReturnInfo : ReturnMsgInfo
     {
-        public string lineId { get; set; }
+        public string lineId { get; set; } = "1";
         public string taskNo { get; set; }
     }
 }
