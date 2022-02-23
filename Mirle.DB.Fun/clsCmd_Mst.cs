@@ -464,7 +464,7 @@ namespace Mirle.DB.Fun
                 string strEM = "";
                 string strSql = $"select * from CMDMST" +
                     $" where CmdSts < '{clsConstValue.CmdSts.strCmd_Finished}' ";
-                strSql += " ORDER BY PRT, CrtDate, CmdSno";
+                strSql += " ORDER BY CrtDate, CmdSno";
                 int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
                 if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
                 {
