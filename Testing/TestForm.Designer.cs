@@ -152,22 +152,22 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(155, 240);
+            this.label5.Location = new System.Drawing.Point(112, 240);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(51, 15);
+            this.label5.Size = new System.Drawing.Size(94, 15);
             this.label5.TabIndex = 7;
-            this.label5.Text = "Priority";
+            this.label5.Text = "WhetherAllOut";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(123, 285);
+            this.label6.Location = new System.Drawing.Point(148, 285);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(83, 15);
+            this.label6.Size = new System.Drawing.Size(58, 15);
             this.label6.TabIndex = 8;
-            this.label6.Text = "deliveryTime";
+            this.label6.Text = "lastPallet";
             // 
-            // Form1
+            // TestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -187,7 +187,7 @@
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "Form1";
+            this.Name = "TestForm";
             this.Text = "Test";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);

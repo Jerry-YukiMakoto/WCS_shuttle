@@ -34,7 +34,7 @@ namespace Mirle.Grid
                 oGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;        //選擇整Row方式
                 //oGrid.SelectionMode = DataGridViewSelectionMode.CellSelect;     //選擇單一Row方式
 
-                oGrid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; //字體對齊位置
+                oGrid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft; //字體對齊位置
             }
             catch (Exception ex)
             {

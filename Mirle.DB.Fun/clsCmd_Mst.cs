@@ -358,15 +358,15 @@ namespace Mirle.DB.Fun
             string sSQL = "";
             try
             {
-                sSQL = "INSERT INTO CMDMST (CmdSno, CmdSts, PRT, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, PickUp, Loc, NewLoc,";
-                sSQL += "CrtDate, ExpDate, EndDate, Remark, UserID, EquNO) values(";
+                sSQL = "INSERT INTO CMDMST (CmdSno, CmdSts, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, whetherAllout, lastPallet, Loc, NewLoc,";
+                sSQL += "CrtDate, ExpDate, EndDate, Remark, UserID, EquNo) values(";
                 sSQL += "'" + stuCmdMst.CmdSno + "', ";
-                sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', ";
-                sSQL += "'" + stuCmdMst.Prt + "', 'NA', '', ";
+                sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', 'NA', '', ";
                 sSQL += "'" + stuCmdMst.StnNo + "', ";
                 sSQL += "'" + stuCmdMst.CmdMode + "', ";
                 sSQL += "'" + stuCmdMst.IoType + "', ";
-                sSQL += "'" + stuCmdMst.PickUp + "', ";
+                sSQL += "'" + stuCmdMst.WhetherAllout + "', ";
+                sSQL += "'" + stuCmdMst.lastPallet + "', ";
                 sSQL += "'" + stuCmdMst.Loc + "', ";
                 sSQL += "'" + stuCmdMst.NewLoc + "', ";
                 sSQL += "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '', '', ";
@@ -464,7 +464,7 @@ namespace Mirle.DB.Fun
                 string strEM = "";
                 string strSql = $"select * from CMDMST" +
                     $" where CmdSts < '{clsConstValue.CmdSts.strCmd_Finished}' ";
-                strSql += " ORDER BY PRT, CrtDate, CmdSno";
+                strSql += " ORDER BY CrtDate, CmdSno";
                 int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
                 if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
                 {

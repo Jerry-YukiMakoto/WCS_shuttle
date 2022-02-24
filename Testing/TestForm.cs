@@ -42,8 +42,8 @@ namespace test
                 bussinessType = textBox2.Text,
                 locationFrom = textBox3.Text,
                 locationTo = textBox4.Text,
-                priority = textBox5.Text,
-                //deliveryTime = textBox6.Text,
+                WhetherAllout = textBox5.Text,
+                lastPallet = textBox6.Text,
                 deliveryTime = DateTime.Now.ToString("dd-MM-yyyy"),
         };
 

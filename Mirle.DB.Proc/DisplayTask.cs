@@ -283,7 +283,7 @@ namespace Mirle.DB.Proc
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
-                                    lineId = "1",
+                                     
                                     locationID = ((i - 2) / 2).ToString(),
                                     taskNo = cmdsno.ToString(),
                                     state = "2", //任務結束
@@ -307,7 +307,7 @@ namespace Mirle.DB.Proc
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                lineId = "1",
+                                 
                                 locationID = "1",
                                 taskNo = cmdsno1.ToString(),
                                 state = "2", //任務結束

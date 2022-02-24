@@ -45,6 +45,11 @@ namespace Mirle.Structure
         /// <summary>
         /// 整板出庫
         /// </summary>
-        public string PickUp { get; set; }
+        public string WhetherAllout { get; set; }
+        /// <summary>
+        /// 是否是尾板
+        /// </summary>
+        public string lastPallet { get; set; }
+
     }
 }

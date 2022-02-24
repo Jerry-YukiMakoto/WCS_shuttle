@@ -41,8 +41,8 @@ namespace WCS_API_Server
                 cmd.taskNo = Body.taskNo;
                 cmd.Loc = Body.locationFrom;
                 cmd.NewLoc = Body.locationTo;
-                cmd.Prt = Body.priority;
-                cmd.PickUp = Body.WhetherAllout;
+                cmd.WhetherAllout = Body.WhetherAllout;
+                cmd.lastPallet = Body.lastPallet;
                 cmd.CrtDate = Body.deliveryTime;
                 cmd.Userid = "WMS";
                 #endregion

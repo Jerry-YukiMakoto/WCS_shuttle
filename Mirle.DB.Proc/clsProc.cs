@@ -244,7 +244,7 @@ namespace Mirle.DB.Proc
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
-                                    lineId = "1",
+                                     
                                     locationID = "1",
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
@@ -256,7 +256,7 @@ namespace Mirle.DB.Proc
                                 //填入訊息
                                 TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                 {
-                                    lineId = "1",
+                                     
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
                                     businessType = IOType,
@@ -387,7 +387,7 @@ namespace Mirle.DB.Proc
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
-                                    lineId = "1",
+                                     
                                     locationID = ((bufferIndex-2)/2).ToString(),
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
@@ -399,7 +399,7 @@ namespace Mirle.DB.Proc
                                 //填入訊息
                                 TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                 {
-                                    lineId = "1",
+                                     
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
                                     businessType = IOType.ToString(),
@@ -709,7 +709,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -724,7 +724,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                lineId = "1",
+                                                 
                                                 locationID = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -752,7 +752,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -767,7 +767,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                lineId = "1",
+                                                 
                                                 locationID = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -787,7 +787,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -802,7 +802,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                lineId = "1",
+                                                 
                                                 locationID = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -1024,7 +1024,7 @@ namespace Mirle.DB.Proc
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
-                                    lineId = "1",
+                                     
                                     locationID = "1",
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
@@ -1037,7 +1037,7 @@ namespace Mirle.DB.Proc
                                 //填入訊息
                                 TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                 {
-                                    lineId = "1",
+                                     
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
                                     businessType = IOType,
@@ -1168,7 +1168,7 @@ namespace Mirle.DB.Proc
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
-                                    lineId = "1",
+                                     
                                     locationID = ((bufferIndex - 1) / 2).ToString(),
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
@@ -1180,7 +1180,7 @@ namespace Mirle.DB.Proc
                                 //填入訊息
                                 TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                 {
-                                    lineId = "1",
+                                     
                                     taskNo =cmdSno,
                                     palletNo =cmdSno,
                                     businessType = iotype,
@@ -1496,7 +1496,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -1519,7 +1519,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -1676,7 +1676,7 @@ namespace Mirle.DB.Proc
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
-                                    lineId = "1",
+                                     
                                     locationID = "1",
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
@@ -1689,7 +1689,7 @@ namespace Mirle.DB.Proc
                                 //填入訊息
                                 TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                 {
-                                    lineId = "1",
+                                     
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
                                     businessType = iotype,
@@ -1850,7 +1850,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -1865,7 +1865,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                lineId = "1",
+                                                 
                                                 locationID = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -1893,7 +1893,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -1908,7 +1908,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                lineId = "1",
+                                                 
                                                 locationID = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -1928,7 +1928,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -1943,7 +1943,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                lineId = "1",
+                                                 
                                                 locationID = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -2360,7 +2360,7 @@ namespace Mirle.DB.Proc
                                 //填入訊息
                                 TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                 {
-                                    lineId = "1",
+                                     
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
                                     businessType = IOtype,
@@ -2427,7 +2427,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -2458,7 +2458,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
@@ -2481,7 +2481,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId = "1",
+                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
                                                 businessType = cmdMst.IOType,
