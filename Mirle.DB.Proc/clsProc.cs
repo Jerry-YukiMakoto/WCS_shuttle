@@ -147,7 +147,7 @@ namespace Mirle.DB.Proc
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             string IOType = dataObject[0].IOType;
-                            int pickup = Convert.ToInt32(dataObject[0].pickup);
+                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
@@ -220,7 +220,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (IOType == clsConstValue.IoType.NormalStockIn && pickup==1)
+                            if (IOType == clsConstValue.IoType.NormalStockIn && whetherAllOut == 1)
                             {
                                 WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                 Result = WritePlccheck;
@@ -477,8 +477,8 @@ namespace Mirle.DB.Proc
                             string source = $"{CranePortNo.A1}";
                             string IOType = dataObject[0].IOType;
                             string dest = "";
-                            int pickup = Convert.ToInt32(dataObject[0].pickup);
-                            if (IOType == clsConstValue.IoType.NormalStockOut && pickup==0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
+                            if (IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
@@ -590,8 +590,8 @@ namespace Mirle.DB.Proc
                             }
                             string IOType = dataObject[0].IOType;
                             string dest = "";
-                            int pickup = Convert.ToInt32(dataObject[0].pickup);
-                            if (IOType == clsConstValue.IoType.NormalStockOut && pickup == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
+                            if (IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
@@ -879,7 +879,7 @@ namespace Mirle.DB.Proc
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             string IOType = dataObject[0].IOType;
-                            int pickup = Convert.ToInt32(dataObject[0].pickup);
+                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             bool Result;
 
@@ -980,7 +980,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                                if ((IOType == clsConstValue.IoType.NormalStockOut && pickup == 0 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || IOType == clsConstValue.IoType.CycleOut)//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
+                                if ((IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || IOType == clsConstValue.IoType.CycleOut)//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
@@ -1538,7 +1538,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 return false;
                                             }
-                                            if ((cmdMst.IOType != "2" && cmdMst.pickup != "0") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
+                                            if ((cmdMst.IOType != "2" && cmdMst.whetherAllOut!= "0") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
                                             {
                                                 if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
                                                 {
@@ -2549,7 +2549,10 @@ namespace Mirle.DB.Proc
         private bool CheckEmptyWillBefullOrNot()
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0) || _conveyor.GetBuffer(4).EmptyINReady == 9)
+            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0)  
+                || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(3).CommandId != 0) || _conveyor.GetBuffer(4).EmptyINReady == 9
+                || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).Presence ) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).Presence)
+                || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(3).Presence))
             {
                 return true;
             }
@@ -2560,7 +2563,7 @@ namespace Mirle.DB.Proc
         }
         #endregion
 
-        #region//判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1:現在沒有用這個作為判斷，現在用WMS傳我們的pickup參數作為判斷
+        #region//判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1:現在沒有用這個作為判斷，現在用WMS傳我們的whetherAllOut參數作為判斷
         private int LastCargoOrNot()
         {
             using (var db = clsGetDB.GetDB(_config))

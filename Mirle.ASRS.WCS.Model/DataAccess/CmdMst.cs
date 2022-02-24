@@ -21,7 +21,7 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string Trace { get; private set; }
         public string IOType { get; private set; }
         public string COUNT { get; internal set; }
-        public string pickup { get; internal set; }
+        public string whetherAllOut { get; internal set; }
 
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
@@ -65,9 +65,9 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             {
                 COUNT = Convert.ToString(row["COUNT"]);
             }
-            if (row.Table.Columns.Contains("pickup"))
+            if (row.Table.Columns.Contains("whetherAllOut"))
             {
-                pickup = Convert.ToString(row["pickup"]);
+                whetherAllOut = Convert.ToString(row["whetherAllOut"]);
             }
             return this;
         }

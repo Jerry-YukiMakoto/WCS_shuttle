@@ -394,5 +394,12 @@ namespace Mirle.DB.Fun
                 return false;
             }
         }
+
+        public GetDataResult SubGetCraneSts(out DataObject<EquCmd> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM EquModeLog WHERE EquNo='1' ";
+            sql += $" and EndDT IN ('',' ')";
+            return db.GetData(sql, out dataObject);
+        }
     }
 }

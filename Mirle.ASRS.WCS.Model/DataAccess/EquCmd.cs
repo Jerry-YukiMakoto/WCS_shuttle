@@ -12,6 +12,7 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string CmdSts { get; private set; }
         public string CompleteCode { get; private set; }
         public string ReNeqFlag { get; private set; }
+        public string EquMode { get; private set; }
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
             if (row.Table.Columns.Contains("CMDSNO"))

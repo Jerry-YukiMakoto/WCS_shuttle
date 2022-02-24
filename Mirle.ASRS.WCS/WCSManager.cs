@@ -24,6 +24,8 @@ namespace Mirle.ASRS.WCS
 
         private readonly Timer _KanBanstoreOutrepotfinish = new Timer();
 
+        private readonly Timer _ErrorReportStart = new Timer();
+
         private readonly Timer _storeInProcess = new Timer();
         private readonly Timer _storeOutProcess = new Timer();
         private readonly Timer _otherProcess = new Timer();
@@ -41,6 +43,7 @@ namespace Mirle.ASRS.WCS
             _emptyInReport.Interval = 500;
             _emptyOutReport.Interval = 500;
             _KanBanstoreOutrepotfinish.Interval = 500;
+            _ErrorReportStart.Interval = 5000;
 
             _storeOutProcess.Elapsed += StoreOutProcess;
             _storeInProcess.Elapsed += StoreInProcess;
@@ -49,6 +52,7 @@ namespace Mirle.ASRS.WCS
             _emptyInReport.Elapsed += EmptyStoreInProcess;
             _emptyOutReport.Elapsed += EmptyStoreOutProcess;
             _KanBanstoreOutrepotfinish.Elapsed += KanBanstoreOutrepotfinish;
+            _ErrorReportStart.Elapsed += ErrorReportStart;
 
         }
 
@@ -60,6 +64,7 @@ namespace Mirle.ASRS.WCS
             _storeOutProcess.Start();
             _storeInProcess.Start();
             _KanBanstoreOutrepotfinish.Start();
+            _ErrorReportStart.Start();
 
         }
         public void Stop()
@@ -70,6 +75,7 @@ namespace Mirle.ASRS.WCS
             _storeInProcess.Stop();
             _otherProcess.Stop();
             _KanBanstoreOutrepotfinish.Stop();
+            _ErrorReportStart.Stop();
         }
 
         private void EmptyStoreInProcess(object sender, ElapsedEventArgs e)
@@ -137,7 +143,27 @@ namespace Mirle.ASRS.WCS
                 _KanBanstoreOutrepotfinish.Start();
             }
         }
-
+        private void ErrorReportStart(object sender, ElapsedEventArgs e)
+        {
+            _ErrorReportStart.Stop();
+            try
+            {
+                if (IsConnected)
+                {
+                    clsErrorReportStart.ErrorReportStart();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                _loggerManager.WriteLogTrace(log);
+            }
+            finally
+            {
+                _ErrorReportStart.Start();
+            }
+        }
 
         private void StoreOutProcess(object sender, ElapsedEventArgs e)
         {
