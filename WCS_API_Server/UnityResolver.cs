@@ -20,10 +20,10 @@ namespace WCS_API_Server
 
         public object GetService(Type serviceType)
         {
-            if (serviceType == typeof(WMSWCSController))
+            if (serviceType == typeof(WCSController))
             {
                 //return container.Resolve<WCSController>();
-                return new WMSWCSController();
+                return new WCSController();
             }
             else
             {

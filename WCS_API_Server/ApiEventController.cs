@@ -10,13 +10,13 @@ using Mirle.DB.Object;
 
 namespace WCS_API_Server
 {
-    public class WMSWCSController : ApiController
+    public class WCSController : ApiController
     {
-        public WMSWCSController()
+        public WCSController()
         {
         }
 
-        [Route("WMSWCS/MOVE_TASK_ADD")]
+        [Route("WCS/MOVE_TASK_ADD")]
         [HttpPost]
         public IHttpActionResult MOVE_TASK_ADD([FromBody] MoveTaskAddInfo Body)
         {
@@ -75,7 +75,7 @@ namespace WCS_API_Server
     
         }
         
-        [Route("WMSWCS/MOVE_TASK_FORCE_CLEAR")]
+        [Route("WCS/MOVE_TASK_FORCE_CLEAR")]
         [HttpPost]
         public IHttpActionResult MOVE_TASK_FORCE_CLEAR([FromBody] MoveTaskAddInfo Body)
         {
