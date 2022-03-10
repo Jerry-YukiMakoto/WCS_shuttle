@@ -29,7 +29,7 @@ namespace test
             clInitSys.FunLoadIniSys();
             clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS);
             _unityContainer = new UnityContainer();
-            _unityContainer.RegisterInstance(new WMSWCSController());
+            _unityContainer.RegisterInstance(new WCSController());
             _webApiHost = new WebApiHost(new Startup(_unityContainer), "127.0.0.1:9000");
             //_webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
         }
@@ -57,10 +57,10 @@ namespace test
             degShowCmdtoGrid obj;
             string strJson = Newtonsoft.Json.JsonConvert.SerializeObject(info);
             //clsWriLog.Log.FunWriTraceLog_CV(strJson);
-            string sLink = $"http://127.0.0.1:9000/WMSWCS/MoveTaskAdd";
+            string sLink = $"http://127.0.0.1:9000/WCS/MoveTaskAdd";
             //string strResonse = HttpPost(sLink, strJson);
 
-            var add2 = $"http://127.0.0.1:9000/WMSWCS/MOVE_TASK_ADD";
+            var add2 = $"http://127.0.0.1:9000/WCS/MOVE_TASK_ADD";
             Task.Run(() =>
             {
                 using (HttpClient client = new HttpClient())
