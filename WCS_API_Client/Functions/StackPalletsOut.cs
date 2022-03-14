@@ -21,7 +21,7 @@ namespace WCS_API_Client.Functions
             {
                 string strJson = Newtonsoft.Json.JsonConvert.SerializeObject(info);
                 clsWriLog.Log.FunWriTraceLog_CV(strJson);
-                string sLink = $"http://{_config.IP}/STACK_PALLETS_OUT";
+                string sLink = $"http://{_config.IP}/StackPalletsOut";
                 clsWriLog.Log.FunWriTraceLog_CV($"URL: {sLink}");
                 string re = clsTool.HttpPost(sLink, strJson);
                 clsWriLog.Log.FunWriTraceLog_CV(re);

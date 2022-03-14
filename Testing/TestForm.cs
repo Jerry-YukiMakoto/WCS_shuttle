@@ -23,8 +23,8 @@ namespace test
         {
             InitializeComponent();
             cboFun.Items.Clear();
-            cboFun.Items.Add("MOVE_TASK_ADD");
-            cboFun.Items.Add("MOVE_TASK_FORCE_CLEAR");
+            cboFun.Items.Add("MoveTaskAdd");
+            cboFun.Items.Add("MoveTaskForceClear");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -42,7 +42,7 @@ namespace test
             MoveTaskAddInfo info = new MoveTaskAddInfo
             {
                 taskNo = txtTaskNo.Text,
-                bussinessType = txtBusinessType.Text,
+                businessType = txtBusinessType.Text,
                 locationFrom = txtSrc.Text,
                 locationTo = txtDst.Text,
                 WhetherAllout = txtWhetherAllOut.Text,
@@ -64,9 +64,9 @@ namespace test
             //string strResonse = HttpPost(sLink, strJson);
 
             //var add2 = $"http://127.0.0.1:9000/WCS/MOVE_TASK_ADD";
-            var sLink2 = $"http://{clInitSys.WcsApi_Config.IP}/WCS/{cboFun.Text}";
+            var sLink2 = $"http://{clInitSys.WcsApi_Config.IP}/api/WCS/{cboFun.Text}";
 
-            if(cboFun.Text == "MOVE_TASK_FORCE_CLEAR")
+            if(cboFun.Text == "MoveTaskForceClear")
             {
                 txtBusinessType.Enabled = false;
                 txtSrc.Enabled = false;
