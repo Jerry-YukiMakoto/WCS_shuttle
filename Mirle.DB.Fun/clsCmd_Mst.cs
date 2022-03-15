@@ -21,6 +21,7 @@ namespace Mirle.DB.Fun
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
             sql += $"AND STNNO = '{stations}'";
+            sql += $"order by prt , crtdate , cmdsno";
             return db.GetData(sql, out dataObject);
         }
 
@@ -72,6 +73,7 @@ namespace Mirle.DB.Fun
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
             sql += $"AND STNNO = '{stations}'";
+            sql += $"order by prt , crtdate , cmdsno";
             return db.GetData(sql, out dataObject);
         }
 
@@ -152,6 +154,7 @@ namespace Mirle.DB.Fun
             sql += $"AND CmdSno='{cmdsno}' ";
             sql += $"AND TRACE IN ('{Trace.EmptyStoreInWriteCraneCmdToCV}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"order by prt , crtdate , cmdsno";
             return db.GetData(sql, out dataObject);
         }
 

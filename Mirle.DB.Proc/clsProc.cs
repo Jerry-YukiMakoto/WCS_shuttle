@@ -880,6 +880,7 @@ namespace Mirle.DB.Proc
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             string IOType = dataObject[0].IOType;
                             int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
+                            int lastpallet = Convert.ToInt32(dataObject[0].lastpallet);
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             bool Result;
 
@@ -951,7 +952,7 @@ namespace Mirle.DB.Proc
 
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
-                            int LastCargoOrNotchek = LastCargoOrNot();
+                            //int LastCargoOrNotchek = LastCargoOrNot();
 
 
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
@@ -980,7 +981,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                                if ((IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || IOType == clsConstValue.IoType.CycleOut)//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
+                                if ((IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || IOType == clsConstValue.IoType.CycleOut || (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0) )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
