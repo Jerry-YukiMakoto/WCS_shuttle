@@ -330,7 +330,7 @@ namespace Mirle.DB.Fun
             try
             {
                 string strEM = "";
-                string strSql = "select * from CMDMST where CmdSno'" + taskNo + "' ";
+                string strSql = "select * from CMDMST where CmdSno = '" + taskNo + "' ";
                 int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
                 if (iRet == DBResult.Success)
                 {

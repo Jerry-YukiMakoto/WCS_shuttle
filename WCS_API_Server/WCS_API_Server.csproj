@@ -132,7 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiEventController.cs" />
-    <Compile Include="BusinessToCmd.cs" />
+    <Compile Include="BusinessTypeConvert.cs" />
     <Compile Include="clsWriLog.cs" />
     <Compile Include="Models\BaseInfo.cs" />
     <Compile Include="Models\MoveTaskForceClearInfo.cs" />

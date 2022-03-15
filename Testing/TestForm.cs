@@ -22,6 +22,9 @@ namespace test
         public TestForm()
         {
             InitializeComponent();
+            cboFun.Items.Clear();
+            cboFun.Items.Add("MoveTaskAdd");
+            cboFun.Items.Add("MoveTaskForceClear");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -29,21 +32,21 @@ namespace test
             clInitSys.FunLoadIniSys();
             clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS);
             _unityContainer = new UnityContainer();
-            _unityContainer.RegisterInstance(new WMSWCSController());
-            _webApiHost = new WebApiHost(new Startup(_unityContainer), "127.0.0.1:9000");
-            //_webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
+            _unityContainer.RegisterInstance(new WCSController());
+            //_webApiHost = new WebApiHost(new Startup(_unityContainer), "127.0.0.1:9000");
+            _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             MoveTaskAddInfo info = new MoveTaskAddInfo
             {
-                taskNo = textBox1.Text,
-                bussinessType = textBox2.Text,
-                locationFrom = textBox3.Text,
-                locationTo = textBox4.Text,
-                WhetherAllout = textBox5.Text,
-                lastPallet = textBox6.Text,
+                taskNo = txtTaskNo.Text,
+                businessType = txtBusinessType.Text,
+                locationFrom = txtSrc.Text,
+                locationTo = txtDst.Text,
+                WhetherAllout = txtWhetherAllOut.Text,
+                lastPallet = txtLastPallet.Text,
                 deliveryTime = DateTime.Now.ToString("dd-MM-yyyy"),
         };
 
@@ -57,15 +60,26 @@ namespace test
             degShowCmdtoGrid obj;
             string strJson = Newtonsoft.Json.JsonConvert.SerializeObject(info);
             //clsWriLog.Log.FunWriTraceLog_CV(strJson);
-            string sLink = $"http://127.0.0.1:9000/WMSWCS/MoveTaskAdd";
+            //string sLink = $"http://127.0.0.1:9000/WCS/MoveTaskAdd";
             //string strResonse = HttpPost(sLink, strJson);
 
-            var add2 = $"http://127.0.0.1:9000/WMSWCS/MOVE_TASK_ADD";
+            //var add2 = $"http://127.0.0.1:9000/WCS/MOVE_TASK_ADD";
+            var sLink2 = $"http://{clInitSys.WcsApi_Config.IP}/api/WCS/{cboFun.Text}";
+
+            if(cboFun.Text == "MoveTaskForceClear")
+            {
+                txtBusinessType.Enabled = false;
+                txtSrc.Enabled = false;
+                txtDst.Enabled = false;
+                txtWhetherAllOut.Enabled = false;
+                txtLastPallet.Enabled = false;
+            }
+
             Task.Run(() =>
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    var result2 = client.PostAsJsonAsync(add2, info).Result;
+                    var result2 = client.PostAsJsonAsync(sLink2, info).Result;
                     try
                     {
                         FunTest(result2.ReasonPhrase);

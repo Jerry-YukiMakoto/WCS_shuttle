@@ -10,13 +10,13 @@ using Mirle.DB.Object;
 
 namespace WCS_API_Server
 {
-    public class WMSWCSController : ApiController
+    public class WCSController : ApiController
     {
-        public WMSWCSController()
+        public WCSController()
         {
         }
 
-        [Route("WMSWCS/MOVE_TASK_ADD")]
+        [Route("api/WCS/MoveTaskAdd")]
         [HttpPost]
         public IHttpActionResult MOVE_TASK_ADD([FromBody] MoveTaskAddInfo Body)
         {
@@ -36,9 +36,10 @@ namespace WCS_API_Server
                 string strEM = "";
 
                 cmd.CmdSno = Body.taskNo;
-                cmd.CmdMode = BusinessToCmd.ConvertToCmd(Body.bussinessType, Body.WhetherAllout);
-                cmd.IoType = Body.bussinessType;
+                cmd.CmdMode = BusinessTypeConvert.cvtCmdMode(Body.businessType, Body.WhetherAllout);
+                cmd.IoType = Body.businessType;
                 cmd.taskNo = Body.taskNo;
+                cmd.StnNo = BusinessTypeConvert.cvtStnNo(Body.businessType, Body.locationFrom, Body.locationTo);
                 cmd.Loc = Body.locationFrom;
                 cmd.NewLoc = Body.locationTo;
                 cmd.WhetherAllout = Body.WhetherAllout;
@@ -75,7 +76,7 @@ namespace WCS_API_Server
     
         }
         
-        [Route("WMSWCS/MOVE_TASK_FORCE_CLEAR")]
+        [Route("api/WCS/MoveTaskForceClear")]
         [HttpPost]
         public IHttpActionResult MOVE_TASK_FORCE_CLEAR([FromBody] MoveTaskAddInfo Body)
         {

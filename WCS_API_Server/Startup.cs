@@ -23,7 +23,7 @@ namespace WCS_API_Server
             config.MapHttpAttributeRoutes();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "{controller}/{id}", 
+                routeTemplate: "api/{controller}/{id}", 
                 defaults: new { id = RouteParameter.Optional }
             );
             appBuilder.UseWebApi(config);
@@ -33,6 +33,6 @@ namespace WCS_API_Server
 
 #region Route Template
 //去抓ApiEventController中的__Controller的開頭
-//E.g. [Route("WMSWCS/MOVE_TASK")]的{controller}是WMSWCSController
+//E.g. [Route("WCS/MOVE_TASK")]的{controller}是WCSController
 //id是function name
 #endregion

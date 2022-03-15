@@ -23,7 +23,7 @@ namespace WCS_API_Client.Functions
             {
                 string strJson = Newtonsoft.Json.JsonConvert.SerializeObject(info);
                 clsWriLog.Log.FunWriTraceLog_CV(strJson);
-                string sLink = $"http://{_config.IP}/DISPLAY_TASK_STATUS";
+                string sLink = $"http://{_config.IP}/DisplayTaskStatus";
                 clsWriLog.Log.FunWriTraceLog_CV($"URL: {sLink}");
                 string re = clsTool.HttpPost(sLink, strJson);
                 clsWriLog.Log.FunWriTraceLog_CV(re);
