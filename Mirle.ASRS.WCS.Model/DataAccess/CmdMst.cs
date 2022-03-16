@@ -22,6 +22,7 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string IOType { get; private set; }
         public string COUNT { get; internal set; }
         public string whetherAllOut { get; internal set; }
+        public string lastpallet { get; internal set; }
 
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
@@ -68,6 +69,10 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             if (row.Table.Columns.Contains("whetherAllOut"))
             {
                 whetherAllOut = Convert.ToString(row["whetherAllOut"]);
+            }
+            if (row.Table.Columns.Contains("lastpallet"))
+            {
+                lastpallet = Convert.ToString(row["lastpallet"]);
             }
             return this;
         }
