@@ -34,7 +34,7 @@ namespace Mirle.Structure
         public string CurLoc { get; set; }
         public string CurDeviceID { get; set; }
         public string taskNo { get; set; }
-        //public string JobID { get; set; }
+        public string palletNo { get; set; }
         public string BatchID { get; set; }
         public string ZoneID { get; set; }
         public string Remark { get; set; }

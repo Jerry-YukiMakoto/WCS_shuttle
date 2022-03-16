@@ -42,7 +42,7 @@ namespace test
             MoveTaskAddInfo info = new MoveTaskAddInfo
             {
                 taskNo = txtTaskNo.Text,
-                businessType = txtBusinessType.Text,
+                bussinessType = txtBusinessType.Text,
                 locationFrom = txtSrc.Text,
                 locationTo = txtDst.Text,
                 WhetherAllout = txtWhetherAllOut.Text,

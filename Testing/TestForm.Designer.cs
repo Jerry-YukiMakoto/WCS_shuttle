@@ -52,7 +52,7 @@
             this.txtTaskNo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtTaskNo.Name = "txtTaskNo";
             this.txtTaskNo.Size = new System.Drawing.Size(113, 25);
-            this.txtTaskNo.TabIndex = 0;
+            this.txtTaskNo.TabIndex = 1;
             // 
             // txtBusinessType
             // 
@@ -60,7 +60,7 @@
             this.txtBusinessType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtBusinessType.Name = "txtBusinessType";
             this.txtBusinessType.Size = new System.Drawing.Size(113, 25);
-            this.txtBusinessType.TabIndex = 0;
+            this.txtBusinessType.TabIndex = 2;
             // 
             // txtSrc
             // 
@@ -68,7 +68,7 @@
             this.txtSrc.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtSrc.Name = "txtSrc";
             this.txtSrc.Size = new System.Drawing.Size(113, 25);
-            this.txtSrc.TabIndex = 0;
+            this.txtSrc.TabIndex = 3;
             // 
             // txtDst
             // 
@@ -76,7 +76,7 @@
             this.txtDst.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtDst.Name = "txtDst";
             this.txtDst.Size = new System.Drawing.Size(113, 25);
-            this.txtDst.TabIndex = 0;
+            this.txtDst.TabIndex = 4;
             // 
             // txtWhetherAllOut
             // 
@@ -84,7 +84,7 @@
             this.txtWhetherAllOut.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtWhetherAllOut.Name = "txtWhetherAllOut";
             this.txtWhetherAllOut.Size = new System.Drawing.Size(113, 25);
-            this.txtWhetherAllOut.TabIndex = 0;
+            this.txtWhetherAllOut.TabIndex = 5;
             // 
             // txtLastPallet
             // 
@@ -92,7 +92,7 @@
             this.txtLastPallet.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtLastPallet.Name = "txtLastPallet";
             this.txtLastPallet.Size = new System.Drawing.Size(113, 25);
-            this.txtLastPallet.TabIndex = 0;
+            this.txtLastPallet.TabIndex = 6;
             // 
             // button1
             // 
@@ -100,7 +100,7 @@
             this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(85, 23);
-            this.button1.TabIndex = 1;
+            this.button1.TabIndex = 7;
             this.button1.Text = "Send";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -113,7 +113,7 @@
             this.textBox7.Name = "textBox7";
             this.textBox7.ReadOnly = true;
             this.textBox7.Size = new System.Drawing.Size(356, 345);
-            this.textBox7.TabIndex = 2;
+            this.textBox7.TabIndex = 8;
             // 
             // label1
             // 
@@ -184,7 +184,7 @@
             this.cboFun.Location = new System.Drawing.Point(155, 62);
             this.cboFun.Name = "cboFun";
             this.cboFun.Size = new System.Drawing.Size(224, 23);
-            this.cboFun.TabIndex = 10;
+            this.cboFun.TabIndex = 0;
             // 
             // TestForm
             // 

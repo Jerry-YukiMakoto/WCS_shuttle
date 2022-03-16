@@ -358,13 +358,14 @@ namespace Mirle.DB.Fun
             string sSQL = "";
             try
             {
-                sSQL = "INSERT INTO CMDMST (CmdSno, CmdSts, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, whetherAllout, lastPallet, Loc, NewLoc,";
+                sSQL = "INSERT INTO CMDMST (CmdSno, CmdSts, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, palletNo, whetherAllout, lastPallet, Loc, NewLoc,";
                 sSQL += "CrtDate, ExpDate, EndDate, Remark, UserID, EquNo) values(";
                 sSQL += "'" + stuCmdMst.CmdSno + "', ";
                 sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', 'NA', '', ";
                 sSQL += "'" + stuCmdMst.StnNo + "', ";
                 sSQL += "'" + stuCmdMst.CmdMode + "', ";
                 sSQL += "'" + stuCmdMst.IoType + "', ";
+                sSQL += "'" + stuCmdMst.palletNo + "', ";
                 sSQL += "'" + stuCmdMst.WhetherAllout + "', ";
                 sSQL += "'" + stuCmdMst.lastPallet + "', ";
                 sSQL += "'" + stuCmdMst.Loc + "', ";
