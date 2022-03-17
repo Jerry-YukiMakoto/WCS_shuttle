@@ -273,12 +273,12 @@ namespace Mirle.DB.Proc
                 {
                     for (int i = 6; i <= 10; i += 2)
                     {
-                        int cmdsno = _conveyor.GetBuffer(i).CommandId;
+                        string cmdsno = _conveyor.GetBuffer(i).CommandId.ToString().PadLeft(5, '0'); 
                         bool position = _conveyor.GetBuffer(i).Position;
-                        if (cmdsno != 0 && position)
+                        if (cmdsno != "0" && position)
                         {
 
-                            if(CMD_MST.GetCmdMstByStoreOutFinish(cmdsno.ToString(), out var dataObject, db).ResultCode==DBResult.Success)
+                            if(CMD_MST.GetCmdMstByStoreOutFinish(cmdsno, out var dataObject, db).ResultCode==DBResult.Success)
                             {
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
@@ -297,12 +297,12 @@ namespace Mirle.DB.Proc
                         }
                     }
 
-                    int cmdsno1 = _conveyor.GetBuffer(2).CommandId;
+                    string cmdsno1 = _conveyor.GetBuffer(2).CommandId.ToString().PadLeft(5, '0');
                     bool position1 = _conveyor.GetBuffer(2).Position;
-                    if (cmdsno1 != 0 && position1)
+                    if (cmdsno1 != "0" && position1)
                     {
 
-                        if (CMD_MST.GetCmdMstByStoreOutFinish(cmdsno1.ToString(), out var dataObject, db).ResultCode == DBResult.Success)
+                        if (CMD_MST.GetCmdMstByStoreOutFinish(cmdsno1, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {

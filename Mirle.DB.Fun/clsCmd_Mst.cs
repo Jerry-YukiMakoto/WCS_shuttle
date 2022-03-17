@@ -401,8 +401,8 @@ namespace Mirle.DB.Fun
 
         public GetDataResult EmptyInOutCheck(string Iotype,out DataObject<CmdMst> dataObject, SqlServer db)
         {
-            string sql = "SELECT * FROM CMDMST ";
-            sql += $"WHERE IOtype='{Iotype}' ";
+            string sql = "SELECT * FROM CMDMST";
+            sql += $" WHERE IOtype='{Iotype}' ";
             sql += $"AND CmdSts in ('{clsConstValue.CmdSts.strCmd_Initial}','{clsConstValue.CmdSts.strCmd_Running}') ";
             return db.GetData(sql, out dataObject);
         }
