@@ -36,10 +36,11 @@ namespace WCS_API_Server
                 string strEM = "";
 
                 cmd.CmdSno = Body.taskNo;
-                cmd.CmdMode = BusinessTypeConvert.cvtCmdMode(Body.businessType, Body.WhetherAllout);
-                cmd.IoType = Body.businessType;
+                cmd.CmdMode = BusinessTypeConvert.cvtCmdMode(Body.bussinessType, Body.WhetherAllout);
+                cmd.palletNo = Body.palletNo;
+                cmd.IoType = Body.bussinessType;
                 cmd.taskNo = Body.taskNo;
-                cmd.StnNo = BusinessTypeConvert.cvtStnNo(Body.businessType, Body.locationFrom, Body.locationTo);
+                cmd.StnNo = BusinessTypeConvert.cvtStnNo(Body.bussinessType, Body.locationFrom, Body.locationTo);
                 cmd.Loc = Body.locationFrom;
                 cmd.NewLoc = Body.locationTo;
                 cmd.WhetherAllout = Body.WhetherAllout;
