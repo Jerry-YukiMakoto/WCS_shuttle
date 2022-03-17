@@ -23,6 +23,7 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string COUNT { get; internal set; }
         public string whetherAllOut { get; internal set; }
         public string lastpallet { get; internal set; }
+        public string palletNo { get; internal set; }
 
         protected override ValueObject ConvaertDataRow(DataRow row)
         {

@@ -148,6 +148,7 @@ namespace Mirle.DB.Proc
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             string IOType = dataObject[0].IOType;
                             int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
+                            string palletNo = dataObject[0].palletNo;
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
@@ -258,7 +259,7 @@ namespace Mirle.DB.Proc
                                 {
                                      
                                     taskNo = cmdSno,
-                                    palletNo = cmdSno,
+                                    palletNo = palletNo,
                                     businessType = IOType,
                                     state = "12",
                                     errMsg = ""
@@ -305,6 +306,7 @@ namespace Mirle.DB.Proc
                             string cmdSno = dataObject[0].CmdSno;
                             string IOType = dataObject[0].IOType;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string palletNo = dataObject[0].palletNo;
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
@@ -401,7 +403,7 @@ namespace Mirle.DB.Proc
                                 {
                                      
                                     taskNo = cmdSno,
-                                    palletNo = cmdSno,
+                                    palletNo = palletNo,
                                     businessType = IOType.ToString(),
                                     state = "12",
                                     errMsg = ""
@@ -443,7 +445,7 @@ namespace Mirle.DB.Proc
                     if (iRet == DBResult.Success)
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString().PadLeft(5,'0');
 
                         if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
@@ -546,7 +548,7 @@ namespace Mirle.DB.Proc
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                         
-                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
+                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString().PadLeft(5, '0');
                         if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
 
@@ -711,7 +713,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg =""
@@ -754,7 +756,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
@@ -789,7 +791,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
@@ -881,6 +883,7 @@ namespace Mirle.DB.Proc
                             string IOType = dataObject[0].IOType;
                             int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
                             int lastpallet = Convert.ToInt32(dataObject[0].lastpallet);
+                            string palletNo = dataObject[0].palletNo;
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             bool Result;
 
@@ -1040,7 +1043,7 @@ namespace Mirle.DB.Proc
                                 {
                                      
                                     taskNo = cmdSno,
-                                    palletNo = cmdSno,
+                                    palletNo = palletNo,
                                     businessType = IOType,
                                     state = "12",
                                     errMsg = ""
@@ -1086,6 +1089,7 @@ namespace Mirle.DB.Proc
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             string iotype = dataObject[0].IOType;
+                            string palletNo = dataObject[0].palletNo;
                             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}, " +
@@ -1183,7 +1187,7 @@ namespace Mirle.DB.Proc
                                 {
                                      
                                     taskNo =cmdSno,
-                                    palletNo =cmdSno,
+                                    palletNo =palletNo,
                                     businessType = iotype,
                                     state = "12",
                                     errMsg =""
@@ -1225,7 +1229,7 @@ namespace Mirle.DB.Proc
                     if (iRet == DBResult.Success)
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
+                        string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString().PadLeft(5, '0');
 
                         if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
@@ -1326,9 +1330,7 @@ namespace Mirle.DB.Proc
                     if (iRet == DBResult.Success)
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString();
-
-                        
+                        string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString().PadLeft(5, '0');
 
                         if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
@@ -1468,7 +1470,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 lineId ="1" ,
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg =""
@@ -1499,7 +1501,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
@@ -1522,7 +1524,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
@@ -1601,11 +1603,12 @@ namespace Mirle.DB.Proc
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
                             if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                             {
-                                string cmdSno = dataObject[0].CmdSno;
+                            string cmdSno = dataObject[0].CmdSno;
                             string iotype = dataObject[0].IOType;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string palletNo = dataObject[0].palletNo;
 
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreIn Command => {cmdSno}");
+                            clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreIn Command => {cmdSno}");
 
                                 #region//站口狀態確認
                                 if (_conveyor.GetBuffer(bufferIndex).Auto != true)
@@ -1692,7 +1695,7 @@ namespace Mirle.DB.Proc
                                 {
                                      
                                     taskNo = cmdSno,
-                                    palletNo = cmdSno,
+                                    palletNo = palletNo,
                                     businessType = iotype,
                                     state = "12",
                                     errMsg = ""
@@ -1734,8 +1737,8 @@ namespace Mirle.DB.Proc
                     if (iRet == DBResult.Success)
                     {
                         var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
- 
+                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString().PadLeft(5, '0');
+
                         if (CMD_MST.GetEmptyCmdMstByStoreIn(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
                         {
                             string source = $"{CranePortNo.A1}";
@@ -1853,7 +1856,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg = ""
@@ -1896,7 +1899,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
@@ -1931,7 +1934,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
@@ -2327,6 +2330,7 @@ namespace Mirle.DB.Proc
                             string dest = $"{dataObject[0].NewLoc}";
                             string cmdSno = $"{dataObject[0].CmdSno}";
                             string IOtype = $"{dataObject[0].IOType}";
+                            string palletNo = dataObject[0].palletNo;
 
 
                             clsWriLog.L2LLogTrace(5, "LocToLoc", $"LocToLoc Command Received => {cmdSno}");
@@ -2363,7 +2367,7 @@ namespace Mirle.DB.Proc
                                 {
                                      
                                     taskNo = cmdSno,
-                                    palletNo = cmdSno,
+                                    palletNo = palletNo,
                                     businessType = IOtype,
                                     state = "12",
                                     errMsg = ""
@@ -2430,7 +2434,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg = ""
@@ -2461,7 +2465,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
@@ -2484,7 +2488,7 @@ namespace Mirle.DB.Proc
                                             {
                                                  
                                                 taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.CmdSno,
+                                                palletNo = cmdMst.palletNo,
                                                 businessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
