@@ -26,7 +26,7 @@ namespace Mirle.CENS.U0NXMA30
             TaskStateUpdateInfo info = new TaskStateUpdateInfo
             {
                 taskNo = cmd.CmdSno,
-                businessType = cmd.IoType,
+                bussinessType = cmd.IoType,
                 state = StatusDef.moveTaskFinished, 
             };
 

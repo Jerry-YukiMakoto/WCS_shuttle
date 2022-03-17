@@ -24,7 +24,7 @@ namespace WCS_API_Client.View
             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
             {
                 lineId = txtLineID.Text,
-                locationID = txtLocationID.Text,
+                locationId = txtLocationID.Text,
                 taskNo = txtTaskNo.Text,
                 state = txtState.Text,
             };

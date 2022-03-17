@@ -245,7 +245,7 @@ namespace Mirle.DB.Proc
                                 {
                                     //填入回報訊息
                                      
-                                    locationID = "1",
+                                    locationId = "1",
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
                                 };
@@ -259,7 +259,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
-                                    businessType = IOType,
+                                    bussinessType = IOType,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -388,7 +388,7 @@ namespace Mirle.DB.Proc
                                 {
                                     //填入回報訊息
                                      
-                                    locationID = ((bufferIndex-2)/2).ToString(),
+                                    locationId = ((bufferIndex-2)/2).ToString(),
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
                                 };
@@ -402,7 +402,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
-                                    businessType = IOType.ToString(),
+                                    bussinessType = IOType.ToString(),
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -712,7 +712,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg =""
                                             };
@@ -725,7 +725,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
                                                  
-                                                locationID = locationId,
+                                                locationId = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -755,7 +755,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -768,7 +768,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
                                                  
-                                                locationID = locationId,
+                                                locationId = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -790,7 +790,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };
@@ -803,7 +803,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
                                                  
-                                                locationID = locationId,
+                                                locationId = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -1026,7 +1026,7 @@ namespace Mirle.DB.Proc
                                 {
                                     //填入回報訊息
                                      
-                                    locationID = "1",
+                                    locationId = "1",
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
                                 };
@@ -1041,7 +1041,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
-                                    businessType = IOType,
+                                    bussinessType = IOType,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -1170,7 +1170,7 @@ namespace Mirle.DB.Proc
                                 {
                                     //填入回報訊息
                                      
-                                    locationID = ((bufferIndex - 1) / 2).ToString(),
+                                    locationId = ((bufferIndex - 1) / 2).ToString(),
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
                                 };
@@ -1184,7 +1184,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo =cmdSno,
                                     palletNo =cmdSno,
-                                    businessType = iotype,
+                                    bussinessType = iotype,
                                     state = "12",
                                     errMsg =""
                                 };
@@ -1469,7 +1469,7 @@ namespace Mirle.DB.Proc
                                                 lineId ="1" ,
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg =""
                                             };
@@ -1500,7 +1500,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -1523,7 +1523,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };
@@ -1678,7 +1678,7 @@ namespace Mirle.DB.Proc
                                 {
                                     //填入回報訊息
                                      
-                                    locationID = "1",
+                                    locationId = "1",
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
                                 };
@@ -1693,7 +1693,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
-                                    businessType = iotype,
+                                    bussinessType = iotype,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -1854,7 +1854,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg = ""
                                             };
@@ -1867,7 +1867,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
                                                  
-                                                locationID = "1",
+                                                locationId = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -1897,7 +1897,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -1910,7 +1910,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
                                                  
-                                                locationID = "1",
+                                                locationId = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -1932,7 +1932,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };
@@ -1945,7 +1945,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
                                                  
-                                                locationID = "1",
+                                                locationId = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -2364,7 +2364,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = cmdSno,
-                                    businessType = IOtype,
+                                    bussinessType = IOtype,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -2431,7 +2431,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg = ""
                                             };
@@ -2462,7 +2462,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -2485,7 +2485,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.CmdSno,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };

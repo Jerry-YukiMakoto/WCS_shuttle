@@ -25,7 +25,7 @@ namespace Mirle.DB.Proc
             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
             {
                 //填入回報訊息
-                locationID = sLocationID,
+                locationId = sLocationID,
                 taskNo = sCmdSno,
                 state = "1", //任務開始
             };
@@ -56,7 +56,7 @@ namespace Mirle.DB.Proc
             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
             {
                 //填入回報訊息
-                locationID = "0",
+                locationId = "0",
                 taskNo = "0",
                 state = "1", //任務開始
             };
@@ -120,7 +120,7 @@ namespace Mirle.DB.Proc
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationID = "0",
+                                locationId = "0",
                                 taskNo = "0",
                                 state = "1", //任務開始
                                 MerrMsg = MerrMsg,
@@ -132,7 +132,7 @@ namespace Mirle.DB.Proc
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationID = "0",
+                                locationId = "0",
                                 taskNo = "0",
                                 state = "2", //任務結束
                                 MerrMsg = "",
@@ -150,7 +150,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "1",
+                            locationId = "1",
                             taskNo = "0",
                             state = "1", //任務開始
                             MerrMsg = MerrMsg,
@@ -162,7 +162,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "1",
+                            locationId = "1",
                             taskNo = "0",
                             state = "2", //任務結束
                             MerrMsg = "",
@@ -178,7 +178,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "2",
+                            locationId = "2",
                             taskNo = "0",
                             state = "1", //任務開始
                             MerrMsg = MerrMsg,
@@ -190,7 +190,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "2",
+                            locationId = "2",
                             taskNo = "0",
                             state = "2", //任務結束
                             MerrMsg = "",
@@ -206,7 +206,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "3",
+                            locationId = "3",
                             taskNo = "0",
                             state = "1", //任務開始
                             MerrMsg = MerrMsg,
@@ -218,7 +218,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "3",
+                            locationId = "3",
                             taskNo = "0",
                             state = "2", //任務結束
                             MerrMsg = "",
@@ -234,7 +234,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "4",
+                            locationId = "4",
                             taskNo = "0",
                             state = "1", //任務開始
                             MerrMsg = MerrMsg,
@@ -246,7 +246,7 @@ namespace Mirle.DB.Proc
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationID = "4",
+                            locationId = "4",
                             taskNo = "0",
                             state = "2", //任務結束
                             MerrMsg = "",
@@ -284,7 +284,7 @@ namespace Mirle.DB.Proc
                                 {
                                     //填入回報訊息
                                      
-                                    locationID = ((i - 2) / 2).ToString(),
+                                    locationId = ((i - 2) / 2).ToString(),
                                     taskNo = cmdsno.ToString(),
                                     state = "2", //任務結束
                                 };
@@ -308,7 +308,7 @@ namespace Mirle.DB.Proc
                             {
                                 //填入回報訊息
                                  
-                                locationID = "1",
+                                locationId = "1",
                                 taskNo = cmdsno1.ToString(),
                                 state = "2", //任務結束
                             };

@@ -11,7 +11,7 @@ namespace WCS_API_Client.ReportInfo
         public string lineId { get; set; } = "1";
         public string taskNo { get; set; }
         public string palletNo { get; set; }
-        public string businessType { get; set; }
+        public string bussinessType { get; set; }
         public string state { get; set; }
         public string errMsg { get; set; }
     }

@@ -24,7 +24,7 @@ namespace WCS_API_Client.View
             {
                 taskNo = txtTaskNo.Text,
                 palletNo = txtPalletNo.Text,
-                businessType = txtBusinessType.Text,
+                bussinessType = txtBusinessType.Text,
                 state = txtStatus.Text,
                 errMsg = txtErrMsg.Text
             };
