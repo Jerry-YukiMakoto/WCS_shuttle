@@ -81,6 +81,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.U0NXMA30", "Mirl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileLayout", "FileLayout", "{099F4337-36A1-4962-8414-92CBD811E2E6}"
 	ProjectSection(SolutionItems) = preProject
+		..\金頂文件\金頂_WCS_FileLayOut_v1.0.docx = ..\金頂文件\金頂_WCS_FileLayOut_v1.0.docx
 		Documents\FileLayout\金頂與Crane相關FileLayout_V7.2.docx = Documents\FileLayout\金頂與Crane相關FileLayout_V7.2.docx
 	EndProjectSection
 EndProject

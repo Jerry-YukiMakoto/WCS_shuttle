@@ -2486,7 +2486,6 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
