@@ -260,7 +260,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = palletNo,
-                                    businessType = IOType,
+                                    bussinessType = IOType,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -404,7 +404,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = palletNo,
-                                    businessType = IOType.ToString(),
+                                    bussinessType = IOType.ToString(),
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -714,7 +714,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg =""
                                             };
@@ -757,7 +757,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -792,7 +792,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };
@@ -1044,7 +1044,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = palletNo,
-                                    businessType = IOType,
+                                    bussinessType = IOType,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -1188,7 +1188,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo =cmdSno,
                                     palletNo =palletNo,
-                                    businessType = iotype,
+                                    bussinessType = iotype,
                                     state = "12",
                                     errMsg =""
                                 };
@@ -1471,7 +1471,7 @@ namespace Mirle.DB.Proc
                                                 lineId ="1" ,
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg =""
                                             };
@@ -1502,7 +1502,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -1525,7 +1525,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };
@@ -1696,7 +1696,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = palletNo,
-                                    businessType = iotype,
+                                    bussinessType = iotype,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -1857,7 +1857,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg = ""
                                             };
@@ -1900,7 +1900,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -1935,7 +1935,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };
@@ -2368,7 +2368,7 @@ namespace Mirle.DB.Proc
                                      
                                     taskNo = cmdSno,
                                     palletNo = palletNo,
-                                    businessType = IOtype,
+                                    bussinessType = IOtype,
                                     state = "12",
                                     errMsg = ""
                                 };
@@ -2435,7 +2435,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "13",
                                                 errMsg = ""
                                             };
@@ -2466,7 +2466,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "15",
                                                 errMsg = ""
                                             };
@@ -2489,7 +2489,7 @@ namespace Mirle.DB.Proc
                                                  
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
-                                                businessType = cmdMst.IOType,
+                                                bussinessType = cmdMst.IOType,
                                                 state = "14",
                                                 errMsg = ""
                                             };
