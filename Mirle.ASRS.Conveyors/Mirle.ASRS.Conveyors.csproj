@@ -115,6 +115,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mirle.DB.WMS.Proc\Mirle.DB.WMS.Proc.csproj">
+      <Project>{553BD8CF-F4C1-4B39-97AB-42CC2F7C8187}</Project>
+      <Name>Mirle.DB.WMS.Proc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj">
       <Project>{10da0e99-fd46-4c3f-a87a-c5b66fcb4a87}</Project>
       <Name>Mirle.MPLC.MCProtocol</Name>

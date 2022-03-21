@@ -6,13 +6,14 @@ using System.Linq;
 using Mirle.MPLC;
 using Mirle.MPLC.MCProtocol;
 using Mirle.ASRS.Conveyor.U2NMMA30.Service;
+using Mirle.DB.WMS.Proc;
 
 namespace Mirle.ASRS.Conveyors.View
 {
     public partial class MainView : Form
     {
         private readonly Conveyor _conveyor;
-        private LoggerService _loggerService;
+        //private LoggerService _loggerService;
         private static int bufferCount = 10;
 
         public MainView(Conveyor conveyor)
@@ -66,7 +67,9 @@ namespace Mirle.ASRS.Conveyors.View
             }
             catch (Exception ex)
             {
-                _loggerService.WriteExceptionLog(MethodBase.GetCurrentMethod(), $"{ex.Message}\n{ex.StackTrace}");
+                //_loggerService.WriteExceptionLog(MethodBase.GetCurrentMethod(), $"{ex.Message}\n{ex.StackTrace}");
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                //clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
             }
             finally
             {

@@ -75,6 +75,10 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             {
                 lastpallet = Convert.ToString(row["lastpallet"]);
             }
+            if (row.Table.Columns.Contains("palletNo"))
+            {
+                palletNo = Convert.ToString(row["palletNo"]);
+            }
             return this;
         }
     }
