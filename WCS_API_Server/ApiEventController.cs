@@ -79,7 +79,7 @@ namespace WCS_API_Server
         
         [Route("api/WCS/MoveTaskForceClear")]
         [HttpPost]
-        public IHttpActionResult MOVE_TASK_FORCE_CLEAR([FromBody] MoveTaskAddInfo Body)
+        public IHttpActionResult MOVE_TASK_FORCE_CLEAR([FromBody] MoveTaskForceClearInfo Body)
         {
             clsWriLog.Log.FunWriTraceLog_CV($"<MOVE_TASK_FORCE_CLEAR> <WMS Send>\n{JsonConvert.SerializeObject(Body)}");
             ReturnMessage rMsg = new ReturnMessage
