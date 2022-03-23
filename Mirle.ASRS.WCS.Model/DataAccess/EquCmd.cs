@@ -12,7 +12,7 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string CmdSts { get; private set; }
         public string CompleteCode { get; private set; }
         public string ReNeqFlag { get; private set; }
-        public string EquMode { get; private set; }
+        public string alarmdesc { get; private set; }
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
             if (row.Table.Columns.Contains("CMDSNO"))
@@ -34,6 +34,10 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             if (row.Table.Columns.Contains("RENEWFLAG"))
             {
                 ReNeqFlag = Convert.ToString(row["RENEWFLAG"]);
+            }
+            if (row.Table.Columns.Contains("alarmdesc"))
+            {
+                alarmdesc = Convert.ToString(row["alarmdesc"]);
             }
             return this;
         }
