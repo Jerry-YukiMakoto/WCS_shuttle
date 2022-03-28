@@ -94,28 +94,10 @@ namespace Mirle.DB.Proc
                 {
                     if (EQU_CMD.SubGetCraneSts(out DataObject<EquCmd> dataObject, db).ResultCode == DBResult.Success)
                     {
-                        string EquMode = dataObject[0].EquMode;
-                        if (EquMode != "C")
-                        {
+                        string Alarmdesc = dataObject[0].alarmdesc;
+                        
                             CraneStsFirst = 1;
-                            switch (EquMode)
-                            {
-                                case "R":
-                                    MerrMsg = "地上盤模式";
-                                    break;
-                                case "I":
-                                    MerrMsg = "地上盤維護模式";
-                                    break;
-                                case "M":
-                                    MerrMsg = "車上盤維護模式";
-                                    break;
-                                case "N":
-                                    MerrMsg = "電腦離線中";
-                                    break;
-                                default:
-                                    MerrMsg = "";
-                                    break;
-                            }
+                            MerrMsg = Alarmdesc;
 
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
@@ -126,10 +108,8 @@ namespace Mirle.DB.Proc
                                 MerrMsg = MerrMsg,
                             };
                             clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
-                        }
-                        else
-                        {
-                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+
+                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
                                 locationId = "0",
@@ -137,8 +117,8 @@ namespace Mirle.DB.Proc
                                 state = "2", //任務結束
                                 MerrMsg = "",
                             };
-                            clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
-                        }
+                            clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1);
+                        
                     }
                     
                     if(_conveyor.GetBuffer(1).Error|| _conveyor.GetBuffer(2).Error|| _conveyor.GetBuffer(3).Error || CraneStsFirst!=1)

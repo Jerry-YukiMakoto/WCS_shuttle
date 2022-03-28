@@ -397,8 +397,9 @@ namespace Mirle.DB.Fun
 
         public GetDataResult SubGetCraneSts(out DataObject<EquCmd> dataObject, SqlServer db)
         {
-            string sql = "SELECT * FROM EquModeLog WHERE EquNo='1' ";
-            sql += $" and EndDT IN ('',' ')";
+            string sql = "select a.EquNo, b.alarmdesc, a.STRDT from alarmlog as a left join alarmdef as b";
+            sql += " on a.alarmcode=b.alarmcode ";
+            sql += " where a.CLRDT in ('',' ') ";
             return db.GetData(sql, out dataObject);
         }
     }
