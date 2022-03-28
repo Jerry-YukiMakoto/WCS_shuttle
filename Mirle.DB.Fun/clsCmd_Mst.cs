@@ -373,7 +373,7 @@ namespace Mirle.DB.Fun
                 sSQL += "'" + stuCmdMst.lastPallet + "', ";
                 sSQL += "'" + stuCmdMst.Loc + "', ";
                 sSQL += "'" + stuCmdMst.NewLoc + "', ";
-                sSQL += "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '', '', ";
+                sSQL += "'" + stuCmdMst.CrtDate + "', '', '', ";
                 sSQL += "'WMS下命令', ";
                 sSQL += "'" +stuCmdMst.Userid+"', ";
                 sSQL += "'" + stuCmdMst.EquNo + "')";
