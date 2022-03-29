@@ -40,8 +40,8 @@ namespace Mirle.ASRS.WCS
             _storeInProcess.Interval = 500;
             _otherProcess.Interval = 500;
             
-            _emptyInReport.Interval = 500;
-            _emptyOutReport.Interval = 500;
+            _emptyInReport.Interval = 5000;
+            _emptyOutReport.Interval = 5000;
             _KanBanstoreOutrepotfinish.Interval = 500;
             _ErrorReportStart.Interval = 5000;
 
