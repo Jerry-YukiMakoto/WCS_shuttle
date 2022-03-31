@@ -131,7 +131,10 @@ namespace Mirle.DB.Proc
                                 state = "1", //任務開始
                                 MerrMsg = MerrMsg,
                             };
-                            clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                            if(!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            };
                             ErrorNormal["0"] =1;
                         }
                     }
@@ -145,7 +148,10 @@ namespace Mirle.DB.Proc
                             state = "2", //任務結束
                             MerrMsg = "",
                         };
-                        clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1);
+                        if(clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                        {
+                            return;
+                        }
                         ErrorNormal["0"] = 2;//讓回報正常只發生一次，值會改變就是在上報異常之後，檢查值改變加上資料表沒有異常
                         Errormessage["0"] = "";
                     }
@@ -169,7 +175,10 @@ namespace Mirle.DB.Proc
                                 state = "1", //任務開始
                                 MerrMsg = MerrMsg,
                             };
-                            clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                            if(!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
                             Errormessage["1"] = "一樓異常";
                         }
                     }
@@ -183,7 +192,10 @@ namespace Mirle.DB.Proc
                             state = "2", //任務結束
                             MerrMsg = "",
                         };
-                        clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                        if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                        {
+                            return;
+                        }
                         ErrorNormal["1"] = 2;
                         Errormessage["1"] = "";
                     }
@@ -203,7 +215,10 @@ namespace Mirle.DB.Proc
                                 state = "1", //任務開始
                                 MerrMsg = MerrMsg,
                             };
-                            clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
                             Errormessage["2"] = "二樓異常";
                         }
                     }
@@ -217,7 +232,10 @@ namespace Mirle.DB.Proc
                             state = "2", //任務結束
                             MerrMsg = "",
                         };
-                        clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                        if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                        {
+                            return;
+                        }
                         ErrorNormal["2"] = 2;
                         Errormessage["2"] = "";
                     }
@@ -237,7 +255,10 @@ namespace Mirle.DB.Proc
                                 state = "1", //任務開始
                                 MerrMsg = MerrMsg,
                             };
-                            clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
                             Errormessage["3"] = "三樓異常";
                         }
                     }
@@ -251,7 +272,10 @@ namespace Mirle.DB.Proc
                             state = "2", //任務結束
                             MerrMsg = "",
                         };
-                        clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                        if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                        {
+                            return;
+                        }
                         ErrorNormal["3"] = 2;
                         Errormessage["3"] = "";
                     }
@@ -272,7 +296,10 @@ namespace Mirle.DB.Proc
                                 state = "1", //任務開始
                                 MerrMsg = MerrMsg,
                             };
-                            clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
                             Errormessage["4"] = "四樓異常";
                         }
                     }
@@ -286,7 +313,10 @@ namespace Mirle.DB.Proc
                             state = "2", //任務結束
                             MerrMsg = "",
                         };
-                        clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info);
+                        if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                        {
+                            return;
+                        }
                         ErrorNormal["4"] = 2;
                         Errormessage["4"] = "";
                     }

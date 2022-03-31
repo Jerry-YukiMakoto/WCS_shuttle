@@ -520,7 +520,7 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.FunGetFinishCommand(ref dtTmp, db) == DBResult.Success)
+                        if (CMD_MST.FunGetFinishCommand(ref dtTmp, db) == DBResult.Success) //拿到一天前的命令去做移動到歷史資料表的動作
                         {
                             for (int i = 0; i < dtTmp.Rows.Count; i++)
                             {

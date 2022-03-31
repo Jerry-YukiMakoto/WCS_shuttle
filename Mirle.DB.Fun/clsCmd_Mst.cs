@@ -412,7 +412,9 @@ namespace Mirle.DB.Fun
         {
             try
             {
+                string strDelDay = DateTime.Today.Date.AddDays(1 * (-1)).ToString("yyyy-MM-dd");
                 string strSql = $"select * from CMDMST where CmdSts in ('{clsConstValue.CmdSts.strCmd_Cancel}', '{clsConstValue.CmdSts.strCmd_Finished}')";
+                strSql += $"And CrtDate <=  '" + strDelDay + "'";
                 string strEM = "";
                 int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
                 if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
