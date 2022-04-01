@@ -148,7 +148,7 @@ namespace Mirle.DB.Proc
                             state = "2", //任務結束
                             MerrMsg = "",
                         };
-                        if(clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                        if(!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                         {
                             return;
                         }
@@ -330,7 +330,7 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public void TaskEnd()
+        public void TaskEnd() //出庫都在到了站口buffer口才做任務結束的上報動作
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             using (var db = clsGetDB.GetDB(_config))

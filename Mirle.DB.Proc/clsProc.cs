@@ -378,31 +378,24 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
 
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            else
-                            {
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
-                                     
-                                    locationId = ((bufferIndex-2)/2).ToString(),
+
+                                    locationId = ((bufferIndex - 2) / 2).ToString(),
                                     taskNo = cmdSno.ToString(),
                                     state = "1", //任務開始
                                 };
                                 if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                                 {
+                                    db.TransactionCtrl(TransactionTypes.Rollback);
                                     return false;
                                 }
                                 //填入訊息
                                 TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                 {
-                                     
+
                                     taskNo = cmdSno,
                                     palletNo = palletNo,
                                     bussinessType = IOType.ToString(),
@@ -414,8 +407,16 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                return true;
+                            
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
                             }
+                            else return true;
+
                         }
                         else return false;
                     }
@@ -1164,14 +1165,7 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            else
-                            {
+
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
@@ -1200,8 +1194,15 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                return true;
+                                
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
                             }
+                            else return true;
+                            
                         }
                         else return false;
                     }
@@ -1672,14 +1673,7 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
-                                    if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                    {
-                                        clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return false;
-                                    }
-                            else
-                            {
+                                    
                                 DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                 {
                                     //填入回報訊息
@@ -1708,10 +1702,17 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                return true;
+                                
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
                             }
-                        }
-                            return true;
+                            else return true;
+                            
+                            }
+                            return false;
                     }
                     else
                     {
@@ -2356,15 +2357,6 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command Commit Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            else
-                            {
                                 //填入訊息
                                 TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                 {
@@ -2380,8 +2372,16 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                return true;
+
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command Commit Fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
                             }
+                            else return true;
+                             
                         }
                         else return false;
                     }

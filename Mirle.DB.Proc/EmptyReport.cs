@@ -6,6 +6,7 @@ using Mirle.CENS.U0NXMA30;
 using WCS_API_Client.ReportInfo;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using System.Timers;
+using System.Collections.Generic;
 
 namespace Mirle.DB.Proc
 {
@@ -13,10 +14,13 @@ namespace Mirle.DB.Proc
     {
         private DB.Fun.clsCmd_Mst CMD_MST = new DB.Fun.clsCmd_Mst();
         private clsDbConfig _config = new clsDbConfig();
+        public static Dictionary<string, int> EmptyFlag = new Dictionary<string, int>();
 
         public EmptyReport(clsDbConfig config)
         {
             _config = config;
+            EmptyFlag.Add("1", 0);
+            EmptyFlag.Add("2", 0);
         }
 
         public void EmptyInWMS()//確認空棧板入庫狀態，狀態正確才上報WMS，要求搬運命令
@@ -35,11 +39,16 @@ namespace Mirle.DB.Proc
                 {
                     if (_conveyor.GetBuffer(4).EmptyINReady == 9 && _conveyor.GetBuffer(4).Ready == 1)
                     {
-                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockIn, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockIn, out var dataObject, db) == GetDataResult.NoDataSelect && EmptyFlag["1"] != 1)//沒有命令資料就上報WMS
                         {
                             //做上報WMS的動作
                             clsWmsApi.GetApiProcess().GetStackPalletsIn().FunReport(info);
+                            EmptyFlag["1"] = 1;
                         }
+                    }
+                    else
+                    {
+                        EmptyFlag["1"] = 0;
                     }
                 }
                 else
@@ -68,11 +77,16 @@ namespace Mirle.DB.Proc
                 {
                     if (_conveyor.GetBuffer(4).Presence == false && _conveyor.GetBuffer(4).Ready == 2)
                     {
-                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject, db) == GetDataResult.NoDataSelect)//沒有命令資料就上報WMS
+                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject, db) == GetDataResult.NoDataSelect && EmptyFlag["2"]!=1)//沒有命令資料就上報WMS
                         {
                             //做上報WMS的動作
                             clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);
+                            EmptyFlag["2"] = 1;
                         }
+                    }
+                    else
+                    {
+                        EmptyFlag["2"] = 0;
                     }
                 }
                 else
