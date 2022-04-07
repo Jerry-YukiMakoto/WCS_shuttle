@@ -16,6 +16,7 @@ namespace Mirle.ASRS.Conveyors.Signal
         public Word Switch_Ack { get; protected internal set; }
         public Word A2LV2 { get; protected internal set; }
         public Word EmptyInReady { get; protected internal set; }
+        public Word EmptyError { get; protected internal set; }
         public Word InitialNotice { get; protected internal set; }
 
         public BufferControllerSignal ControllerSignal { get; }

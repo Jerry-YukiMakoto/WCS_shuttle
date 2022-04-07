@@ -45,6 +45,7 @@ namespace Mirle.ASRS.Conveyors
         public bool Position => Signal.StatusSignal.Position.IsOn();
         public int Switch_Ack => Signal.Switch_Ack.GetValue();
         public int EmptyINReady => Signal.EmptyInReady.GetValue();
+        public int EmptyError => Signal.EmptyError.GetValue();
         public int A2LV2 => Signal.A2LV2.GetValue();
 
         public Buffer(BufferSignal signal)
@@ -74,6 +75,11 @@ namespace Mirle.ASRS.Conveyors
             if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)//待修改，需要知道什麼時候電控運送母托到A3
             {
                 Signal.ControllerSignal.A4Emptysupply.SetValue(0);
+                OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
+            }
+            if (Signal.ControllerSignal.A4ErrorOn.GetValue() > 0 && Signal.EmptyError.GetValue() == Signal.ControllerSignal.A4ErrorOn.GetValue())
+            {
+                Signal.ControllerSignal.A4ErrorOn.SetValue(0);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
             if (Signal.StatusSignal.InMode.IsOn() == true && Signal.ControllerSignal.Switch_Mode.GetValue() == 1
@@ -149,6 +155,22 @@ namespace Mirle.ASRS.Conveyors
                 try
                 {
                     Signal.ControllerSignal.A4Emptysupply.SetValue(1);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+        }
+
+        public Task<bool> A4ErrorOn()
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    Signal.ControllerSignal.A4ErrorOn.SetValue(1);
                     return true;
                 }
                 catch

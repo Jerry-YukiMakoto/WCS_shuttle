@@ -160,6 +160,14 @@ namespace Mirle.ASRS.Conveyors.Signal
                         {
                             buffer.EmptyInReady = new Word();
                         }
+                        if (bufferIndex + 1 == 4)
+                        {
+                            buffer.EmptyError = new Word(_mplc, $"D149");//A4空棧板補充異常 1:異常 0:無異常
+                        }
+                        else
+                        {
+                            buffer.EmptyError = new Word();
+                        }
                         #endregion
 
                         buffer.ControllerSignal.CommandId = new Word(_mplc, $"D{pcIndex + (bufferIndex * 10)}");
@@ -183,6 +191,14 @@ namespace Mirle.ASRS.Conveyors.Signal
                         else 
                         {
                             buffer.ControllerSignal.A4Emptysupply = new Word();
+                        }
+                        if (bufferIndex + 1 == 4)
+                        {
+                            buffer.ControllerSignal.A4ErrorOn = new Word(_mplc, $"D3149"); //A4通知無法補充空棧板異常
+                        }
+                        else 
+                        {
+                            buffer.ControllerSignal.A4ErrorOn = new Word();
                         }
                         #endregion
 

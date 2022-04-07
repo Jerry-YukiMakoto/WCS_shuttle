@@ -10,6 +10,7 @@ namespace Mirle.ASRS.Conveyors.Signal
         public Word PathChangeNotice { get; protected internal set; }
         public Word InitialNotice { get; protected internal set; }
         public Word A4Emptysupply { get; protected internal set; }
+        public Word A4ErrorOn { get; protected internal set; }
         public Word Switch_Mode { get; protected internal set; }
 
     }

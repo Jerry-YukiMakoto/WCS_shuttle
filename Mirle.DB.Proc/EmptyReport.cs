@@ -15,12 +15,14 @@ namespace Mirle.DB.Proc
         private DB.Fun.clsCmd_Mst CMD_MST = new DB.Fun.clsCmd_Mst();
         private clsDbConfig _config = new clsDbConfig();
         public static Dictionary<string, int> EmptyFlag = new Dictionary<string, int>();
+        public static Dictionary<string, int> DisplayFlag = new Dictionary<string, int>();
 
         public EmptyReport(clsDbConfig config)
         {
             _config = config;
             EmptyFlag.Add("1", 0);
             EmptyFlag.Add("2", 0);
+            DisplayFlag.Add("1", 0);
         }
 
         public void EmptyInWMS()//確認空棧板入庫狀態，狀態正確才上報WMS，要求搬運命令
@@ -75,17 +77,57 @@ namespace Mirle.DB.Proc
                 int iRet = clsGetDB.FunDbOpen(db);
                 if (iRet == DBResult.Success)
                 {
-                    if (_conveyor.GetBuffer(4).Presence == false && _conveyor.GetBuffer(4).Ready == 2)
+                    if (_conveyor.GetBuffer(4).Presence == false && _conveyor.GetBuffer(4).Ready == 2 && _conveyor.GetBuffer(4).EmptyError==0)
                     {
                         if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject, db) == GetDataResult.NoDataSelect && EmptyFlag["2"]!=1)//沒有命令資料就上報WMS
                         {
                             //做上報WMS的動作
-                            clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);
-                            EmptyFlag["2"] = 1;
+                            var StoreOutApichk= clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);//上報需要空棧板補充命令
+                            bool success = StoreOutApichk.success;
+                            string errmesg = StoreOutApichk.errMsg;
+                            if (success)
+                            {
+                                EmptyFlag["2"] = 1;
+                            }
+                            else if(!success && errmesg=="無空棧板庫存")
+                            {
+                                _conveyor.GetBuffer(4).A4ErrorOn();
+                                DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    locationId = "1",
+                                    taskNo = "0",
+                                    state = "1", //任務開始
+                                    MerrMsg = errmesg,
+                                };
+                                clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1);//上報異常於看板
+                                DisplayFlag["1"] = 1;
+                                EmptyFlag["2"] = 1;
+                            }
+                            else if (!success)
+                            {
+                                EmptyFlag["2"] = 0;
+                            }
                         }
                     }
                     else
                     {
+                        if (DisplayFlag["1"] == 1)//當有上報過異常，符合解除異常的狀態，才會上報無異常
+                        {
+                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "1",
+                                taskNo = "0",
+                                state = "2", //任務結束
+                                MerrMsg = "",
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))//上報異常於看板
+                            {
+                                return;
+                            }
+                            DisplayFlag["1"] = 0;
+                        }
                         EmptyFlag["2"] = 0;
                     }
                 }
