@@ -121,7 +121,7 @@ namespace Mirle.DB.Proc
                         if (Alarmdesc != Errormessage["0"])
                         {
                             MerrMsg = Alarmdesc;
-                            Errormessage["0"] = Alarmdesc;
+                            
 
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
@@ -135,6 +135,7 @@ namespace Mirle.DB.Proc
                             {
                                 return;
                             };
+                            Errormessage["0"] = Alarmdesc;
                             ErrorNormal["0"] =1;
                         }
                     }

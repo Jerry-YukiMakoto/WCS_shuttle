@@ -126,13 +126,18 @@ namespace Mirle.ASRS.WCS.Controller
             {
                 _test.SetBitOff("D" + (101 + text1 * 10 + 2.7));
             }
-           
+            if (A4ErrorOn.Checked)
+            {
+                _test.WriteWord("D" + (101 + text1 * 10 + 8), text2);
+            }
+
 
             showwritevalue.Text = _test.ReadWord("D" + (3101 + text1 * 10)).ToString();
             showwritevalue.Text += $",{_test.ReadWord("D" + (3101 + text1 * 10+1))}";
             showwritevalue.Text += $",{_test.ReadWord("D" + (3101 + text1 * 10+4))}";
             showwritevalue.Text += $",{_test.ReadWord("D" + (3101 + text1 * 10 + 9))}";
             showwritevalue.Text += $",{_test.ReadWord("D" + (3101 + text1 * 10 + 8))}";
+            showwritevalue.Text += $",{_test.ReadWord("D" + (101 + text1 * 10 + 8))}";
 
         }
     }

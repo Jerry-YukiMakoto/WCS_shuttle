@@ -54,6 +54,7 @@ namespace Mirle.ASRS.WCS.Controller
             this.A2LV2 = new System.Windows.Forms.CheckBox();
             this.showwritevalue = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.A4ErrorOn = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // test
@@ -313,11 +314,22 @@ namespace Mirle.ASRS.WCS.Controller
             this.label1.TabIndex = 26;
             this.label1.Text = "命令號,模式,路徑,初始,切換模式";
             // 
+            // A4ErrorOn
+            // 
+            this.A4ErrorOn.AutoSize = true;
+            this.A4ErrorOn.Location = new System.Drawing.Point(517, 564);
+            this.A4ErrorOn.Name = "A4ErrorOn";
+            this.A4ErrorOn.Size = new System.Drawing.Size(110, 22);
+            this.A4ErrorOn.TabIndex = 27;
+            this.A4ErrorOn.Text = "A4ErrorOn";
+            this.A4ErrorOn.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(986, 679);
+            this.Controls.Add(this.A4ErrorOn);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.showwritevalue);
             this.Controls.Add(this.A2LV2);
@@ -378,5 +390,6 @@ namespace Mirle.ASRS.WCS.Controller
         private System.Windows.Forms.CheckBox A2LV2;
         private System.Windows.Forms.TextBox showwritevalue;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox A4ErrorOn;
     }
 }
