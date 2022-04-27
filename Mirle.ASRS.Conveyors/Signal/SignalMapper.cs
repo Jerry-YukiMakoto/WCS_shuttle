@@ -168,6 +168,14 @@ namespace Mirle.ASRS.Conveyors.Signal
                         {
                             buffer.EmptyError = new Word();
                         }
+                        if (bufferIndex + 1 == 4)
+                        {
+                            buffer.EmptyDone = new Word(_mplc, $"D146");//A4空棧板補充異常 1:異常 0:無異常
+                        }
+                        else
+                        {
+                            buffer.EmptyDone = new Word();
+                        }
                         #endregion
 
                         buffer.ControllerSignal.CommandId = new Word(_mplc, $"D{pcIndex + (bufferIndex * 10)}");

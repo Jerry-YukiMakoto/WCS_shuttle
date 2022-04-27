@@ -19,8 +19,7 @@ namespace Mirle.ASRS.WCS.View
 {
     public partial class MainForm : Form
     {
-        //public static clsCheckPathIsWork CheckPathIsWork = new clsCheckPathIsWork();
-        
+       
 
         private DB.ClearCmd.Proc.clsHost clearCmd;
         private WebApiHost _webApiHost;
@@ -338,5 +337,6 @@ namespace Mirle.ASRS.WCS.View
                 Library.clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
         }
+
     }
 }

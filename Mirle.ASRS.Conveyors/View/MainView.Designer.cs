@@ -28,15 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.timerMainProc = new System.Windows.Forms.Timer();
+            this.components = new System.ComponentModel.Container();
+            this.timerMainProc = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lbl_4F = new System.Windows.Forms.Label();
             this.lbl_3F = new System.Windows.Forms.Label();
             this.lbl_2F = new System.Windows.Forms.Label();
             this.lbl_1F = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblPLCConnSts = new System.Windows.Forms.Label();
             this.A1 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A2 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A3 = new Mirle.ASRS.Conveyors.View.BufferView();
@@ -47,6 +45,10 @@
             this.A8 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A9 = new Mirle.ASRS.Conveyors.View.BufferView();
             this.A10 = new Mirle.ASRS.Conveyors.View.BufferView();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblPLCConnSts = new System.Windows.Forms.Label();
+            this.testbutton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -64,7 +66,7 @@
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -89,9 +91,9 @@
             // 
             this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1170, 657);
-            this.splitContainer1.SplitterDistance = 979;
-            this.splitContainer1.SplitterWidth = 6;
+            this.splitContainer1.Size = new System.Drawing.Size(1316, 788);
+            this.splitContainer1.SplitterDistance = 1101;
+            this.splitContainer1.SplitterWidth = 7;
             this.splitContainer1.TabIndex = 0;
             // 
             // lbl_4F
@@ -99,9 +101,9 @@
             this.lbl_4F.AutoSize = true;
             this.lbl_4F.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_4F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lbl_4F.Location = new System.Drawing.Point(574, 377);
+            this.lbl_4F.Location = new System.Drawing.Point(646, 452);
             this.lbl_4F.Name = "lbl_4F";
-            this.lbl_4F.Size = new System.Drawing.Size(46, 32);
+            this.lbl_4F.Size = new System.Drawing.Size(54, 37);
             this.lbl_4F.TabIndex = 10;
             this.lbl_4F.Text = "4F";
             // 
@@ -110,9 +112,9 @@
             this.lbl_3F.AutoSize = true;
             this.lbl_3F.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_3F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lbl_3F.Location = new System.Drawing.Point(68, 377);
+            this.lbl_3F.Location = new System.Drawing.Point(76, 452);
             this.lbl_3F.Name = "lbl_3F";
-            this.lbl_3F.Size = new System.Drawing.Size(46, 32);
+            this.lbl_3F.Size = new System.Drawing.Size(54, 37);
             this.lbl_3F.TabIndex = 9;
             this.lbl_3F.Text = "3F";
             // 
@@ -121,9 +123,9 @@
             this.lbl_2F.AutoSize = true;
             this.lbl_2F.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_2F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lbl_2F.Location = new System.Drawing.Point(574, 36);
+            this.lbl_2F.Location = new System.Drawing.Point(646, 43);
             this.lbl_2F.Name = "lbl_2F";
-            this.lbl_2F.Size = new System.Drawing.Size(46, 32);
+            this.lbl_2F.Size = new System.Drawing.Size(54, 37);
             this.lbl_2F.TabIndex = 8;
             this.lbl_2F.Text = "2F";
             // 
@@ -132,29 +134,140 @@
             this.lbl_1F.AutoSize = true;
             this.lbl_1F.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_1F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lbl_1F.Location = new System.Drawing.Point(68, 36);
+            this.lbl_1F.Location = new System.Drawing.Point(76, 43);
             this.lbl_1F.Name = "lbl_1F";
-            this.lbl_1F.Size = new System.Drawing.Size(46, 32);
+            this.lbl_1F.Size = new System.Drawing.Size(54, 37);
             this.lbl_1F.TabIndex = 7;
             this.lbl_1F.Text = "1F";
+            // 
+            // A1
+            // 
+            this.A1.BufferIndex = 1;
+            this.A1.Location = new System.Drawing.Point(255, 43);
+            this.A1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A1.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A1.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A1.Name = "A1";
+            this.A1.Size = new System.Drawing.Size(120, 97);
+            this.A1.TabIndex = 1;
+            // 
+            // A2
+            // 
+            this.A2.BufferIndex = 2;
+            this.A2.Location = new System.Drawing.Point(255, 150);
+            this.A2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A2.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A2.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A2.Name = "A2";
+            this.A2.Size = new System.Drawing.Size(120, 97);
+            this.A2.TabIndex = 2;
+            // 
+            // A3
+            // 
+            this.A3.BufferIndex = 3;
+            this.A3.Location = new System.Drawing.Point(255, 257);
+            this.A3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A3.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A3.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A3.Name = "A3";
+            this.A3.Size = new System.Drawing.Size(120, 97);
+            this.A3.TabIndex = 0;
+            // 
+            // A4
+            // 
+            this.A4.BufferIndex = 4;
+            this.A4.Location = new System.Drawing.Point(126, 150);
+            this.A4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A4.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A4.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A4.Name = "A4";
+            this.A4.Size = new System.Drawing.Size(120, 97);
+            this.A4.TabIndex = 0;
+            // 
+            // A5
+            // 
+            this.A5.BufferIndex = 5;
+            this.A5.Location = new System.Drawing.Point(728, 43);
+            this.A5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A5.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A5.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A5.Name = "A5";
+            this.A5.Size = new System.Drawing.Size(120, 97);
+            this.A5.TabIndex = 0;
+            // 
+            // A6
+            // 
+            this.A6.BufferIndex = 6;
+            this.A6.Location = new System.Drawing.Point(728, 150);
+            this.A6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A6.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A6.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A6.Name = "A6";
+            this.A6.Size = new System.Drawing.Size(120, 97);
+            this.A6.TabIndex = 0;
+            // 
+            // A7
+            // 
+            this.A7.BufferIndex = 7;
+            this.A7.Location = new System.Drawing.Point(255, 452);
+            this.A7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A7.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A7.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A7.Name = "A7";
+            this.A7.Size = new System.Drawing.Size(120, 97);
+            this.A7.TabIndex = 3;
+            // 
+            // A8
+            // 
+            this.A8.BufferIndex = 8;
+            this.A8.Location = new System.Drawing.Point(255, 559);
+            this.A8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A8.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A8.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A8.Name = "A8";
+            this.A8.Size = new System.Drawing.Size(120, 97);
+            this.A8.TabIndex = 4;
+            // 
+            // A9
+            // 
+            this.A9.BufferIndex = 9;
+            this.A9.Location = new System.Drawing.Point(728, 452);
+            this.A9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A9.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A9.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A9.Name = "A9";
+            this.A9.Size = new System.Drawing.Size(120, 97);
+            this.A9.TabIndex = 5;
+            // 
+            // A10
+            // 
+            this.A10.BufferIndex = 10;
+            this.A10.Location = new System.Drawing.Point(728, 559);
+            this.A10.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.A10.MaximumSize = new System.Drawing.Size(120, 97);
+            this.A10.MinimumSize = new System.Drawing.Size(120, 97);
+            this.A10.Name = "A10";
+            this.A10.Size = new System.Drawing.Size(120, 97);
+            this.A10.TabIndex = 6;
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.testbutton, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblPLCConnSts, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(183, 655);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(206, 786);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // label1
@@ -166,7 +279,7 @@
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(177, 39);
+            this.label1.Size = new System.Drawing.Size(200, 47);
             this.label1.TabIndex = 13;
             this.label1.Text = "PLC Status";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -178,130 +291,35 @@
             this.lblPLCConnSts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblPLCConnSts.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.lblPLCConnSts.ForeColor = System.Drawing.Color.Black;
-            this.lblPLCConnSts.Location = new System.Drawing.Point(2, 41);
+            this.lblPLCConnSts.Location = new System.Drawing.Point(2, 49);
             this.lblPLCConnSts.Margin = new System.Windows.Forms.Padding(2);
             this.lblPLCConnSts.Name = "lblPLCConnSts";
-            this.lblPLCConnSts.Size = new System.Drawing.Size(179, 74);
+            this.lblPLCConnSts.Size = new System.Drawing.Size(202, 90);
             this.lblPLCConnSts.TabIndex = 12;
             this.lblPLCConnSts.Text = "Connect Status";
             this.lblPLCConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // A1
+            // testbutton
             // 
-            this.A1.BufferIndex = 1;
-            this.A1.Location = new System.Drawing.Point(227, 36);
-            this.A1.Margin = new System.Windows.Forms.Padding(4);
-            this.A1.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A1.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A1.Name = "A1";
-            this.A1.Size = new System.Drawing.Size(107, 81);
-            this.A1.TabIndex = 1;
-            // 
-            // A2
-            // 
-            this.A2.BufferIndex = 2;
-            this.A2.Location = new System.Drawing.Point(227, 125);
-            this.A2.Margin = new System.Windows.Forms.Padding(4);
-            this.A2.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A2.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A2.Name = "A2";
-            this.A2.Size = new System.Drawing.Size(107, 81);
-            this.A2.TabIndex = 2;
-            // 
-            // A3
-            // 
-            this.A3.BufferIndex = 3;
-            this.A3.Location = new System.Drawing.Point(227, 214);
-            this.A3.Margin = new System.Windows.Forms.Padding(4);
-            this.A3.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A3.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A3.Name = "A3";
-            this.A3.Size = new System.Drawing.Size(107, 81);
-            this.A3.TabIndex = 0;
-            // 
-            // A4
-            // 
-            this.A4.BufferIndex = 4;
-            this.A4.Location = new System.Drawing.Point(112, 125);
-            this.A4.Margin = new System.Windows.Forms.Padding(4);
-            this.A4.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A4.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A4.Name = "A4";
-            this.A4.Size = new System.Drawing.Size(107, 81);
-            this.A4.TabIndex = 0;
-            // 
-            // A5
-            // 
-            this.A5.BufferIndex = 5;
-            this.A5.Location = new System.Drawing.Point(647, 36);
-            this.A5.Margin = new System.Windows.Forms.Padding(4);
-            this.A5.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A5.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A5.Name = "A5";
-            this.A5.Size = new System.Drawing.Size(107, 81);
-            this.A5.TabIndex = 0;
-            // 
-            // A6
-            // 
-            this.A6.BufferIndex = 6;
-            this.A6.Location = new System.Drawing.Point(647, 125);
-            this.A6.Margin = new System.Windows.Forms.Padding(4);
-            this.A6.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A6.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A6.Name = "A6";
-            this.A6.Size = new System.Drawing.Size(107, 81);
-            this.A6.TabIndex = 0;
-            // 
-            // A7
-            // 
-            this.A7.BufferIndex = 7;
-            this.A7.Location = new System.Drawing.Point(227, 377);
-            this.A7.Margin = new System.Windows.Forms.Padding(4);
-            this.A7.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A7.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A7.Name = "A7";
-            this.A7.Size = new System.Drawing.Size(107, 81);
-            this.A7.TabIndex = 3;
-            // 
-            // A8
-            // 
-            this.A8.BufferIndex = 8;
-            this.A8.Location = new System.Drawing.Point(227, 466);
-            this.A8.Margin = new System.Windows.Forms.Padding(4);
-            this.A8.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A8.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A8.Name = "A8";
-            this.A8.Size = new System.Drawing.Size(107, 81);
-            this.A8.TabIndex = 4;
-            // 
-            // A9
-            // 
-            this.A9.BufferIndex = 9;
-            this.A9.Location = new System.Drawing.Point(647, 377);
-            this.A9.Margin = new System.Windows.Forms.Padding(4);
-            this.A9.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A9.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A9.Name = "A9";
-            this.A9.Size = new System.Drawing.Size(107, 81);
-            this.A9.TabIndex = 5;
-            // 
-            // A10
-            // 
-            this.A10.BufferIndex = 10;
-            this.A10.Location = new System.Drawing.Point(647, 466);
-            this.A10.Margin = new System.Windows.Forms.Padding(4);
-            this.A10.MaximumSize = new System.Drawing.Size(107, 81);
-            this.A10.MinimumSize = new System.Drawing.Size(107, 81);
-            this.A10.Name = "A10";
-            this.A10.Size = new System.Drawing.Size(107, 81);
-            this.A10.TabIndex = 6;
+            this.testbutton.AutoSize = true;
+            this.testbutton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.testbutton.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.testbutton.Location = new System.Drawing.Point(4, 147);
+            this.testbutton.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.testbutton.Name = "testbutton";
+            this.testbutton.Size = new System.Drawing.Size(198, 82);
+            this.testbutton.TabIndex = 14;
+            this.testbutton.Text = "輸送機初始";
+            this.testbutton.UseVisualStyleBackColor = true;
+            this.testbutton.Click += new System.EventHandler(this.buffer_Restart);
             // 
             // MainView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1170, 657);
+            this.ClientSize = new System.Drawing.Size(1316, 788);
             this.Controls.Add(this.splitContainer1);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "MainView";
             this.Text = "MainView";
             this.Load += new System.EventHandler(this.MainView_Load);
@@ -336,5 +354,6 @@
         private System.Windows.Forms.Label lbl_2F;
         private System.Windows.Forms.Label lbl_1F;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button testbutton;
     }
 }

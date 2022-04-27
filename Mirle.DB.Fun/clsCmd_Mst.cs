@@ -83,7 +83,7 @@ namespace Mirle.DB.Fun
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.CMDFInish}') ";
             sql += $"AND Cmdsno='{cmdsno}' ";
             sql += $"AND Remark<>'{Remark.WMSReportComplete}' ";
-            sql += $"AND Iotype =='{clsConstValue.IoType.NormalStockOut}' ";
+            sql += $"AND Iotype =='{clsConstValue.IoType.NormalStockOut}', '{clsConstValue.IoType.CycleOut}') ";
             return db.GetData(sql, out dataObject);
         }
 

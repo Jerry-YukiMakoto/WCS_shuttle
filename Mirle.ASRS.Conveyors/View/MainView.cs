@@ -7,13 +7,13 @@ using Mirle.MPLC;
 using Mirle.MPLC.MCProtocol;
 using Mirle.ASRS.Conveyor.U2NMMA30.Service;
 using Mirle.DB.WMS.Proc;
+using WCS;
 
 namespace Mirle.ASRS.Conveyors.View
 {
     public partial class MainView : Form
     {
         private readonly Conveyor _conveyor;
-        //private LoggerService _loggerService;
         private static int bufferCount = 10;
 
         public MainView(Conveyor conveyor)
@@ -75,6 +75,27 @@ namespace Mirle.ASRS.Conveyors.View
             {
                 timerMainProc.Enabled = true;
             }
+        }
+
+        private Form Buffer_Restart;
+        private void buffer_Restart(object sender, EventArgs e)
+        {
+            if (Buffer_Restart == null)
+            {
+                Buffer_Restart = new frmBuffer_Initial(_conveyor);
+                Buffer_Restart.FormClosed += new FormClosedEventHandler(bufferrestart_FormClosed);
+                Buffer_Restart.Show();
+            }
+            else
+            {
+                Buffer_Restart.BringToFront();
+            }
+        }
+
+        private void bufferrestart_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (Buffer_Restart != null)
+                Buffer_Restart = null;
         }
     }
 }

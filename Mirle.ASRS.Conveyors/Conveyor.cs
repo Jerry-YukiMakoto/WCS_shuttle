@@ -84,13 +84,13 @@ namespace Mirle.ASRS.Conveyors
             var dt = DateTime.Now; 
             int[] bcdDatetime = new int[6];
             bcdDatetime[0] = dt.Year.ConvertBase10ToBCD();
-            bcdDatetime[1] = dt.Year.ConvertBase10ToBCD();
+            bcdDatetime[1] = dt.Month.ConvertBase10ToBCD();
             bcdDatetime[2] = dt.Day.ConvertBase10ToBCD();
             bcdDatetime[3] = dt.Hour.ConvertBase10ToBCD();
             bcdDatetime[4] = dt.Minute.ConvertBase10ToBCD();
             bcdDatetime[5] = dt.Second.ConvertBase10ToBCD();
 
-            systemSignal.ControllerSignal.SystemTimeCalibration.SetValue(bcdDatetime);
+            systemSignal.ControllerSignal.SystemTimeCalibration.SetValue(bcdDatetime);//給予PLC時間調整
         }
 
         private void Refresh()

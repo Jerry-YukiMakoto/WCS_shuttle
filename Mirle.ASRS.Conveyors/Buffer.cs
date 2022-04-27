@@ -32,10 +32,13 @@ namespace Mirle.ASRS.Conveyors
         public string BufferName => Signal.BufferName;
 
         public int CommandId => Signal.CommandId.GetValue();
+        public int PC_CommandId => Signal.ControllerSignal.CommandId.GetValue();
         public int PathNotice => Signal.PathChangeNotice.GetValue();
         public int CmdMode => Signal.CmdMode.GetValue();
+        public int PC_CmdMode => Signal.ControllerSignal.CmdMode.GetValue();
         public int Ready => Signal.Ready.GetValue();
         public int InitialNotice => Signal.InitialNotice.GetValue();
+        public int PC_InitialNotice => Signal.ControllerSignal.InitialNotice.GetValue();
         public bool InMode => Signal.StatusSignal.InMode.IsOn() && Signal.StatusSignal.OutMode.IsOff();
         public bool OutMode => Signal.StatusSignal.InMode.IsOff() && Signal.StatusSignal.OutMode.IsOn();
         public bool Error => Signal.StatusSignal.Error.IsOn();
@@ -44,6 +47,7 @@ namespace Mirle.ASRS.Conveyors
         public bool Presence => Signal.StatusSignal.Presence.IsOn();
         public bool Position => Signal.StatusSignal.Position.IsOn();
         public int Switch_Ack => Signal.Switch_Ack.GetValue();
+        public int PC_Switch_Ack => Signal.ControllerSignal.Switch_Mode.GetValue();
         public int EmptyINReady => Signal.EmptyInReady.GetValue();
         public int EmptyError => Signal.EmptyError.GetValue();
         public int A2LV2 => Signal.A2LV2.GetValue();
@@ -55,6 +59,12 @@ namespace Mirle.ASRS.Conveyors
 
         protected internal virtual void Refresh()//自己寫入的值，自己清，當寫入的值和確認PLC寫的值條件=>確認寫入成功，才清理自己寫的值
         {
+            if (Signal.Switch_Ack.GetValue() == 0 && Signal.ControllerSignal.Switch_Mode.GetValue()>0
+                )
+            {
+                Signal.ControllerSignal.Switch_Mode.Clear();
+                OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
+            }
             if (Signal.CmdMode.GetValue() > 0 && Signal.CmdMode.GetValue() == Signal.ControllerSignal.CmdMode.GetValue()
                 )
             {
@@ -72,7 +82,7 @@ namespace Mirle.ASRS.Conveyors
                 Signal.ControllerSignal.PathChangeNotice.SetValue(0);
                 OnBufferPathNoticeChange?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
-            if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0)//待修改，需要知道什麼時候電控運送母托到A3
+            if (Signal.ControllerSignal.A4Emptysupply.GetValue() > 0 && Signal.ControllerSignal.A4Emptysupply.GetValue()==Signal.EmptyDone.GetValue())
             {
                 Signal.ControllerSignal.A4Emptysupply.SetValue(0);
                 OnBufferCommandReceive?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
@@ -120,7 +130,7 @@ namespace Mirle.ASRS.Conveyors
                 OnIniatlNotice?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));
             }
             else if (_onIniatlNotice == true && Signal.ControllerSignal.InitialNotice.GetValue() == 1 && Signal.InitialNotice.GetValue() == 1)
-            {
+            {                                                                                         
                 _onIniatlNotice = false;
                 Signal.ControllerSignal.InitialNotice.SetValue(0);
                 OnIniatlNoticeComplete?.Invoke(this, new BufferEventArgs(Signal.BufferIndex, Signal.BufferName));

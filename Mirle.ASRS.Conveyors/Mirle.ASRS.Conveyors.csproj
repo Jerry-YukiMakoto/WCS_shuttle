@@ -82,6 +82,12 @@
     <Compile Include="View\BufferView.Designer.cs">
       <DependentUpon>BufferView.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\frmBuffer_Initial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmBuffer_Initial.designer.cs">
+      <DependentUpon>frmBuffer_Initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\testform.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,6 +112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\BufferView.resx">
       <DependentUpon>BufferView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\frmBuffer_Initial.resx">
+      <DependentUpon>frmBuffer_Initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\MainView.resx">
       <DependentUpon>MainView.cs</DependentUpon>
