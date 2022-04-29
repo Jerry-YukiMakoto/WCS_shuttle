@@ -39,8 +39,8 @@ namespace Mirle.ASRS.WCS.Controller
                 _plcHost = new PLCHost(plcHostInfo);
                 _plcHost.Interval = 200;
                 _plcHost.MPLCTimeout = 600;
-                _plcHost.EnableWriteRawData = false;
-                _plcHost.EnableWriteShareMemory = true;
+                _plcHost.EnableWriteRawData = true;
+                _plcHost.EnableWriteShareMemory = false;
                 var smReader = new SMReadOnlyCachedReader();
                 var blockInfos = GetBlockInfos();
                 foreach (var block in blockInfos)

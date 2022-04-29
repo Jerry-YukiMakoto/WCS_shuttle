@@ -427,30 +427,83 @@ namespace Mirle.MPLC.MCProtocol
                     return null;
                 }
 
-                int retryTimes = 3;
-                for (int i = 0; i < retryTimes; i++)
-                {
-                    try
-                    {
-                        var timeout = TimeSpan.FromMilliseconds(_timeout / retryTimes);
-                        byte[] id = _socket.Options.Identity;
-                        if (_socket.TrySendFrame(timeout, id, true)
-                           && _socket.TrySendFrame(timeout, frame)
-                           && _socket.TryReceiveFrameBytes(timeout, out byte[] receiveId)
-                           && _socket.TryReceiveFrameBytes(timeout, out byte[] dataFrame))
-                        {
-                            IsConnected = true;
+                //int retryTimes = 3;
+                //for (int i = 0; i < retryTimes; i++)
+                //{
+                //    try
+                //    {
+                //        var timeout = TimeSpan.FromMilliseconds(_timeout / retryTimes);
+                //        byte[] id = _socket.Options.Identity;
+                //        if (_socket.TrySendFrame(timeout, id, true)
+                //           && _socket.TrySendFrame(timeout, frame)
+                //           && _socket.TryReceiveFrameBytes(timeout, out byte[] receiveId)
+                //           && _socket.TryReceiveFrameBytes(timeout, out byte[] dataFrame))
+                //        {
+                //            IsConnected = true;
 
-                            if (receiveId.SequenceEqual(id))
+                //            if (receiveId.SequenceEqual(id))
+                //            {
+                //                return dataFrame;
+                //            }
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        TraceLog($"SendData: {ex}");
+                //    }
+                //}
+
+                try
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        var timeout = TimeSpan.FromMilliseconds(_timeout);
+                        byte[] id = _socket.Options.Identity;
+                        //if (_socket.TrySendFrame(timeout, id, true)
+                        //   && _socket.TrySendFrame(timeout, frame)
+                        //   && _socket.TryReceiveFrameBytes(timeout, out byte[] receiveId)
+                        //   && _socket.TryReceiveFrameBytes(timeout, out byte[] dataFrame))
+                        //{
+                        //    IsConnected = true;
+
+                        //    if (receiveId.SequenceEqual(id))
+                        //    {
+                        //        return dataFrame;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    TraceLog($"SendData: Fail!");
+                        //}
+                        if (_socket.TrySendFrame(timeout, id, true) && _socket.TrySendFrame(timeout, frame))
+                        {
+                            if (_socket.TryReceiveFrameBytes(timeout, out byte[] receiveId) && _socket.TryReceiveFrameBytes(timeout, out byte[] dataFrame))
                             {
-                                return dataFrame;
+                                IsConnected = true;
+
+                                if (receiveId.SequenceEqual(id))
+                                {
+                                    return dataFrame;
+                                }
+                                else
+                                {
+                                    TraceLog($"SendData: SequenceEqual Id Fail, Retrt Count{i + 1}");
+                                }
+                            }
+                            else
+                            {
+                                TraceLog($"SendData: TryReceiveFrameBytes Fail, Retrt Count{i + 1}");
                             }
                         }
+                        else
+                        {
+                            TraceLog($"SendData: TrySendFrame Fail, Retrt Count{i + 1}");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        TraceLog($"SendData: {ex}");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog($"SendData: {ex}");
                 }
 
                 IsConnected = false;

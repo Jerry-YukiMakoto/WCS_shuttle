@@ -379,35 +379,35 @@ namespace Mirle.DB.Proc
                                 return false;
                             }
 
-                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                                {
-                                    //填入回報訊息
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
 
-                                    locationId = ((bufferIndex - 2) / 2).ToString(),
-                                    taskNo = cmdSno.ToString(),
-                                    state = "1", //任務開始
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                //填入訊息
-                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                                {
+                                locationId = ((bufferIndex - 2) / 2).ToString(),
+                                taskNo = cmdSno.ToString(),
+                                state = "1", //任務開始
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            //填入訊息
+                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                            {
 
-                                    taskNo = cmdSno,
-                                    palletNo = palletNo,
-                                    bussinessType = IOType.ToString(),
-                                    state = "12",
-                                    errMsg = ""
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                            
+                                taskNo = cmdSno,
+                                palletNo = palletNo,
+                                bussinessType = IOType.ToString(),
+                                state = "12",
+                                errMsg = ""
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");

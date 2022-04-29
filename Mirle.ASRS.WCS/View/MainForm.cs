@@ -238,9 +238,9 @@ namespace Mirle.ASRS.WCS.View
 
             _wcsManager = new WCSManager();
             _wcsManager.Start();
-            _unityContainer = new UnityContainer();
-            _unityContainer.RegisterInstance(new WCSController());
-            _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
+            //_unityContainer = new UnityContainer();
+            //_unityContainer.RegisterInstance(new WCSController());
+            //_webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
             clearCmd = new DB.ClearCmd.Proc.clsHost();
             ChangeSubForm(ControllerReader.GetCVControllerr().GetMainView());
         }
