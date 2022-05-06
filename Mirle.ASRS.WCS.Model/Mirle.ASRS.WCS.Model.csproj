@@ -63,6 +63,7 @@
     <Compile Include="LogTrace\LogTraceBase.cs" />
     <Compile Include="LogTrace\StoreInLogTrace.cs" />
     <Compile Include="LogTrace\StoreOutLogTrace.cs" />
+    <Compile Include="PLCDefinitions\CVErrorDefine.cs" />
     <Compile Include="PLCDefinitions\CranePortNo.cs" />
     <Compile Include="PLCDefinitions\LoadCategory.cs" />
     <Compile Include="PLCDefinitions\Path.cs" />

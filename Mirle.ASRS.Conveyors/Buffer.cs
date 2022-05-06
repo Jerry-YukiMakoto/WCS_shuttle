@@ -11,7 +11,7 @@ namespace Mirle.ASRS.Conveyors
 {
     public class Buffer
     {
-        private readonly bool[] _alarmBit = new bool[16];
+        public readonly bool[] _alarmBit = new bool[16];
 
         private bool _onIniatlNotice = false;
 

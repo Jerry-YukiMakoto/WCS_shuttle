@@ -202,14 +202,14 @@ namespace Mirle.ASRS.WCS
             {
                 if (IsConnected)
                 {
-                    SwitchInMode.Switch_InMode(_conveyor, _loggerManager);//自動切入庫模式
+                    //SwitchInMode.Switch_InMode(_conveyor, _loggerManager);//自動切入庫模式
 
-                    if (_conveyor.GetBuffer(1).Ready == Ready.StoreInReady)
-                    {
+                    //if (_conveyor.GetBuffer(1).Ready == Ready.StoreInReady)
+                    //{
                         clsStoreIn.StoreIn_A1_WriteCV();
 
                         clsStoreIn.StoreIn_A1_CreateEquCmd();
-                    }
+                    //}
 
                     clsStoreIn.StoreIn_A2ToA4_WriteCV();
 

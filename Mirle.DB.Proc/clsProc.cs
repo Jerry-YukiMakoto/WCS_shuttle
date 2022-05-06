@@ -154,6 +154,27 @@ namespace Mirle.DB.Proc
                             clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
                                     $"{CmdMode}");
 
+                            #region//確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
+                            if (_conveyor.GetBuffer(bufferIndex-2).Ready != Ready.StoreInReady
+                                && _conveyor.GetBuffer(bufferIndex-2).Switch_Ack == 1)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 2).BufferIndex, _conveyor.GetBuffer(bufferIndex - 2).BufferName, "Not StoreOut Ready, Can Switchmode");
+
+                                var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex - 2).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                                bool Result1 = WritePlccheck1;
+                                if (Result1 != true)
+                                {
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 2).BufferIndex, _conveyor.GetBuffer(bufferIndex - 2).BufferName, $"Normal-StoreOut Switchmode fail");
+                                    return false;
+                                }
+                                else
+                                {
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 2).BufferIndex, _conveyor.GetBuffer(bufferIndex - 2).BufferName, "Normal-StoreOut Switchmode Complete");
+                                }
+                            }
+                            #endregion
+
+
                             #region//根據buffer狀態更新命令
                             if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                             {
@@ -175,7 +196,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 6)//為了不跟撿料命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)//為了不跟撿料命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -212,28 +233,6 @@ namespace Mirle.DB.Proc
                                 return false;
                             }
 
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                            bool Result = WritePlccheck;
-                            if (Result != true)//寫入命令和模式
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (IOType == clsConstValue.IoType.NormalStockIn && whetherAllOut == 1)
-                            {
-                                WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                Result = WritePlccheck;
-                                if (Result != true)//請A4補充母托一版
-                                {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC A4EmptySupply Fail");
-
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                            }
-
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
@@ -261,6 +260,28 @@ namespace Mirle.DB.Proc
                             {
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
+                            }
+
+                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                            bool Result = WritePlccheck;
+                            if (Result != true)//寫入命令和模式
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            if (IOType == clsConstValue.IoType.NormalStockIn && whetherAllOut == 1)
+                            {
+                                WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                                Result = WritePlccheck;
+                                if (Result != true)//請A4補充母托一版
+                                {
+                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC A4EmptySupply Fail");
+
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
                             }
 
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
@@ -334,14 +355,14 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 6)//為了不跟撿料命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)//為了不跟撿料命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                            if (_conveyor.GetBuffer(bufferIndex).Presence != true)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
                                 return false;
                             }
                             if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
@@ -365,15 +386,6 @@ namespace Mirle.DB.Proc
                             else
                             {
                                 clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                            bool Result = WritePlccheck;
-                            if (Result != true)//寫入命令和模式
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
@@ -407,6 +419,18 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
+
+                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                            bool Result = WritePlccheck;
+                            if (Result != true)//寫入命令和模式
+                            {
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+
 
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
@@ -480,9 +504,9 @@ namespace Mirle.DB.Proc
 
                             string source = $"{CranePortNo.A1}";
                             string IOType = dataObject[0].IOType;
+                            string CmdMode = dataObject[0].CmdMode;
                             string dest = "";
-                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
-                            if (IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            if (CmdMode == "3")//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
@@ -593,17 +617,16 @@ namespace Mirle.DB.Proc
                                 source = $"{CranePortNo.A9}";
                             }
                             string IOType = dataObject[0].IOType;
+                            string CmdMode = dataObject[0].CmdMode;
                             string dest = "";
-                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
-                            if (IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0)//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
+                            if (CmdMode == "3")//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
                             {
                                 dest = $"{dataObject[0].Loc}";
                             }
                             else
                             {
                                 dest = $"{dataObject[0].NewLoc}";
-                            }
-                            //clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
+                            };
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
@@ -713,14 +736,14 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
                                                 state = "13",
-                                                errMsg =""
+                                                errMsg = ""
                                             };
-                                            if(!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
@@ -728,7 +751,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                 
+
                                                 locationId = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -757,7 +780,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
@@ -772,7 +795,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                 
+
                                                 locationId = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -793,7 +816,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
@@ -808,7 +831,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                 
+
                                                 locationId = locationId,
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -935,7 +958,7 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 6)//為了不跟減料命令衝突的條件
+                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)//為了不跟減料命令衝突的條件
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
                                 return false;
@@ -959,7 +982,6 @@ namespace Mirle.DB.Proc
 
                             clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreOut Command => {cmdSno}, " +
                                     $"{CmdMode}");
-                            //int LastCargoOrNotchek = LastCargoOrNot();
 
 
                                 if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
@@ -979,7 +1001,37 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                                 }
-                                var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+
+                                locationId = "1",
+                                taskNo = cmdSno.ToString(),
+                                state = "1", //任務開始
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            //填入訊息
+                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                            {
+
+                                taskNo = cmdSno,
+                                palletNo = palletNo,
+                                bussinessType = IOType,
+                                state = "12",
+                                errMsg = ""
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                 Result = WritePlccheck;
                                 if (Result != true)
                                 {
@@ -988,7 +1040,7 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
                                 //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                                if ((IOType == clsConstValue.IoType.NormalStockOut && whetherAllOut == 0 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || IOType == clsConstValue.IoType.CycleOut || (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0) )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
+                                if ((CmdMode == 3 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0) )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
@@ -1021,34 +1073,7 @@ namespace Mirle.DB.Proc
                                         return false;
                                     }
                                 }
-                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                            {
-                                //填入回報訊息
 
-                                locationId = "1",
-                                taskNo = cmdSno.ToString(),
-                                state = "1", //任務開始
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                            {
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            //填入訊息
-                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                            {
-
-                                taskNo = cmdSno,
-                                palletNo = palletNo,
-                                bussinessType = IOType,
-                                state = "12",
-                                errMsg = ""
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                            {
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                return false;
-                            }
 
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
@@ -1157,7 +1182,37 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+
+                                locationId = ((bufferIndex - 1) / 2).ToString(),
+                                taskNo = cmdSno.ToString(),
+                                state = "1", //任務開始
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            //填入訊息
+                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                            {
+
+                                taskNo = cmdSno,
+                                palletNo = palletNo,
+                                bussinessType = iotype,
+                                state = "12",
+                                errMsg = ""
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                 bool Result = WritePlccheck;
                                 if (Result != true)//寫入命令和模式
                                 {
@@ -1166,35 +1221,6 @@ namespace Mirle.DB.Proc
                                     return false;
                                 }
 
-                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                                {
-                                    //填入回報訊息
-                                     
-                                    locationId = ((bufferIndex - 1) / 2).ToString(),
-                                    taskNo = cmdSno.ToString(),
-                                    state = "1", //任務開始
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                //填入訊息
-                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                                {
-                                     
-                                    taskNo =cmdSno,
-                                    palletNo =palletNo,
-                                    bussinessType = iotype,
-                                    state = "12",
-                                    errMsg =""
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
@@ -1472,12 +1498,12 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                lineId ="1" ,
+                                                lineId = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
                                                 state = "13",
-                                                errMsg =""
+                                                errMsg = ""
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
@@ -1503,7 +1529,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
@@ -1526,7 +1552,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
@@ -1545,15 +1571,15 @@ namespace Mirle.DB.Proc
                                             {
                                                 return false;
                                             }
-                                            if ((cmdMst.IOType != "2" && cmdMst.whetherAllOut!= "0") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
+                                            if ((cmdMst.CmdMode != "3") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
                                             {
                                                 if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
                                                 {
                                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                                     return false;
                                                 }
-                                            }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
+                                        }
+                                        if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                                 return false;
@@ -1614,17 +1640,37 @@ namespace Mirle.DB.Proc
 
                             clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreIn Command => {cmdSno}");
 
-                                #region//站口狀態確認
-                                if (_conveyor.GetBuffer(bufferIndex).Auto != true)
+                            #region//確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
+                            if (_conveyor.GetBuffer(bufferIndex - 3).Ready != Ready.StoreInReady
+                                && _conveyor.GetBuffer(bufferIndex - 3).Switch_Ack == 1)
+                            {
+                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, "Not StoreOut Ready, Can Switchmode");
+
+                                var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex - 3).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                                bool Result1 = WritePlccheck1;
+                                if (Result1 != true)
+                                {
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, $"Normal-StoreOut Switchmode fail");
+                                    return false;
+                                }
+                                else
+                                {
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, "Normal-StoreOut Switchmode Complete");
+                                }
+                            }
+                            #endregion
+
+                            #region//站口狀態確認
+                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
                                 {
                                     CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
                                     return false;
                                 }
-                                if (_conveyor.GetBuffer(bufferIndex).InMode != true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                    return false;
-                                }
+                                //if (_conveyor.GetBuffer(bufferIndex).InMode != true)
+                                //{
+                                //    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
+                                //    return false;
+                                //}
                                 if (_conveyor.GetBuffer(bufferIndex).Error == true)
                                 {
                                     CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
@@ -1665,7 +1711,36 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
-                                    var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+
+                                locationId = "1",
+                                taskNo = cmdSno.ToString(),
+                                state = "1", //任務開始
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            //填入訊息
+                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
+                            {
+
+                                taskNo = cmdSno,
+                                palletNo = palletNo,
+                                bussinessType = iotype,
+                                state = "12",
+                                errMsg = ""
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
+                            {
+                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                     bool Result = WritePlccheck;
                                     if (Result != true)//寫入命令和模式
                                     {
@@ -1673,36 +1748,9 @@ namespace Mirle.DB.Proc
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
-                                    
-                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                                {
-                                    //填入回報訊息
-                                     
-                                    locationId = "1",
-                                    taskNo = cmdSno.ToString(),
-                                    state = "1", //任務開始
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                //填入訊息
-                                TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                                {
-                                     
-                                    taskNo = cmdSno,
-                                    palletNo = palletNo,
-                                    bussinessType = iotype,
-                                    state = "12",
-                                    errMsg = ""
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                
+
+
+
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
                                 clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
@@ -1858,7 +1906,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
@@ -1873,7 +1921,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                 
+
                                                 locationId = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -1901,7 +1949,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
@@ -1916,7 +1964,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                 
+
                                                 locationId = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
@@ -1936,7 +1984,7 @@ namespace Mirle.DB.Proc
                                             //填入訊息
                                             TaskStateUpdateInfo info = new TaskStateUpdateInfo
                                             {
-                                                 
+
                                                 taskNo = cmdMst.CmdSno,
                                                 palletNo = cmdMst.palletNo,
                                                 bussinessType = cmdMst.IOType,
@@ -1951,7 +1999,7 @@ namespace Mirle.DB.Proc
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                             {
                                                 //填入回報訊息
-                                                 
+
                                                 locationId = "1",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束

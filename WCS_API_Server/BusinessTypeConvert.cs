@@ -12,12 +12,13 @@ namespace WCS_API_Server
             {
                 case clsConstValue.IoType.NormalStockIn:
                 case clsConstValue.IoType.PalletStockIn:
+                case clsConstValue.IoType.CycleIn:
                     cvtCmdMode = clsConstValue.CmdMode.StockIn;
                     break;
 
                 case clsConstValue.IoType.NormalStockOut:
                     if (WhetherAllout == "0") //檢料
-                        cvtCmdMode = "6";
+                        cvtCmdMode = "3";
                     else
                         cvtCmdMode = clsConstValue.CmdMode.StockOut;
                     break;
@@ -26,9 +27,9 @@ namespace WCS_API_Server
                     cvtCmdMode = clsConstValue.CmdMode.StockOut;
                     break;
 
-                case clsConstValue.IoType.CycleIn:
+                
                 case clsConstValue.IoType.CycleOut:
-                    cvtCmdMode = clsConstValue.CmdMode.Cycle;
+                    cvtCmdMode = clsConstValue.CmdMode.StockOut;
                     break;
 
                 default:

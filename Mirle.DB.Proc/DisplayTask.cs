@@ -16,6 +16,7 @@ namespace Mirle.DB.Proc
         private clsDbConfig _config = new clsDbConfig();
         public static Dictionary<string, string> Errormessage = new Dictionary<string, string>();
         public static Dictionary<string, int> ErrorNormal = new Dictionary<string, int>();
+        public static Dictionary<string, string> CVErrormessage = new Dictionary<string, string>();
 
         public DisplayTask(clsDbConfig config)
         {
@@ -158,12 +159,65 @@ namespace Mirle.DB.Proc
                     }
 
 
-                    if (_conveyor.GetBuffer(1).Error|| _conveyor.GetBuffer(2).Error|| _conveyor.GetBuffer(3).Error || CraneStsFirst!=1)
+                    if (_conveyor.GetBuffer(1).Error|| _conveyor.GetBuffer(2).Error|| _conveyor.GetBuffer(3).Error || _conveyor.GetBuffer(4).Error || CraneStsFirst!=1)
                     {
-                        if (_conveyor.GetBuffer(1).Error) { MerrMsg = "A1異常"; ErrorNormal["1"] = 1; }
-                        if (_conveyor.GetBuffer(2).Error) { MerrMsg += " A2異常"; ErrorNormal["1"] = 1; }
-                        if (_conveyor.GetBuffer(3).Error) { MerrMsg += " A3異常"; ErrorNormal["1"] = 1; }
+                        if (_conveyor.GetBuffer(1).Error)
+                        {
+                            MerrMsg = "A1異常:"; ErrorNormal["1"] = 1;
 
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(1)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.PortStnbitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+
+                        }
+
+                        if (_conveyor.GetBuffer(2).Error) 
+                        {
+                            MerrMsg += " A2異常:"; ErrorNormal["1"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(2)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.A2bitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (_conveyor.GetBuffer(3).Error) 
+                        { 
+                            MerrMsg += " A3異常:"; ErrorNormal["1"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(3)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.bitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (_conveyor.GetBuffer(4).Error)
+                        {
+                            MerrMsg += " A4異常:"; ErrorNormal["1"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(3)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.A4bitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
 
 
                         if (Errormessage["1"] != "一樓異常")
@@ -203,8 +257,32 @@ namespace Mirle.DB.Proc
 
                     if (_conveyor.GetBuffer(5).Error || _conveyor.GetBuffer(6).Error || CraneStsFirst != 1)
                     {
-                        if (_conveyor.GetBuffer(5).Error) { MerrMsg = "A5異常"; ErrorNormal["2"] = 1; }
-                        if (_conveyor.GetBuffer(6).Error) { MerrMsg += "A6異常"; ErrorNormal["2"] = 1; }
+                        if (_conveyor.GetBuffer(5).Error)
+                        { 
+                            MerrMsg = " A5異常:"; ErrorNormal["2"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(5)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.PortStnbitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
+                        if (_conveyor.GetBuffer(6).Error) 
+                        {
+                            MerrMsg += " A6異常:"; ErrorNormal["2"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(6)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.bitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
 
                         if (Errormessage["2"] != "二樓異常")
                         {
@@ -243,8 +321,32 @@ namespace Mirle.DB.Proc
 
                     if (_conveyor.GetBuffer(7).Error || _conveyor.GetBuffer(8).Error || CraneStsFirst != 1)
                     {
-                        if (_conveyor.GetBuffer(7).Error) { MerrMsg = "A7異常"; ErrorNormal["3"] = 1; }
-                        if (_conveyor.GetBuffer(8).Error) { MerrMsg += "A8異常"; ErrorNormal["3"] = 1; }
+                        if (_conveyor.GetBuffer(7).Error)
+                        { 
+                            MerrMsg = " A7異常:"; ErrorNormal["3"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(7)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.PortStnbitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
+                        if (_conveyor.GetBuffer(8).Error)
+                        {
+                            MerrMsg += " A8異常:"; ErrorNormal["3"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(8)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.bitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
 
                         if (Errormessage["3"] != "三樓異常")
                         {
@@ -283,9 +385,35 @@ namespace Mirle.DB.Proc
 
                     if (_conveyor.GetBuffer(9).Error || _conveyor.GetBuffer(10).Error || CraneStsFirst != 1)
                     {
-                        if (_conveyor.GetBuffer(9).Error) { MerrMsg = "A9異常"; ErrorNormal["4"] = 1; }
-                        if (_conveyor.GetBuffer(10).Error) { MerrMsg += "A10異常"; ErrorNormal["4"] = 1; }
+                        if (_conveyor.GetBuffer(9).Error) 
+                        { 
+                            MerrMsg = " A9異常:"; ErrorNormal["4"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(9)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.PortStnbitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
 
+                        if (_conveyor.GetBuffer(10).Error)
+                        {
+                            MerrMsg += " A10異常:"; ErrorNormal["4"] = 1;
+                            for (int i = 0; i < 13; i++)
+                            {
+                                if (_conveyor.GetBuffer(10)._alarmBit[i] == true)
+                                {
+                                    string CVerror = CVErrorDefine.bitError[i];
+                                    MerrMsg += CVerror;
+                                    break;
+                                }
+                            }
+                        }
+
+                        
 
                         if (Errormessage["4"] != "四樓異常")
                         {

@@ -28,6 +28,9 @@ namespace Mirle.Def.U0NXMA30
 
         [Option(Alias = "StnNo")]
         StnNoConfig StnNo { get; }
+
+        [Option(Alias = "CVerror")]
+        CVError CVError { get; }
     }
 
     public interface DatabaseConfig
@@ -93,5 +96,41 @@ namespace Mirle.Def.U0NXMA30
         string A7 { get; }
         string A9 { get; }
         string WaterLevel { get; }
+    }
+
+    public interface CVError
+    {
+        string bit0 { get; }
+        string bit1 { get; }
+        string bit2 { get; }
+        string bit3 { get; }
+        string bit4 { get; }
+        string bit5 { get; }
+        string bit6 { get; }
+        string bit7 { get; }
+        string bit8 { get; }
+        string bit9 { get; }
+        string bitA { get; }
+        string bitB { get; }
+        string bitC { get; }
+        string bitD { get; }
+        string bitE { get; }
+        string bitF { get; }
+
+        string A2bit1 { get; }
+        string A2bit2 { get; }
+        string A2bit3 { get; }
+        string A2bit4 { get; }
+        string A2bit5 { get; }
+        string A2bit6 { get; }
+        string A2bit7 { get; }
+        string A2bit8 { get; }
+
+        string A4bit1 { get; }
+        string A4bit3 { get; }
+        string A4bit4 { get; }
+        string A4bit5 { get; }
+        string UPLVbit0 { get; }
+
     }
 }
