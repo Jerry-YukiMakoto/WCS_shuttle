@@ -60,7 +60,7 @@ namespace Mirle.DB.Proc
                         }          
                     }
 
-                    if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockIn, out var dataObject2, db) == GetDataResult.Success && EmptyFlag["1"] == 1)
+                    if (_conveyor.GetBuffer(4).EmptyINReady != 8 && EmptyFlag["1"] == 1)
                     {
                         EmptyFlag["1"] = 0;
                     }
@@ -127,10 +127,7 @@ namespace Mirle.DB.Proc
                             }
                         }
 
-                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject2, db) == GetDataResult.Success && EmptyFlag["2"] == 1)
-                        {
-                            EmptyFlag["2"] = 0;
-                        }
+                        
                     }
                     else
                     {
@@ -150,6 +147,11 @@ namespace Mirle.DB.Proc
                             }
                             DisplayFlag["1"] = 0;
                         }
+                        EmptyFlag["2"] = 0;
+                    }
+
+                    if (_conveyor.GetBuffer(4).Presence != false && EmptyFlag["2"] == 1)
+                    {
                         EmptyFlag["2"] = 0;
                     }
                 }

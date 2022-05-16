@@ -247,8 +247,8 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
                                 return false;
                             }
                             //填入訊息
@@ -263,8 +263,8 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
                                 return false;
                             }
 
@@ -407,8 +407,9 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
+                                
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
                                 return false;
                             }
                             //填入訊息
@@ -423,8 +424,9 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
+                                
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
                                 return false;
                             }
 
@@ -753,7 +755,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                                             {
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 return false;
                                             }
                                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
@@ -766,7 +770,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                                             {
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
                                                 return false;
                                             }
                                         }
@@ -797,7 +803,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 return false;
                                             }
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
@@ -810,7 +818,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
                                                 return false;
                                             }
                                         }
@@ -834,6 +844,7 @@ namespace Mirle.DB.Proc
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 return false;
                                             }
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
@@ -846,6 +857,8 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
                                                 return false;
                                             }
                                         }
@@ -1020,8 +1033,9 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
+                                
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
                                 return false;
                             }
                             //填入訊息
@@ -1036,8 +1050,8 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
                                 return false;
                             }
 
@@ -1204,8 +1218,9 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
+                                
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
                                 return false;
                             }
                             //填入訊息
@@ -1220,8 +1235,8 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
                                 return false;
                             }
 
@@ -1520,8 +1535,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 return false;
                                             }
                                         }
@@ -1552,8 +1568,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 return false;
                                             }
                                         }
@@ -1576,8 +1593,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 return false;
                                             }
                                         }
@@ -1737,8 +1755,9 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
+                                
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
                                 return false;
                             }
                             //填入訊息
@@ -1753,8 +1772,9 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
+                                
                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
                                 return false;
                             }
 
@@ -1933,8 +1953,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
+                                               
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 return false;
                                             }
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
@@ -1947,6 +1968,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
                                                 CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
                                                 return false;
                                             }
@@ -1978,8 +2000,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
+                                               
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 return false;
                                             }
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
@@ -1992,8 +2015,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
                                                 return false;
                                             }
                                         }
@@ -2016,8 +2040,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 return false;
                                             }
                                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
@@ -2030,8 +2055,9 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
+                                                
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
                                                 return false;
                                             }
                                         }
