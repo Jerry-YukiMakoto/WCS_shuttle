@@ -471,7 +471,7 @@ namespace Mirle.DB.Proc
                     {
                         string cmdsno = _conveyor.GetBuffer(i).CommandId.ToString().PadLeft(5, '0'); 
                         bool position = _conveyor.GetBuffer(i).Position;
-                        if (cmdsno != "0" && position)
+                        if (cmdsno != "0" && position && cmdsno!="00000")
                         {
 
                             if(CMD_MST.GetCmdMstByStoreOutFinish(cmdsno, out var dataObject, db).ResultCode==DBResult.Success)
@@ -495,7 +495,7 @@ namespace Mirle.DB.Proc
 
                     string cmdsno1 = _conveyor.GetBuffer(2).CommandId.ToString().PadLeft(5, '0');
                     bool position1 = _conveyor.GetBuffer(2).Position;
-                    if (cmdsno1 != "0" && position1)
+                    if (cmdsno1 != "0" && position1 && cmdsno1 != "00000")
                     {
 
                         if (CMD_MST.GetCmdMstByStoreOutFinish(cmdsno1, out var dataObject, db).ResultCode == DBResult.Success)

@@ -25,6 +25,16 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
+        public GetDataResult GetCmdMstByStoreInStartForEmpty( out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}') ";
+            sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND STNNO = 'A3'";
+            sql += $"order by prt , crtdate , cmdsno";
+            return db.GetData(sql, out dataObject);
+        }
+
         public GetDataResult GetCmdMstByStoreInCrane(string cmdsno, out DataObject<CmdMst> dataObject, SqlServer db) //同時處理盤點入庫
         {
             string sql = "SELECT * FROM CMDMST ";
@@ -73,6 +83,16 @@ namespace Mirle.DB.Fun
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
             sql += $"AND STNNO = '{stations}'";
+            sql += $"order by prt , crtdate , cmdsno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByStoreOutStartForEmpty(out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockOut}') ";
+            sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND STNNO = 'A3'";
             sql += $"order by prt , crtdate , cmdsno";
             return db.GetData(sql, out dataObject);
         }
@@ -361,7 +381,7 @@ namespace Mirle.DB.Fun
             string sSQL = "";
             try
             {
-                sSQL = "INSERT INTO CMDMST (CmdSno, CmdSts, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, palletNo, whetherAllout, lastPallet, Loc, NewLoc,";
+                sSQL = "INSERT INTO CMDMST (CmdSno, CmdSts, Cmd_Abnormal, Trace, StnNo, CmdMode, Iotype, palletNo, whetherAllout, Loc, NewLoc,";
                 sSQL += "CrtDate, ExpDate, EndDate, Remark, UserID, EquNo) values(";
                 sSQL += "'" + stuCmdMst.CmdSno + "', ";
                 sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', 'NA', '', ";
@@ -370,7 +390,6 @@ namespace Mirle.DB.Fun
                 sSQL += "'" + stuCmdMst.IoType + "', ";
                 sSQL += "'" + stuCmdMst.palletNo + "', ";
                 sSQL += "'" + stuCmdMst.WhetherAllout + "', ";
-                sSQL += "'" + stuCmdMst.lastPallet + "', ";
                 sSQL += "'" + stuCmdMst.Loc + "', ";
                 sSQL += "'" + stuCmdMst.NewLoc + "', ";
                 sSQL += "'" + stuCmdMst.CrtDate + "', '', '', ";

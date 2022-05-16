@@ -39,20 +39,33 @@ namespace Mirle.DB.Proc
                 int iRet = clsGetDB.FunDbOpen(db);
                 if (iRet == DBResult.Success)
                 {
-                    if (_conveyor.GetBuffer(4).EmptyINReady == 9 && _conveyor.GetBuffer(4).Ready == 1)
+                    if (_conveyor.GetBuffer(4).EmptyINReady == 8 /*&& (_conveyor.GetBuffer(4).Ready == 1)*/ && (_conveyor.GetBuffer(1).CommandId != 0))
                     {
-                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockIn, out var dataObject, db) == GetDataResult.NoDataSelect && EmptyFlag["1"] != 1)//沒有命令資料就上報WMS
+                        if (CMD_MST.GetCmdMstByStoreOutStartForEmpty(out var dataObject, db) != GetDataResult.NoDataSelect)
                         {
-                            //做上報WMS的動作
-                            clsWmsApi.GetApiProcess().GetStackPalletsIn().FunReport(info);
-                            EmptyFlag["1"] = 1;
-                        }
+
+                            if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockIn, out var dataObject1, db) == GetDataResult.NoDataSelect && EmptyFlag["1"] == 0)//沒有命令資料就上報WMS
+                            {
+                                //做上報WMS的動作
+                                if (!clsWmsApi.GetApiProcess().GetStackPalletsIn().FunReport(info))
+                                {
+                                    EmptyFlag["1"] = 0;
+                                    return;
+                                }
+                                else
+                                {
+                                    EmptyFlag["1"] = 1;
+                                }
+                            }
+                        }          
                     }
-                    else
+
+                    if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockIn, out var dataObject2, db) == GetDataResult.Success && EmptyFlag["1"] == 1)
                     {
                         EmptyFlag["1"] = 0;
                     }
-                }
+
+                    }
                 else
                 {
                     string strEM = "Error: 開啟DB失敗！";
@@ -77,37 +90,46 @@ namespace Mirle.DB.Proc
                 int iRet = clsGetDB.FunDbOpen(db);
                 if (iRet == DBResult.Success)
                 {
-                    if (_conveyor.GetBuffer(4).Presence == false && _conveyor.GetBuffer(4).Ready == 2 && _conveyor.GetBuffer(4).EmptyError==0)
+                    if (_conveyor.GetBuffer(4).Presence == false/* && (_conveyor.GetBuffer(4).Ready == 2 /*|| _conveyor.GetBuffer(4).Ready == 0*/ && _conveyor.GetBuffer(4).EmptyError==0)
                     {
-                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject, db) == GetDataResult.NoDataSelect && EmptyFlag["2"]!=1)//沒有命令資料就上報WMS
+                        if (CMD_MST.GetCmdMstByStoreInStartForEmpty( out var dataObject1, db) != GetDataResult.NoDataSelect)
                         {
-                            //做上報WMS的動作
-                            var StoreOutApichk= clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);//上報需要空棧板補充命令
-                            bool success = StoreOutApichk.success;
-                            string errmesg = StoreOutApichk.errMsg;
-                            if (success)
+
+                            if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject, db) == GetDataResult.NoDataSelect && EmptyFlag["2"] != 1)//沒有命令資料就上報WMS
                             {
-                                EmptyFlag["2"] = 1;
-                            }
-                            else if(!success && errmesg=="無空棧板庫存")
-                            {
-                                _conveyor.GetBuffer(4).A4ErrorOn();
-                                DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                //做上報WMS的動作
+                                var StoreOutApichk = clsWmsApi.GetApiProcess().GetStackPalletsOut().FunReport(info);//上報需要空棧板補充命令
+                                bool success = StoreOutApichk.success;
+                                string errmesg = StoreOutApichk.errMsg;
+                                if (success)
                                 {
-                                    //填入回報訊息
-                                    locationId = "1",
-                                    taskNo = "0",
-                                    state = "1", //任務開始
-                                    MerrMsg = errmesg,
-                                };
-                                clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1);//上報異常於看板
-                                DisplayFlag["1"] = 1;
-                                EmptyFlag["2"] = 1;
+                                    EmptyFlag["2"] = 1;
+                                }
+                                else if (!success && errmesg == "無空棧板庫存")
+                                {
+                                    _conveyor.GetBuffer(4).A4ErrorOn();
+                                    DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                    {
+                                        //填入回報訊息
+                                        locationId = "1",
+                                        taskNo = "0",
+                                        state = "1", //任務開始
+                                        MerrMsg = errmesg,
+                                    };
+                                    clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1);//上報異常於看板
+                                    DisplayFlag["1"] = 1;
+                                    EmptyFlag["2"] = 1;
+                                }
+                                else if (!success)
+                                {
+                                    EmptyFlag["2"] = 0;
+                                }
                             }
-                            else if (!success)
-                            {
-                                EmptyFlag["2"] = 0;
-                            }
+                        }
+
+                        if (CMD_MST.EmptyInOutCheck(clsConstValue.IoType.PalletStockOut, out var dataObject2, db) == GetDataResult.Success && EmptyFlag["2"] == 1)
+                        {
+                            EmptyFlag["2"] = 0;
                         }
                     }
                     else

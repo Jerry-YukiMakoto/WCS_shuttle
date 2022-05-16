@@ -196,25 +196,29 @@ namespace Mirle.DB.Proc
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)//為了不跟撿料命令衝突的條件
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
+                            //if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)//為了不跟撿料命令衝突的條件
+                            //{
+                            //    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
+                            //    return false;
+                            //}
+                            //if (_conveyor.GetBuffer(bufferIndex).Presence == true)
+                            //{
+                            //    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
+                            //    return false;
+                            //}
                             if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreInReady, db);
                                 return false;
                             }
-                            //&& _conveyor.GetBuffer(bufferIndex + 1).Presence == true) //在一般入庫時要確認A4是否有空棧板，沒有則不寫入命令=>目前不加入條件因為會與空棧版入庫衝突
-                            #endregion
+                            if (_conveyor.GetBuffer(bufferIndex + 1).Presence != true && IOType=="1") //在一般入庫時要確認A4是否有空棧板，沒有則不寫入命令=>目前不加入條件因為會與空棧版入庫衝突
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.A4NoEmpty, db);
+                                return false;
+                            }
+                                #endregion
 
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
+                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
@@ -243,6 +247,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -258,6 +263,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -271,7 +277,7 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (IOType == clsConstValue.IoType.NormalStockIn && whetherAllOut == 1)
+                            if (!(IOType == clsConstValue.IoType.ManualPalletStockIn || IOType == clsConstValue.IoType.CycleIn))
                             {
                                 WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
                                 Result = WritePlccheck;
@@ -401,6 +407,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -416,6 +423,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -1012,6 +1020,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -1027,6 +1036,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -1039,8 +1049,19 @@ namespace Mirle.DB.Proc
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
-                                //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                                if ((CmdMode == 3 ) || IOType == clsConstValue.IoType.ManualPalletStockOut || (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0) )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
+                            if (IOType == clsConstValue.IoType.PalletStockOut)
+                            {
+                                WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path3_toA4).Result;//錯誤時回傳exmessage
+                                Result = WritePlccheck;
+                                if (Result != true)
+                                {
+                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path3_toA4 Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
+                            else if ((CmdMode == 3 ) || IOType!="2" /*|| (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0)*/ )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
@@ -1051,17 +1072,7 @@ namespace Mirle.DB.Proc
                                         return false;
                                     }
                                 }
-                                else if(IOType == clsConstValue.IoType.PalletStockOut)
-                                {
-                                    WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path3_toA4).Result;//錯誤時回傳exmessage
-                                    Result = WritePlccheck;
-                                    if (Result != true)
-                                    {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path3_toA4 Fail");
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return false;
-                                    }
-                                }
+                                
                                 else
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2).Result;//錯誤時回傳exmessage
@@ -1193,6 +1204,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -1208,6 +1220,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -1507,6 +1520,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
@@ -1538,6 +1552,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
@@ -1561,6 +1576,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
@@ -1571,14 +1587,14 @@ namespace Mirle.DB.Proc
                                             {
                                                 return false;
                                             }
-                                            if ((cmdMst.CmdMode != "3") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
-                                            {
+                                        //if ((cmdMst.CmdMode != "3") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
+                                        //    {
                                                 if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
                                                 {
                                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                                     return false;
                                                 }
-                                        }
+                                        //}
                                         if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
                                             {
                                                 db.TransactionCtrl2(TransactionTypes.Rollback);
@@ -1721,6 +1737,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -1736,6 +1753,7 @@ namespace Mirle.DB.Proc
                             };
                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
                             {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                 return false;
                             }
@@ -1915,6 +1933,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
@@ -1928,6 +1947,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
                                                 return false;
                                             }
                                         }
@@ -1958,6 +1978,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
@@ -1971,6 +1992,8 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
                                         }
@@ -1993,6 +2016,7 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
@@ -2006,6 +2030,8 @@ namespace Mirle.DB.Proc
                                             };
                                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
                                             {
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
                                                 return false;
                                             }
                                         }

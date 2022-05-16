@@ -8,6 +8,7 @@ using Mirle.Def;
 using Mirle.DataBase;
 using Mirle.DB.Object;
 
+
 namespace WCS_API_Server
 {
     public class WCSController : ApiController
@@ -44,10 +45,11 @@ namespace WCS_API_Server
                 cmd.Loc = Body.locationFrom;
                 cmd.NewLoc = Body.locationTo;
                 cmd.WhetherAllout = Body.WhetherAllout;
-                cmd.lastPallet = Body.lastPallet;
                 cmd.CrtDate = Body.deliveryTime;
                 cmd.Userid = "WMS";
                 #endregion
+
+                //var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                 //寫入DB
                 if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))

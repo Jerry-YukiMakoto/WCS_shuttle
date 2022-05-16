@@ -79,6 +79,10 @@ namespace Mirle.Def
             /// </summary>
             public const string NormalStockOut = "2";
             /// <summary>
+            /// 正常貨物出庫(不堆疊)
+            /// </summary>
+            public const string NormalStockOutNoLvl = "3";
+            /// <summary>
             /// /整疊空棧板入庫
             /// </summary>
             public const string PalletStockIn = "6";
@@ -136,25 +140,6 @@ namespace Mirle.Def
             /// 不滿板
             /// </summary>
             public const string NotFull = "NOTFULL";
-        }
-
-        public class CVError
-        {
-            public const string bit1 = "";
-            public const string bit2 = "";
-            public const string bit3 = "";
-            public const string bit4 = "";
-            public const string bit5 = "";
-            public const string bit6 = "";
-            public const string bit7 = "";
-            public const string bit8 = "";
-            public const string bit9 = "";
-            public const string bitA = "";
-            public const string bitB = "";
-            public const string bitC = "";
-            public const string bitD = "";
-            public const string bitE = "";
-
         }
 
         public class CompleteCode

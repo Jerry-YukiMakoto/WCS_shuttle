@@ -18,5 +18,13 @@
         public const string NotStoreOutReady = "不是StoreOutReady狀態";
         public const string InsideLocWait = "內儲位有命令，請等待命令做完";
         public const string WMSReportComplete = "WMS出庫回報完成";
+        public const string WMSReportFailTask = "WMS入庫開始任務回報失敗";
+        public const string WMSReportFailDisplay = "WMS入庫開始看板回報失敗";
+        public const string A4NoEmpty = "A4無空棧板，一般貨物入庫暫停";
+        public const string WMSOutReportFailDisplay = "WMS出庫開始看板回報失敗";
+        public const string WMSOutReportFailTask = "WMS出庫開始任務回報失敗";
+        public const string WMSOutReportFailTaskFinish = "WMS出庫結束任務回報失敗";
+        public const string WMSInReportFailTaskFinish = "WMS入庫結束任務回報失敗";
+        public const string WMSInReportFailDisplayFinish = "WMS入庫結束看板回報失敗";
     }
 }

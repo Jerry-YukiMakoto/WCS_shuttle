@@ -18,7 +18,7 @@ namespace Mirle.Grid.U0NXMA30
             public static readonly ColumnInfo EquNO = new ColumnInfo { Index = 5, Name = "設備編號", Width = 75 };
             public static readonly ColumnInfo StnNo = new ColumnInfo { Index = 6, Name = "站口", Width = 60 };
             public static readonly ColumnInfo whetherAllout = new ColumnInfo { Index = 7, Name = "整板出庫", Width = 50 };
-            public static readonly ColumnInfo lastPallet = new ColumnInfo { Index = 8, Name = "是否尾板", Width = 50 };
+            //public static readonly ColumnInfo lastPallet = new ColumnInfo { Index = 8, Name = "是否尾板", Width = 50 };
             public static readonly ColumnInfo Loc = new ColumnInfo { Index = 9, Name = "儲位", Width = 68 };
             public static readonly ColumnInfo NewLoc = new ColumnInfo { Index = 10, Name = "新儲位", Width = 68 };
             public static readonly ColumnInfo Remark = new ColumnInfo { Index = 11, Name = "說明", Width = 200 };
@@ -38,7 +38,7 @@ namespace Mirle.Grid.U0NXMA30
                 clInitSys.SetGridColumnInit(EquNO, ref oGrid);
                 clInitSys.SetGridColumnInit(StnNo, ref oGrid);
                 clInitSys.SetGridColumnInit(whetherAllout, ref oGrid);
-                clInitSys.SetGridColumnInit(lastPallet, ref oGrid);
+                //clInitSys.SetGridColumnInit(lastPallet, ref oGrid);
                 clInitSys.SetGridColumnInit(Loc, ref oGrid);
                 clInitSys.SetGridColumnInit(NewLoc, ref oGrid);
                 clInitSys.SetGridColumnInit(Remark, ref oGrid);

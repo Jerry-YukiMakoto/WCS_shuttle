@@ -33,7 +33,7 @@ namespace Mirle.DB.Object.GridData
                         oGrid[ColumnDef.CMD_MST.StnNo.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["StnNo"]);
                         oGrid[ColumnDef.CMD_MST.palletNo.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["palletNo"]);
                         oGrid[ColumnDef.CMD_MST.whetherAllout.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["whetherAllout"]);
-                        oGrid[ColumnDef.CMD_MST.lastPallet.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["lastPallet"]);
+                        //oGrid[ColumnDef.CMD_MST.lastPallet.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["lastPallet"]);
                         oGrid[ColumnDef.CMD_MST.Loc.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["Loc"]);
                         oGrid[ColumnDef.CMD_MST.NewLoc.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["NewLoc"]);
                         oGrid[ColumnDef.CMD_MST.Remark.Index, oGrid.Rows.Count - 1].Value = Convert.ToString(dtTmp.Rows[i]["Remark"]);
