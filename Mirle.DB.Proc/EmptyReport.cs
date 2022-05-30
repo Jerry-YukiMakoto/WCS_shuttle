@@ -113,7 +113,7 @@ namespace Mirle.DB.Proc
                                         //填入回報訊息
                                         locationId = "A3",
                                         taskNo = "0",
-                                        state = "2", //任務開始
+                                        state = "2", 
                                         MerrMsg = errmesg,
                                     };
                                     clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1);//上報異常於看板

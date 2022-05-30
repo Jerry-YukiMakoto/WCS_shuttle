@@ -324,7 +324,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(1).Error)
                         {
-                            MerrMsg = "A1異常:"; ErrorNormal["1"] = 1;
+                            MerrMsg = "A1異常:";/* ErrorNormal["1"] = 1;*/
 
                             for (int i = 0; i < 13; i++)
                             {
@@ -340,7 +340,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(2).Error) 
                         {
-                            MerrMsg += " A2異常:"; ErrorNormal["1"] = 1;
+                            MerrMsg += " A2異常:"; /*ErrorNormal["1"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(2)._alarmBit[i] == true)
@@ -354,7 +354,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(3).Error) 
                         { 
-                            MerrMsg += " A3異常:"; ErrorNormal["1"] = 1;
+                            MerrMsg += " A3異常:"; /*ErrorNormal["1"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(3)._alarmBit[i] == true)
@@ -368,7 +368,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(4).Error)
                         {
-                            MerrMsg += " A4異常:"; ErrorNormal["1"] = 1;
+                            MerrMsg += " A4異常:"; /*ErrorNormal["1"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(4)._alarmBit[i] == true)
@@ -396,6 +396,7 @@ namespace Mirle.DB.Proc
                                 return;
                             }
                             Errormessage["1"] = "一樓異常";
+                            ErrorNormal["1"] = 1;
                         }
                     }
                     else if(ErrorNormal["1"] == 0 || ErrorNormal["1"] == 1)
@@ -443,7 +444,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(5).Error)
                         { 
-                            MerrMsg = " A5異常:"; ErrorNormal["2"] = 1;
+                            MerrMsg = " A5異常:"; /*ErrorNormal["2"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(5)._alarmBit[i] == true)
@@ -456,7 +457,7 @@ namespace Mirle.DB.Proc
                         }
                         if (_conveyor.GetBuffer(6).Error) 
                         {
-                            MerrMsg += " A6異常:"; ErrorNormal["2"] = 1;
+                            MerrMsg += " A6異常:"; /*ErrorNormal["2"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(6)._alarmBit[i] == true)
@@ -483,6 +484,7 @@ namespace Mirle.DB.Proc
                                 return;
                             }
                             Errormessage["2"] = "二樓異常";
+                            ErrorNormal["2"] = 1;
                         }
                     }
                     else if (ErrorNormal["2"] == 0 || ErrorNormal["2"] == 1)
@@ -530,7 +532,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(7).Error)
                         { 
-                            MerrMsg = " A7異常:"; ErrorNormal["3"] = 1;
+                            MerrMsg = " A7異常:"; /*ErrorNormal["3"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(7)._alarmBit[i] == true)
@@ -543,7 +545,7 @@ namespace Mirle.DB.Proc
                         }
                         if (_conveyor.GetBuffer(8).Error)
                         {
-                            MerrMsg += " A8異常:"; ErrorNormal["3"] = 1;
+                            MerrMsg += " A8異常:"; /*ErrorNormal["3"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(8)._alarmBit[i] == true)
@@ -570,6 +572,7 @@ namespace Mirle.DB.Proc
                                 return;
                             }
                             Errormessage["3"] = "三樓異常";
+                            ErrorNormal["3"] = 1;
                         }
                     }
                     else if(ErrorNormal["3"] == 0 || ErrorNormal["3"] == 1)
@@ -617,7 +620,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(9).Error) 
                         { 
-                            MerrMsg = " A9異常:"; ErrorNormal["4"] = 1;
+                            MerrMsg = " A9異常:"; /*ErrorNormal["4"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(9)._alarmBit[i] == true)
@@ -631,7 +634,7 @@ namespace Mirle.DB.Proc
 
                         if (_conveyor.GetBuffer(10).Error)
                         {
-                            MerrMsg += " A10異常:"; ErrorNormal["4"] = 1;
+                            MerrMsg += " A10異常:"; /*ErrorNormal["4"] = 1;*/
                             for (int i = 0; i < 13; i++)
                             {
                                 if (_conveyor.GetBuffer(10)._alarmBit[i] == true)
@@ -658,6 +661,7 @@ namespace Mirle.DB.Proc
                                 return;
                             }
                             Errormessage["4"] = "四樓異常";
+                            ErrorNormal["4"] = 1;
                         }
                     }
                     else if(ErrorNormal["4"] == 0 || ErrorNormal["4"] == 1)
