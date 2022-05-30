@@ -241,7 +241,7 @@ namespace Mirle.DB.Proc
                             {
                                 //填入回報訊息
 
-                                locationId = "1",
+                                locationId = "A3",
                                 taskNo = cmdSno.ToString(),
                                 state = "1", //任務開始
                             };
@@ -401,7 +401,7 @@ namespace Mirle.DB.Proc
                             {
                                 //填入回報訊息
 
-                                locationId = ((bufferIndex - 2) / 2).ToString(),
+                                locationId = sStnNo,
                                 taskNo = cmdSno.ToString(),
                                 state = "1", //任務開始
                             };
@@ -710,22 +710,6 @@ namespace Mirle.DB.Proc
                             foreach (var cmdMst in dataObject.Data)
                             {
                                 string locationId = cmdMst.StnNo;
-                                if(locationId==StnNo.A3)
-                                {
-                                    locationId = "1";
-                                }
-                                else if(locationId==StnNo.A6)
-                                {
-                                    locationId = "2";
-                                }
-                                else if(locationId == StnNo.A8)
-                                {
-                                    locationId = "3";
-                                }
-                                else if(locationId == StnNo.A10)
-                                {
-                                    locationId = "4";
-                                }
 
                                 if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd,db).ResultCode == DBResult.Success)
                                 {
@@ -1027,7 +1011,7 @@ namespace Mirle.DB.Proc
                             {
                                 //填入回報訊息
 
-                                locationId = "1",
+                                locationId = "A3",
                                 taskNo = cmdSno.ToString(),
                                 state = "1", //任務開始
                             };
@@ -1075,7 +1059,7 @@ namespace Mirle.DB.Proc
                                 }
                             }
                             //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                            else if ((CmdMode == 3 ) || IOType!="2" /*|| (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0)*/ )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
+                            else if (whetherAllOut!=1/*|| (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0)*/ )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
                                     WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
@@ -1212,7 +1196,7 @@ namespace Mirle.DB.Proc
                             {
                                 //填入回報訊息
 
-                                locationId = ((bufferIndex - 1) / 2).ToString(),
+                                locationId = sStnNo,
                                 taskNo = cmdSno.ToString(),
                                 state = "1", //任務開始
                             };
@@ -1515,6 +1499,16 @@ namespace Mirle.DB.Proc
                                         string cmdabnormal="";
                                         string remark="";
                                         bool bflag=false;
+                                        string sStnNo;
+
+                                        if (cmdMst.StnNo == StnNo.A4)
+                                        {
+                                            sStnNo = StnNo.A3;
+                                        }
+                                        else
+                                        {
+                                            sStnNo=cmdMst.StnNo;
+                                        }
 
                                         if (equCmd[0].CompleteCode == "92")//正常完成
                                         {
@@ -1536,6 +1530,21 @@ namespace Mirle.DB.Proc
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
+                                                return false;
+                                            }
+
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+
+                                                locationId = sStnNo,
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 return false;
@@ -1573,6 +1582,20 @@ namespace Mirle.DB.Proc
                                                 CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 return false;
                                             }
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+
+                                                locationId = sStnNo,
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
+                                                return false;
+                                            }
                                         }
                                         else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
                                         {
@@ -1594,6 +1617,21 @@ namespace Mirle.DB.Proc
                                             if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
                                             {
                                                 
+                                                db.TransactionCtrl(TransactionTypes.Rollback);
+                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
+                                                return false;
+                                            }
+
+                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                                            {
+                                                //填入回報訊息
+
+                                                locationId = sStnNo,
+                                                taskNo = cmdMst.CmdSno,
+                                                state = "2", //任務結束
+                                            };
+                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                                            {
                                                 db.TransactionCtrl(TransactionTypes.Rollback);
                                                 CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
                                                 return false;
@@ -1749,7 +1787,7 @@ namespace Mirle.DB.Proc
                             {
                                 //填入回報訊息
 
-                                locationId = "1",
+                                locationId = "A3",
                                 taskNo = cmdSno.ToString(),
                                 state = "1", //任務開始
                             };
@@ -1962,7 +2000,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
 
-                                                locationId = "1",
+                                                locationId = "A3",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -2009,7 +2047,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
 
-                                                locationId = "1",
+                                                locationId = "A3",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };
@@ -2049,7 +2087,7 @@ namespace Mirle.DB.Proc
                                             {
                                                 //填入回報訊息
 
-                                                locationId = "1",
+                                                locationId = "A3",
                                                 taskNo = cmdMst.CmdSno,
                                                 state = "2", //任務結束
                                             };

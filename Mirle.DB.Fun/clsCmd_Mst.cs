@@ -20,7 +20,23 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMDMST ";
             sql += $"WHERE CMDMODE IN ('{clsConstValue.CmdMode.StockIn}') ";
             sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Initial}' ";
-            sql += $"AND STNNO = '{stations}'";
+            sql += $"AND STNNO = '{stations}' ";
+            sql += $"order by prt , crtdate , cmdsno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByStartforDisplay(out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE Cmdsts IN ('{clsConstValue.CmdSts.strCmd_Initial}','{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"order by prt , crtdate , cmdsno";
+            return db.GetData(sql, out dataObject);
+        }
+        public GetDataResult GetCmdMstByStartforDisplayStn(string stations, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMDMST ";
+            sql += $"WHERE Cmdsts IN ('{clsConstValue.CmdSts.strCmd_Initial}','{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"AND STNNO = '{stations}' ";
             sql += $"order by prt , crtdate , cmdsno";
             return db.GetData(sql, out dataObject);
         }

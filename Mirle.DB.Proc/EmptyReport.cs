@@ -60,7 +60,7 @@ namespace Mirle.DB.Proc
                         }          
                     }
 
-                    if (_conveyor.GetBuffer(4).EmptyINReady != 8 && EmptyFlag["1"] == 1)
+                    if (_conveyor.GetBuffer(4).EmptyINReady < 8 /*&& EmptyFlag["1"] == 1*/)//可以重新上報的時機
                     {
                         EmptyFlag["1"] = 0;
                     }
@@ -111,9 +111,9 @@ namespace Mirle.DB.Proc
                                     DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                                     {
                                         //填入回報訊息
-                                        locationId = "1",
+                                        locationId = "A3",
                                         taskNo = "0",
-                                        state = "1", //任務開始
+                                        state = "2", //任務開始
                                         MerrMsg = errmesg,
                                     };
                                     clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1);//上報異常於看板
@@ -136,7 +136,7 @@ namespace Mirle.DB.Proc
                             DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationId = "1",
+                                locationId = "A3",
                                 taskNo = "0",
                                 state = "2", //任務結束
                                 MerrMsg = "",
@@ -150,7 +150,7 @@ namespace Mirle.DB.Proc
                         EmptyFlag["2"] = 0;
                     }
 
-                    if (_conveyor.GetBuffer(4).Presence != false && EmptyFlag["2"] == 1)
+                    if (_conveyor.GetBuffer(4).Presence != false /*&& EmptyFlag["2"] == 1*/)//重新上報的時機
                     {
                         EmptyFlag["2"] = 0;
                     }

@@ -22,7 +22,6 @@ namespace Mirle.ASRS.WCS
         private readonly Timer _emptyInReport = new Timer();
         private readonly Timer _emptyOutReport = new Timer();
 
-        private readonly Timer _KanBanstoreOutrepotfinish = new Timer();
 
         private readonly Timer _ErrorReportStart = new Timer();
 
@@ -42,7 +41,6 @@ namespace Mirle.ASRS.WCS
             
             _emptyInReport.Interval = 5000;
             _emptyOutReport.Interval = 5000;
-            _KanBanstoreOutrepotfinish.Interval = 500;
             _ErrorReportStart.Interval = 5000;
 
             _storeOutProcess.Elapsed += StoreOutProcess;
@@ -51,7 +49,6 @@ namespace Mirle.ASRS.WCS
             
             _emptyInReport.Elapsed += EmptyStoreInProcess;
             _emptyOutReport.Elapsed += EmptyStoreOutProcess;
-            _KanBanstoreOutrepotfinish.Elapsed += KanBanstoreOutrepotfinish;
             _ErrorReportStart.Elapsed += ErrorReportStart;
 
         }
@@ -63,7 +60,6 @@ namespace Mirle.ASRS.WCS
             _emptyOutReport.Start();
             _storeOutProcess.Start();
             _storeInProcess.Start();
-            _KanBanstoreOutrepotfinish.Start();
             _ErrorReportStart.Start();
 
         }
@@ -74,7 +70,6 @@ namespace Mirle.ASRS.WCS
             _storeOutProcess.Stop();
             _storeInProcess.Stop();
             _otherProcess.Stop();
-            _KanBanstoreOutrepotfinish.Stop();
             _ErrorReportStart.Stop();
         }
 
@@ -122,27 +117,27 @@ namespace Mirle.ASRS.WCS
             }
         }
 
-        private void KanBanstoreOutrepotfinish(object sender, ElapsedEventArgs e)
-        {
-            _KanBanstoreOutrepotfinish.Stop();
-            try
-            {
-                if (IsConnected)
-                {
-                    clsStoreOutReportFinish.StoreOutReportFinish();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                _loggerManager.WriteLogTrace(log);
-            }
-            finally
-            {
-                _KanBanstoreOutrepotfinish.Start();
-            }
-        }
+        //private void KanBanstoreOutrepotfinish(object sender, ElapsedEventArgs e)
+        //{
+        //    _KanBanstoreOutrepotfinish.Stop();
+        //    try
+        //    {
+        //        if (IsConnected)
+        //        {
+        //            clsStoreOutReportFinish.StoreOutReportFinish();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //        var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+        //        _loggerManager.WriteLogTrace(log);
+        //    }
+        //    finally
+        //    {
+        //        _KanBanstoreOutrepotfinish.Start();
+        //    }
+        //}
         private void ErrorReportStart(object sender, ElapsedEventArgs e)
         {
             _ErrorReportStart.Stop();

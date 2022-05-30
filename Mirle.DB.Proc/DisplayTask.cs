@@ -122,17 +122,90 @@ namespace Mirle.DB.Proc
                         if (Alarmdesc != Errormessage["0"])
                         {
                             MerrMsg = Alarmdesc;
-                            
+                            string cmdsno="0";
+                            string sStnNo="";
+                            string state1 = "2";
+                            string state2 = "2";
+                            string state3 = "2";
+                            string state4 = "2";
+                            string cmdsno1 = "0";
+                            string cmdsno2 = "0";
+                            string cmdsno3 = "0";
+                            string cmdsno4 = "0";
+
+                            if (CMD_MST.GetCmdMstByStartforDisplay(out DataObject<CmdMst> dataobject1,db).ResultCode == DBResult.Success)
+                            {
+                                cmdsno = dataobject1[0].CmdSno;
+                                sStnNo = dataobject1[0].StnNo;
+                                
+                            }
+                            if(sStnNo==StnNo.A3)
+                            {
+                                cmdsno1=cmdsno;
+                                state1 = "1";
+                            }
+                            if (sStnNo == StnNo.A6)
+                            {
+                                cmdsno2 = cmdsno;
+                                state2 = "1";
+                            }
+                            if (sStnNo == StnNo.A8)
+                            {
+                                cmdsno3 = cmdsno;
+                                state3 = "1";
+                            }
+                            if (sStnNo == StnNo.A10)
+                            {
+                                cmdsno4 = cmdsno;
+                                state4 = "1";
+                            }
+
 
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationId = "0",
-                                taskNo = "0",
-                                state = "1", //任務開始
+                                locationId = "A3",
+                                taskNo = cmdsno1,
+                                state = state1, 
                                 MerrMsg = MerrMsg,
                             };
                             if(!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            };
+                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "A6",
+                                taskNo = cmdsno2,
+                                state = state2, 
+                                MerrMsg = MerrMsg,
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                            {
+                                return;
+                            };
+                            DisplayTaskStatusInfo info2 = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "A8",
+                                taskNo = cmdsno3,
+                                state = state3, 
+                                MerrMsg = MerrMsg,
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info2))
+                            {
+                                return;
+                            };
+                            DisplayTaskStatusInfo info3 = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "A10",
+                                taskNo = cmdsno4,
+                                state = state4,
+                                MerrMsg = MerrMsg,
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info3))
                             {
                                 return;
                             };
@@ -142,15 +215,89 @@ namespace Mirle.DB.Proc
                     }
                     else if(ErrorNormal["0"] == 1 || ErrorNormal["0"]== 0)//Errornormal 0:第一次程式進來回報正常 ErrorNormal 有上報過異常加上目前資料表沒有異常了要回報正常
                     {
+                        string cmdsno = "0";
+                        string sStnNo = "";
+                        string state1 = "2";
+                        string state2 = "2";
+                        string state3 = "2";
+                        string state4 = "2";
+                        string cmdsno1 = "0";
+                        string cmdsno2 = "0";
+                        string cmdsno3 = "0";
+                        string cmdsno4 = "0";
+
+                        if (CMD_MST.GetCmdMstByStartforDisplay(out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            sStnNo = dataobject1[0].StnNo;
+                        }
+                        if (sStnNo == StnNo.A3)
+                        {
+                            cmdsno1 = cmdsno;
+                            state1 = "1";
+                        }
+                        if (sStnNo == StnNo.A6)
+                        {
+                            cmdsno2 = cmdsno;
+                            state2 = "1";
+                        }
+                        if (sStnNo == StnNo.A8)
+                        {
+                            cmdsno3 = cmdsno;
+                            state3 = "1";
+                        }
+                        if (sStnNo == StnNo.A10)
+                        {
+                            cmdsno4 = cmdsno;
+                            state4 = "1";
+                        }
+
+
                         DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationId = "0",
-                            taskNo = "0",
-                            state = "2", //任務結束
+                            locationId = "A3",
+                            taskNo = cmdsno1,
+                            state = state1,
                             MerrMsg = "",
                         };
                         if(!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
+                        {
+                            return;
+                        }
+                        DisplayTaskStatusInfo info2 = new DisplayTaskStatusInfo
+                        {
+                            //填入回報訊息
+                            locationId = "A6",
+                            taskNo = cmdsno2,
+                            state = state2, 
+                            MerrMsg = "",
+                        };
+                        if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info2))
+                        {
+                            return;
+                        }
+                        DisplayTaskStatusInfo info3 = new DisplayTaskStatusInfo
+                        {
+                            //填入回報訊息
+                            locationId = "A8",
+                            taskNo = cmdsno3,
+                            state = state3, 
+                            MerrMsg = "",
+                        };
+                        if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info3))
+                        {
+                            return;
+                        }
+                        DisplayTaskStatusInfo info4 = new DisplayTaskStatusInfo
+                        {
+                            //填入回報訊息
+                            locationId = "A10",
+                            taskNo = cmdsno4,
+                            state = state4, 
+                            MerrMsg = "",
+                        };
+                        if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info4))
                         {
                             return;
                         }
@@ -159,8 +306,22 @@ namespace Mirle.DB.Proc
                     }
 
 
-                    if (_conveyor.GetBuffer(1).Error|| _conveyor.GetBuffer(2).Error|| _conveyor.GetBuffer(3).Error || _conveyor.GetBuffer(4).Error || CraneStsFirst!=1)
+                    if (_conveyor.GetBuffer(1).Error|| _conveyor.GetBuffer(2).Error|| _conveyor.GetBuffer(3).Error || _conveyor.GetBuffer(4).Error /*|| CraneStsFirst!=1*/)
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if(CraneStsFirst==1)
+                        {
+                            return;//以Crane異常上報為主
+                        }
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A3",out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         if (_conveyor.GetBuffer(1).Error)
                         {
                             MerrMsg = "A1異常:"; ErrorNormal["1"] = 1;
@@ -210,7 +371,7 @@ namespace Mirle.DB.Proc
                             MerrMsg += " A4異常:"; ErrorNormal["1"] = 1;
                             for (int i = 0; i < 13; i++)
                             {
-                                if (_conveyor.GetBuffer(3)._alarmBit[i] == true)
+                                if (_conveyor.GetBuffer(4)._alarmBit[i] == true)
                                 {
                                     string CVerror = CVErrorDefine.A4bitError[i];
                                     MerrMsg += CVerror;
@@ -225,9 +386,9 @@ namespace Mirle.DB.Proc
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationId = "1",
-                                taskNo = "0",
-                                state = "1", //任務開始
+                                locationId = "A3",
+                                taskNo = cmdsno,
+                                state = state, 
                                 MerrMsg = MerrMsg,
                             };
                             if(!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -239,12 +400,21 @@ namespace Mirle.DB.Proc
                     }
                     else if(ErrorNormal["1"] == 0 || ErrorNormal["1"] == 1)
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A3", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationId = "1",
-                            taskNo = "0",
-                            state = "2", //任務結束
+                            locationId = "A3",
+                            taskNo = cmdsno,
+                            state = state, //任務結束
                             MerrMsg = "",
                         };
                         if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -255,8 +425,22 @@ namespace Mirle.DB.Proc
                         Errormessage["1"] = "";
                     }
 
-                    if (_conveyor.GetBuffer(5).Error || _conveyor.GetBuffer(6).Error || CraneStsFirst != 1)
+                    if (_conveyor.GetBuffer(5).Error || _conveyor.GetBuffer(6).Error )
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if (CraneStsFirst == 1)
+                        {
+                            return;//以Crane異常上報為主
+                        }
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A6", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         if (_conveyor.GetBuffer(5).Error)
                         { 
                             MerrMsg = " A5異常:"; ErrorNormal["2"] = 1;
@@ -289,9 +473,9 @@ namespace Mirle.DB.Proc
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationId = "2",
-                                taskNo = "0",
-                                state = "1", //任務開始
+                                locationId = "A6",
+                                taskNo = cmdsno,
+                                state = state, 
                                 MerrMsg = MerrMsg,
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -303,12 +487,21 @@ namespace Mirle.DB.Proc
                     }
                     else if (ErrorNormal["2"] == 0 || ErrorNormal["2"] == 1)
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A6", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationId = "2",
-                            taskNo = "0",
-                            state = "2", //任務結束
+                            locationId = "A6",
+                            taskNo = cmdsno,
+                            state = state, 
                             MerrMsg = "",
                         };
                         if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -319,8 +512,22 @@ namespace Mirle.DB.Proc
                         Errormessage["2"] = "";
                     }
 
-                    if (_conveyor.GetBuffer(7).Error || _conveyor.GetBuffer(8).Error || CraneStsFirst != 1)
+                    if (_conveyor.GetBuffer(7).Error || _conveyor.GetBuffer(8).Error /*|| CraneStsFirst != 1*/)
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if (CraneStsFirst == 1)
+                        {
+                            return;//以Crane異常上報為主
+                        }
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A8", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         if (_conveyor.GetBuffer(7).Error)
                         { 
                             MerrMsg = " A7異常:"; ErrorNormal["3"] = 1;
@@ -353,9 +560,9 @@ namespace Mirle.DB.Proc
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationId = "3",
-                                taskNo = "0",
-                                state = "1", //任務開始
+                                locationId = "A8",
+                                taskNo = cmdsno,
+                                state = state, 
                                 MerrMsg = MerrMsg,
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -367,12 +574,21 @@ namespace Mirle.DB.Proc
                     }
                     else if(ErrorNormal["3"] == 0 || ErrorNormal["3"] == 1)
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A8", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationId = "3",
-                            taskNo = "0",
-                            state = "2", //任務結束
+                            locationId = "A8",
+                            taskNo = cmdsno,
+                            state = state,
                             MerrMsg = "",
                         };
                         if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -383,8 +599,22 @@ namespace Mirle.DB.Proc
                         Errormessage["3"] = "";
                     }
 
-                    if (_conveyor.GetBuffer(9).Error || _conveyor.GetBuffer(10).Error || CraneStsFirst != 1)
+                    if (_conveyor.GetBuffer(9).Error || _conveyor.GetBuffer(10).Error )
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if (CraneStsFirst == 1)
+                        {
+                            return;//以Crane異常上報為主
+                        }
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A10", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         if (_conveyor.GetBuffer(9).Error) 
                         { 
                             MerrMsg = " A9異常:"; ErrorNormal["4"] = 1;
@@ -413,16 +643,14 @@ namespace Mirle.DB.Proc
                             }
                         }
 
-                        
-
                         if (Errormessage["4"] != "四樓異常")
                         {
                             DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                             {
                                 //填入回報訊息
-                                locationId = "4",
-                                taskNo = "0",
-                                state = "1", //任務開始
+                                locationId = "A10",
+                                taskNo = cmdsno,
+                                state = state, 
                                 MerrMsg = MerrMsg,
                             };
                             if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -434,12 +662,21 @@ namespace Mirle.DB.Proc
                     }
                     else if(ErrorNormal["4"] == 0 || ErrorNormal["4"] == 1)
                     {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                        if (CMD_MST.GetCmdMstByStartforDisplayStn("A10", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                        {
+                            cmdsno = dataobject1[0].CmdSno;
+                            state = "1";
+                        }
+
                         DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
                         {
                             //填入回報訊息
-                            locationId = "4",
-                            taskNo = "0",
-                            state = "2", //任務結束
+                            locationId = "A10",
+                            taskNo = cmdsno,
+                            state = state, 
                             MerrMsg = "",
                         };
                         if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
@@ -459,7 +696,7 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public void TaskEnd() //出庫都在到了站口buffer口才做任務結束的上報動作
+        public void TaskEnd() //出庫都在到了站口buffer口才做任務結束的上報動作目前放棄此方案
         {
             var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
             using (var db = clsGetDB.GetDB(_config))
