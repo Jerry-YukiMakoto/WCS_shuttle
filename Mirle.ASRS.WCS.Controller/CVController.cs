@@ -51,6 +51,9 @@ namespace Mirle.ASRS.WCS.Controller
                 _plcHost.Start();
             }
 
+            _converyor.OnSystemAlarmClear += Converyor_OnSystemAlarmClear;
+            _converyor.OnSystemAlarmTrigger += Converyor_OnSystemAlarmTrigger;
+
             foreach (var buffer in _converyor.Buffers)
             {
                 buffer.OnIniatlNotice += Buffer_OnIniatlNotice;
@@ -66,7 +69,17 @@ namespace Mirle.ASRS.WCS.Controller
                 yield return new BlockInfo(new DDeviceRange("D3101", "D3210"), "Write", 1);
         }
 
+        private void Converyor_OnSystemAlarmTrigger(object sender, AlarmEventArgs e)
+        {
+            string hAlarmBit = e.AlarmBit.ToString("X");
 
+        }
+
+        private void Converyor_OnSystemAlarmClear(object sender, AlarmEventArgs e)
+        {
+            string hAlarmBit = e.AlarmBit.ToString("X");
+
+        }
 
 
         private void Buffer_OnIniatlNotice(object sender, BufferEventArgs e)

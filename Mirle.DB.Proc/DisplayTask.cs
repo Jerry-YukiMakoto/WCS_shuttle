@@ -16,6 +16,7 @@ namespace Mirle.DB.Proc
         private clsDbConfig _config = new clsDbConfig();
         public static Dictionary<string, string> Errormessage = new Dictionary<string, string>();
         public static Dictionary<string, int> ErrorNormal = new Dictionary<string, int>();
+        public static Dictionary<string, int> ErrorSystem = new Dictionary<string, int>();
         public static Dictionary<string, string> CVErrormessage = new Dictionary<string, string>();
 
         public DisplayTask(clsDbConfig config)
@@ -38,6 +39,11 @@ namespace Mirle.DB.Proc
             ErrorNormal.Add("2", 0);
             ErrorNormal.Add("3", 0);
             ErrorNormal.Add("4", 0);
+
+            ErrorSystem.Add("1", 0);
+            ErrorSystem.Add("2", 0);
+            ErrorSystem.Add("3", 0);
+            ErrorSystem.Add("4", 0);
 
         }
 
@@ -303,6 +309,178 @@ namespace Mirle.DB.Proc
                         }
                         ErrorNormal["0"] = 2;//讓回報正常只發生一次，值會改變就是在上報異常之後，檢查值改變加上資料表沒有異常
                         Errormessage["0"] = "";
+                    }
+
+                    for (int i = 1; i < 5; i++)//系統異常告知，對於電控定義的系統異常訊息秀在看板上，各樓層
+                    {
+                        string cmdsno = "0";
+                        string state = "2";
+
+                            if (i == 1 && _conveyor._alarmBit[i] && ErrorSystem["1"] != 1)
+                            {
+                                if (CMD_MST.GetCmdMstByStartforDisplayStn("A3", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                                {
+                                    cmdsno = dataobject1[0].CmdSno;
+                                    state = "1";
+                                }
+
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    locationId = "A3",
+                                    taskNo = cmdsno,
+                                    state = state,
+                                    MerrMsg = "1F 緊急停止",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return;
+                                }
+                                ErrorSystem["1"] = 1;
+                            }
+                            else if (!_conveyor._alarmBit[i] && ErrorSystem["1"] == 1)
+                            {
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "A3",
+                                taskNo = cmdsno,
+                                state = state,
+                                MerrMsg = "",
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
+                            ErrorSystem["1"] = 2;
+                            }
+
+                        cmdsno = "0";
+                        state = "2";
+
+                        if (i == 2 && _conveyor._alarmBit[i] && ErrorSystem["2"] != 1)
+                            {
+                                if (CMD_MST.GetCmdMstByStartforDisplayStn("A6", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                                {
+                                    cmdsno = dataobject1[0].CmdSno;
+                                    state = "1";
+                                }
+
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    locationId = "A6",
+                                    taskNo = cmdsno,
+                                    state = state,
+                                    MerrMsg = "2F 緊急停止",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return;
+                                }
+                                ErrorSystem["2"] = 1;
+                            }
+                        else if (!_conveyor._alarmBit[i] && ErrorSystem["2"] == 1)
+                        {
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "A6",
+                                taskNo = cmdsno,
+                                state = state,
+                                MerrMsg = "",
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
+                            ErrorSystem["2"] = 2;
+                        }
+
+                        cmdsno = "0";
+                        state = "2";
+
+                        if (i == 3 && _conveyor._alarmBit[i] && ErrorSystem["3"] != 1)
+                            {
+                                if (CMD_MST.GetCmdMstByStartforDisplayStn("A8", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                                {
+                                    cmdsno = dataobject1[0].CmdSno;
+                                    state = "1";
+                                }
+
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    locationId = "A8",
+                                    taskNo = cmdsno,
+                                    state = state,
+                                    MerrMsg = "3F 緊急停止",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return;
+                                }
+                                ErrorSystem["3"] = 1;
+                            }
+                            else if (!_conveyor._alarmBit[i] && ErrorSystem["3"] == 1)
+                            {
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "A8",
+                                taskNo = cmdsno,
+                                state = state,
+                                MerrMsg = "",
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
+                            ErrorSystem["3"] = 2;
+                            }
+
+                        cmdsno = "0";
+                        state = "2";
+
+                        if (i == 4 && _conveyor._alarmBit[i] && ErrorSystem["4"] != 1)
+                            {
+                                if (CMD_MST.GetCmdMstByStartforDisplayStn("A10", out DataObject<CmdMst> dataobject1, db).ResultCode == DBResult.Success)
+                                {
+                                    cmdsno = dataobject1[0].CmdSno;
+                                    state = "1";
+                                }
+
+                                DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                                {
+                                    //填入回報訊息
+                                    locationId = "A10",
+                                    taskNo = cmdsno,
+                                    state = state,
+                                    MerrMsg = "4F 緊急停止",
+                                };
+                                if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                                {
+                                    return;
+                                }
+                                ErrorSystem["4"] = 1;
+                            }
+                        else if (!_conveyor._alarmBit[i] && ErrorSystem["4"] == 1)
+                        {
+                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            {
+                                //填入回報訊息
+                                locationId = "A10",
+                                taskNo = cmdsno,
+                                state = state,
+                                MerrMsg = "",
+                            };
+                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
+                            {
+                                return;
+                            }
+                            ErrorSystem["4"] = 2;
+                        }
+
                     }
 
 

@@ -11,7 +11,7 @@ namespace Mirle.ASRS.Conveyors
 {
     public class Conveyor : IDisposable
     {
-        private readonly bool[] _alarmBit = new bool[16];
+        public readonly bool[] _alarmBit = new bool[16];
         private readonly SignalMapper _signal;
         private readonly Dictionary<int, Buffer> _buffers = new Dictionary<int, Buffer>();
         private readonly SystemSignal _systemSignal;
