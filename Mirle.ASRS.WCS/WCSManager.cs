@@ -117,27 +117,7 @@ namespace Mirle.ASRS.WCS
             }
         }
 
-        //private void KanBanstoreOutrepotfinish(object sender, ElapsedEventArgs e)
-        //{
-        //    _KanBanstoreOutrepotfinish.Stop();
-        //    try
-        //    {
-        //        if (IsConnected)
-        //        {
-        //            clsStoreOutReportFinish.StoreOutReportFinish();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Reflection.MethodBase cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        var log = new StoreOutLogTrace(999, cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-        //        _loggerManager.WriteLogTrace(log);
-        //    }
-        //    finally
-        //    {
-        //        _KanBanstoreOutrepotfinish.Start();
-        //    }
-        //}
+ 
         private void ErrorReportStart(object sender, ElapsedEventArgs e)
         {
             _ErrorReportStart.Stop();
