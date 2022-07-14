@@ -1059,13 +1059,13 @@ namespace Mirle.DB.Proc
                                 }
                             }
                             //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                            else if (whetherAllOut!=1/*|| (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0)*/ )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
+                            else if (whetherAllOut==1/*|| (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0)*/ )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
                                 {
-                                    WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
+                                    WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
                                     if (Result != true)
                                     {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path2_toA3 Fail");
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path1_toA2 Fail");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
@@ -1073,11 +1073,11 @@ namespace Mirle.DB.Proc
                                 
                                 else
                                 {
-                                    WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2).Result;//錯誤時回傳exmessage
+                                    WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
                                     Result = WritePlccheck;
                                     if (Result != true)
                                     {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path1_toA2 Fail");
+                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path2_toA3 Fail");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
