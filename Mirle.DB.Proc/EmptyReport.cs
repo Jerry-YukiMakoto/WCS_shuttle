@@ -39,7 +39,7 @@ namespace Mirle.DB.Proc
                 int iRet = clsGetDB.FunDbOpen(db);
                 if (iRet == DBResult.Success)
                 {
-                    if (_conveyor.GetBuffer(4).EmptyINReady == 8 /*&& (_conveyor.GetBuffer(4).Ready == 1)*/ && (_conveyor.GetBuffer(1).CommandId != 0))
+                    if (_conveyor.GetBuffer(4).Auto == true && _conveyor.GetBuffer(4).EmptyINReady == 8 /*&& (_conveyor.GetBuffer(4).Ready == 1)*/ && (_conveyor.GetBuffer(1).CommandId != 0))
                     {
                         if (CMD_MST.GetCmdMstByStoreOutStartForEmpty(out var dataObject, db) != GetDataResult.NoDataSelect)
                         {
@@ -90,7 +90,7 @@ namespace Mirle.DB.Proc
                 int iRet = clsGetDB.FunDbOpen(db);
                 if (iRet == DBResult.Success)
                 {
-                    if (_conveyor.GetBuffer(4).Presence == false/* && (_conveyor.GetBuffer(4).Ready == 2 /*|| _conveyor.GetBuffer(4).Ready == 0*/ && _conveyor.GetBuffer(4).EmptyError==0)
+                    if (_conveyor.GetBuffer(4).Auto==true && _conveyor.GetBuffer(4).Presence == false/* && (_conveyor.GetBuffer(4).Ready == 2 /*|| _conveyor.GetBuffer(4).Ready == 0*/ && _conveyor.GetBuffer(4).EmptyError==0)
                     {
                         if (CMD_MST.GetCmdMstByStoreInStartForEmpty( out var dataObject1, db) != GetDataResult.NoDataSelect)
                         {
