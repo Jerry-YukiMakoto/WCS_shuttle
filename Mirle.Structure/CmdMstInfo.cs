@@ -26,30 +26,13 @@ namespace Mirle.Structure
         public string ExpDate { get; set; }
         public string EndDate { get; set; }
         public string Userid { get; set; }
-        public string BoxID { get; set; }
         public string EquNo { get; set; }
         /// <summary>
         /// 當前位置
         /// </summary>
-        public string CurLoc { get; set; }
-        public string CurDeviceID { get; set; }
         public string taskNo { get; set; }
-        public string palletNo { get; set; }
-        public string BatchID { get; set; }
-        public string ZoneID { get; set; }
+        public string TrnUser { get; set; }
         public string Remark { get; set; }
-        public string NeedShelfToShelf { get; set; }
-        public string backupPortId { get; set; }
-        public string ticketId { get; set; }
-        public string manualStockIn { get; set; }
-        /// <summary>
-        /// 整板出庫
-        /// </summary>
-        public string WhetherAllout { get; set; }
-        /// <summary>
-        /// 是否是尾板
-        /// </summary>
-        public string lastPallet { get; set; }
 
     }
 }

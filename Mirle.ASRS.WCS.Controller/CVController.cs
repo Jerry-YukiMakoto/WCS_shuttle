@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Mirle.ASRS.Conveyors;
-using Mirle.ASRS.Conveyors.View;
+using HslCommunicationPLC.Siemens;
 using Mirle.MPLC;
 using Mirle.MPLC.DataBlocks;
 using Mirle.MPLC.DataBlocks.DeviceRange;
@@ -13,77 +12,17 @@ namespace Mirle.ASRS.WCS.Controller
 {
     public class CVController : IDisposable
     {
-        private readonly PLCHost _plcHost;
-        private readonly MainView _mainView;
+        private readonly clsHost _plcHost;
         private readonly Form1 _form;
         private readonly Conveyors.Conveyor _converyor;
         private readonly bool _InMemorySimulator;
-       
+        public static clsBufferData Plc1 = new clsBufferData();
 
-        public CVController(string ipAddress, int tcpPort, bool InMemorySimulator)
+
+        public CVController(PlcConfig CVConfig)
         {
-            if (InMemorySimulator)
-            {
-                var smWriter = new SMReadWriter();
-                var blockInfos = GetBlockInfos();
-                foreach (var block in blockInfos)
-                {
-                    smWriter.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
-                }
-                _converyor = new Conveyors.Conveyor(smWriter);
-                _InMemorySimulator = InMemorySimulator;
-            }
-            else
-            {
-                var plcHostInfo = new PLCHostInfo("Gold", ipAddress, tcpPort, GetBlockInfos());
-                _plcHost = new PLCHost(plcHostInfo);
-                _plcHost.Interval = 200;
-                _plcHost.MPLCTimeout = 600;
-                _plcHost.EnableWriteRawData = true;
-                _plcHost.EnableWriteShareMemory = false;
-                var smReader = new SMReadOnlyCachedReader();
-                var blockInfos = GetBlockInfos();
-                foreach (var block in blockInfos)
-                {
-                    smReader.AddDataBlock(new SMDataBlockInt32(block.DeviceRange, $@"Global\{block.SharedMemoryName}"));
-                }
-                _converyor = new Conveyors.Conveyor(_plcHost);
-                _plcHost.Start();
-            }
-
-            _converyor.OnSystemAlarmClear += Converyor_OnSystemAlarmClear;
-            _converyor.OnSystemAlarmTrigger += Converyor_OnSystemAlarmTrigger;
-
-            foreach (var buffer in _converyor.Buffers)
-            {
-                buffer.OnIniatlNotice += Buffer_OnIniatlNotice;
-            }
-
-            _converyor.Start();
-            _mainView = new MainView(_converyor);
-        }
-
-        private IEnumerable<BlockInfo> GetBlockInfos()
-        {    
-                yield return new BlockInfo(new DDeviceRange("D101", "D210"), "Read", 0);
-                yield return new BlockInfo(new DDeviceRange("D3101", "D3210"), "Write", 1);
-        }
-
-        private void Converyor_OnSystemAlarmTrigger(object sender, AlarmEventArgs e)
-        {
-            string hAlarmBit = e.AlarmBit.ToString("X");
-
-        }
-
-        private void Converyor_OnSystemAlarmClear(object sender, AlarmEventArgs e)
-        {
-            string hAlarmBit = e.AlarmBit.ToString("X");
-
-        }
-
-
-        private void Buffer_OnIniatlNotice(object sender, BufferEventArgs e)
-        {
+            _plcHost = new clsHost(CVConfig);
+            Plc1.subStart(_plcHost, CVConfig);
         }
 
 
@@ -95,22 +34,12 @@ namespace Mirle.ASRS.WCS.Controller
             return _converyor;
         }
 
-        public bool GetConnect()
+        public clsBufferData GetPLC1()
         {
-            if (_InMemorySimulator)
-            {
-                return true;
-            }
-            else
-            {
-                return _plcHost.IsConnected;
-            }
+            return Plc1;
         }
 
-        public Form GetMainView()
-        {
-            return _mainView;
-        }
+
 
         private bool disposedValue;
 

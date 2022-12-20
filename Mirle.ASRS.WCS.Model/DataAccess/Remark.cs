@@ -4,6 +4,7 @@
     {
         public const string NotInMode = "站口不是入庫模式";
         public const string NotOutMode = "站口不是出庫模式";
+        public const string NotPickUpMode = "站口不是撿料模式";
         public const string NotAutoMode = "站口不是自動模式";
         public const string BufferError = "站口buffer異常中";
         public const string CycleOperating = "站口執行盤點中";
@@ -26,5 +27,13 @@
         public const string WMSOutReportFailTaskFinish = "WMS出庫結束任務回報失敗";
         public const string WMSInReportFailTaskFinish = "WMS入庫結束任務回報失敗";
         public const string WMSInReportFailDisplayFinish = "WMS入庫結束看板回報失敗";
+        public const string BCRReadNotON = "BCR讀取未開啟";
+        public const string CV_NOTallowWriteCommand = "CV狀態_不允許寫入命令";
+        public const string NotIdle = "CV_不是閒置狀態";
+        public const string NoStoreInInfo = "沒有入庫資訊";
+        public const string LifterNotAutoMode = "電梯不是自動模式";
+        public const string LifterNotIdleMode = "電梯不是idle模式";
+        public const string ExistCmdSno = "命令號已存在buffer上";
+        public const string Loc_DDexistSTS_S = "內儲位有貨物，先產生庫對庫命令";
     }
 }

@@ -76,12 +76,6 @@
     <Compile Include="Signal\SignalMapper.cs" />
     <Compile Include="Signal\SystemControllerSignal.cs" />
     <Compile Include="Signal\SystemSignal.cs" />
-    <Compile Include="View\BufferView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="View\BufferView.Designer.cs">
-      <DependentUpon>BufferView.cs</DependentUpon>
-    </Compile>
     <Compile Include="View\frmBuffer_Initial.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,12 +88,6 @@
     <Compile Include="View\testform.Designer.cs">
       <DependentUpon>testform.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\MainView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="View\MainView.Designer.cs">
-      <DependentUpon>MainView.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -110,14 +98,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\BufferView.resx">
-      <DependentUpon>BufferView.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="View\frmBuffer_Initial.resx">
       <DependentUpon>frmBuffer_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="View\MainView.resx">
-      <DependentUpon>MainView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\testform.resx">
       <DependentUpon>testform.cs</DependentUpon>

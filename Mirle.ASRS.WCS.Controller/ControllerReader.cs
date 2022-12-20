@@ -6,20 +6,21 @@ using System.Threading.Tasks;
 using Mirle.DataBase;
 using Config.Net;
 using System.Windows.Forms;
-using Mirle.Def.U0NXMA30;
+using Mirle.Def.T26YGAP0;
 using Mirle.Def;
+using HslCommunicationPLC.Siemens;
 
 namespace Mirle.ASRS.WCS.Controller
 {
     public class ControllerReader : IDisposable
     {
-        
+
         private static CVController _cvController;
         private static LoggerManager _loggerManager;
-        
-        public static void FunGetController(clsPlcConfig CVConfig) {
+        public static void FunGetController(PlcConfig CVConfig)
+        {
             _loggerManager = new LoggerManager();
-            _cvController = new CVController(CVConfig.MPLCIP, CVConfig.MPLCPort, CVConfig.InMemorySimulator);
+            _cvController = new CVController(CVConfig);
         }
 
         #region Get_Manager

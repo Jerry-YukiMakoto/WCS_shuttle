@@ -20,61 +20,7 @@ namespace Mirle.DB.Proc
         }
 
 
-        public int GetCmdMstByStoreOutStart(string stations, out DataObject<CmdMst> dataObject) 
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var re = CMD_MST.GetCmdMstByStoreOutStart(stations, out dataObject, db);
-                        return re.ResultCode;
-                    }
-                    else dataObject = new DataObject<CmdMst>();
-
-                    return iRet;
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public int GetCmdMstByStoreOutCrane(string CmdSno, out DataObject<CmdMst> dataObject)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var re = CMD_MST.GetCmdMstByStoreOutCrane(CmdSno, out dataObject, db);
-                        return re.ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
+        
 
         public int GetCmdMstByStoreOutcheck(string stations, out DataObject<CmdMst> dataObject)
         {
@@ -132,117 +78,9 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public int GetCmdMstByEmptyStoreOutCrane(string stations, out DataObject<CmdMst> dataObject)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.GetCmdMstByEmptyStoreOutCrane(stations, out dataObject, db).ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
+       
 
-        public int GetCmdMstByStoreInStart(string stations, out DataObject<CmdMst> dataObject) 
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.GetCmdMstByStoreInStart(stations, out dataObject, db).ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public int GetCmdMstByStoreInFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.GetCmdMstByStoreInFinish(stations, out dataObject, db).ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public int GetCmdMstByStoreInCrane(string cmdsno, out DataObject<CmdMst> dataObject)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.GetCmdMstByStoreInCrane(cmdsno, out dataObject, db).ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
+   
 
         public int GetLocToLoc(out DataObject<CmdMst> dataObject)
         {
@@ -272,61 +110,7 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public int GetEmptyCmdMstByStoreIn(string cmdsno, out DataObject<CmdMst> dataObject)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.GetEmptyCmdMstByStoreIn(cmdsno, out dataObject, db).ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
-
-        public int GetEmptyCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.GetEmptyCmdMstByStoreOutFinish(stations, out dataObject, db).ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
+       
 
         //public ExecuteSQLResult UpdateCmdMstTransferring(string cmdSno, string trace)
         //{
@@ -462,27 +246,27 @@ namespace Mirle.DB.Proc
             
         //}
 
-        public bool FunInsCmdMst(CmdMstInfo stuCmdMst, ref string strErrMsg)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.FunInsCmdMst(stuCmdMst, ref strErrMsg, db);
-                    }
-                    else return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-                return false;
-            }
-        }
+        //public bool FunInsCmdMst(CmdMstInfo stuCmdMst, ref string strErrMsg)
+        //{
+        //    try
+        //    {
+        //        using (var db = clsGetDB.GetDB(_config))
+        //        {
+        //            int iRet = clsGetDB.FunDbOpen(db);
+        //            if (iRet == DBResult.Success)
+        //            {
+        //                return CMD_MST.FunInsCmdMst(stuCmdMst, ref strErrMsg, db);
+        //            }
+        //            else return false;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+        //        return false;
+        //    }
+        //}
 
         
         #region Old Ver.

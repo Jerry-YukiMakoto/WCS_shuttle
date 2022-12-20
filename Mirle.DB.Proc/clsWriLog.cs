@@ -19,7 +19,17 @@ namespace Mirle.DB.Proc
         {
             Log.FunWriTraceLog_CV($"StoreOut => {BufferIndex} | {BufferName}: {Msg}");
         }
-        
+
+        public static void PickUpLogTrace(int BufferIndex, string BufferName, string Msg)
+        {
+            Log.FunWriTraceLog_CV($"PickUp => {BufferIndex} | {BufferName}: {Msg}");
+        }
+
+        public static void LifterLogTrace(int BufferIndex, string BufferName, string Msg)
+        {
+            Log.FunWriTraceLog_CV($"Lifter => {BufferIndex} | {BufferName}: {Msg}");
+        }
+
         public static void L2LLogTrace(int CmdType, string IoType, string Msg)
         {
             Log.FunWriTraceLog_CV($"L2L => {CmdType} | {IoType}: {Msg}");

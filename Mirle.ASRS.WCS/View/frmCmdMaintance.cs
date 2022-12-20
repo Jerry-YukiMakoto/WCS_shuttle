@@ -5,7 +5,7 @@ using System.Data;
 using Mirle.DataBase;
 using Mirle.DB.Object;
 using System.Windows.Forms;
-using Mirle.Grid.U0NXMA30;
+using Mirle.Grid.T26YGAP0;
 
 namespace Mirle.ASRS.WCS.View
 {

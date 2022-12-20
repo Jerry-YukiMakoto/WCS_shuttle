@@ -200,7 +200,7 @@
             // 
             this.spcView.Panel2.Controls.Add(this.GridCmd);
             this.spcView.Size = new System.Drawing.Size(1148, 645);
-            this.spcView.SplitterDistance = 447;
+            this.spcView.SplitterDistance = 445;
             this.spcView.SplitterWidth = 6;
             this.spcView.TabIndex = 0;
             // 
@@ -223,8 +223,8 @@
             // 
             this.spcMainView.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.spcMainView.Panel2.Controls.Add(this.tableLayoutPanelSideBtn);
-            this.spcMainView.Size = new System.Drawing.Size(1148, 447);
-            this.spcMainView.SplitterDistance = 959;
+            this.spcMainView.Size = new System.Drawing.Size(1148, 445);
+            this.spcMainView.SplitterDistance = 957;
             this.spcMainView.SplitterWidth = 6;
             this.spcMainView.TabIndex = 0;
             // 
@@ -249,7 +249,7 @@
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(181, 445);
+            this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(183, 443);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
             // 
             // testbutton
@@ -257,10 +257,10 @@
             this.testbutton.AutoSize = true;
             this.testbutton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.testbutton.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testbutton.Location = new System.Drawing.Point(4, 302);
+            this.testbutton.Location = new System.Drawing.Point(4, 298);
             this.testbutton.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.testbutton.Name = "testbutton";
-            this.testbutton.Size = new System.Drawing.Size(173, 62);
+            this.testbutton.Size = new System.Drawing.Size(175, 61);
             this.testbutton.TabIndex = 7;
             this.testbutton.Text = "test";
             this.testbutton.UseVisualStyleBackColor = true;
@@ -271,10 +271,10 @@
             this.btnCraneSpeedMaintain.AutoSize = true;
             this.btnCraneSpeedMaintain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCraneSpeedMaintain.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 154);
+            this.btnCraneSpeedMaintain.Location = new System.Drawing.Point(4, 152);
             this.btnCraneSpeedMaintain.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.btnCraneSpeedMaintain.Name = "btnCraneSpeedMaintain";
-            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(173, 62);
+            this.btnCraneSpeedMaintain.Size = new System.Drawing.Size(175, 61);
             this.btnCraneSpeedMaintain.TabIndex = 6;
             this.btnCraneSpeedMaintain.Text = "Crane Speed Maintain";
             this.btnCraneSpeedMaintain.UseVisualStyleBackColor = true;
@@ -289,7 +289,7 @@
             this.btnCmdMaintain.Location = new System.Drawing.Point(4, 6);
             this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
-            this.btnCmdMaintain.Size = new System.Drawing.Size(173, 62);
+            this.btnCmdMaintain.Size = new System.Drawing.Size(175, 61);
             this.btnCmdMaintain.TabIndex = 4;
             this.btnCmdMaintain.Text = "系統命令查詢";
             this.btnCmdMaintain.UseVisualStyleBackColor = true;
@@ -300,10 +300,10 @@
             this.btnSendAPITest.AutoSize = true;
             this.btnSendAPITest.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnSendAPITest.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSendAPITest.Location = new System.Drawing.Point(4, 227);
+            this.btnSendAPITest.Location = new System.Drawing.Point(4, 224);
             this.btnSendAPITest.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSendAPITest.Name = "btnSendAPITest";
-            this.btnSendAPITest.Size = new System.Drawing.Size(173, 64);
+            this.btnSendAPITest.Size = new System.Drawing.Size(175, 63);
             this.btnSendAPITest.TabIndex = 3;
             this.btnSendAPITest.Text = "Send API Test";
             this.btnSendAPITest.UseVisualStyleBackColor = true;
@@ -319,7 +319,7 @@
             this.GridCmd.Name = "GridCmd";
             this.GridCmd.RowHeadersWidth = 62;
             this.GridCmd.RowTemplate.Height = 24;
-            this.GridCmd.Size = new System.Drawing.Size(1148, 192);
+            this.GridCmd.Size = new System.Drawing.Size(1148, 194);
             this.GridCmd.TabIndex = 0;
             // 
             // tabControl1
@@ -340,7 +340,7 @@
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.Name = "MainForm";
-            this.Text = "金頂自動倉儲系統";
+            this.Text = "后科倉儲系統";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);

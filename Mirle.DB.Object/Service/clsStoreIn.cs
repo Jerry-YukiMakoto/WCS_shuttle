@@ -1,49 +1,24 @@
-﻿using Mirle.ASRS.WCS.Model.PLCDefinitions;
+﻿using HslCommunicationPLC.Siemens;
+using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mirle.IASC;
 
 namespace Mirle.DB.Object.Service
 {
     public class clsStoreIn
     {
-        public static void StoreIn_A1_WriteCV()
+        public static void StoreIn_WriteCV(clsBufferData Plc1)
         {
             try
             {
-                int bufferIndex = 3;
-                clsDB_Proc.GetDB_Object().GetProcess().FunStoreInWriPlc(StnNo.A3, bufferIndex);
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-            }
-        }
 
-        public static void StoreIn_A2ToA4_WriteCV()//A2toA4寫入buffer
-        {
-            try
-            {
-                string stn = "";
-                for (int bufferIndex = 6; bufferIndex <= 10; bufferIndex += 2)
+                for (int bufferIndex = 1; bufferIndex <= 3; bufferIndex += 2)
                 {
-                    if (bufferIndex == 6)
-                    {
-                        stn = StnNo.A6;
-                    }
-                    else if (bufferIndex == 8)
-                    {
-                        stn = StnNo.A8;
-                    }
-                    else if (bufferIndex == 10)
-                    {
-                        stn = StnNo.A10;
-                    }
-                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreInA2ToA4WriPlc(stn, bufferIndex);
+                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreInWriPlc1FA1andA3(Plc1, bufferIndex);
                 }
             }
             catch (Exception ex)
@@ -54,29 +29,23 @@ namespace Mirle.DB.Object.Service
             }
         }
 
-        public static void StoreIn_A1_CreateEquCmd()
+        public static void StoreIn_CALL_LifterAndSHC(clsBufferData Plc1)//入庫對shuttle與lifter之間的的交握控制
         {
             try
             {
-                int bufferIndex = 1;
-                clsDB_Proc.GetDB_Object().GetProcess().FunStoreInCreateEquCmd(bufferIndex);
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-            }
-        }
-
-        public static void StoreIn_A2toA4_CreateEquCmd()
-        {
-            try
-            {
-                for (int bufferIndex = 5; bufferIndex <= 9; bufferIndex += 2)
+                string stn = "";
+                for (int bufferIndex = 2; bufferIndex <= 4; bufferIndex += 2)
                 {
-                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreInA2toA4CreateEquCmd(bufferIndex);
-                }     
+                    if (bufferIndex == 2)
+                    {
+                        stn = StnNo.A2;
+                    }
+                    else if (bufferIndex == 4)
+                    {
+                        stn = StnNo.A4;
+                    }
+                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreInFA1andA3CallLifterAndSHC(Plc1, stn, bufferIndex);
+                }
             }
             catch (Exception ex)
             {
@@ -86,11 +55,30 @@ namespace Mirle.DB.Object.Service
             }
         }
 
-        public static void StoreIn_EquCmdFinish()
+        public static void StoreIn_CarInLifter_WriteCmdInLifter(clsBufferData Plc1)//對lifter寫入命令
         {
             try
             {
-                clsDB_Proc.GetDB_Object().GetProcess().FunStoreInEquCmdFinish();  
+
+                for (int floor = 1; floor <= 10; floor++)
+                {
+                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreCarInLifter_ReportSHC(Plc1, floor);
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+            }
+        }
+
+        public static void FunSHC_ChangeLayerReq(clsBufferData Plc1, ChangeLayerEventArgsLayer e )//對lifter寫入命令
+        {
+            try
+            {
+                clsDB_Proc.GetDB_Object().GetProcess().FunSHC_ChangeLayerReq(Plc1,e);
+
             }
             catch (Exception ex)
             {

@@ -2,28 +2,32 @@
 using System.Windows.Forms;
 using Mirle.Def;
 using Config.Net;
-using Mirle.Def.U0NXMA30;
 using Mirle.DataBase;
 using Mirle.Structure;
 using System.Text;
 using System.Runtime.InteropServices;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using System.Collections.Generic;
+using HslCommunicationPLC.Siemens;
+using Mirle.Def.T26YGAP0;
 
 namespace Mirle.ASRS.WCS.Library
 {
     public class clInitSys
     {
-        
+
         public static clsDbConfig DbConfig = new clsDbConfig();
         public static clsDbConfig DbConfig_WMS = new clsDbConfig();
-        public static clsPlcConfig CV_Config = new clsPlcConfig();
+        public static PlcConfig CV_Config = new PlcConfig();
         public static WebApiConfig WmsApi_Config = new WebApiConfig();
         public static WebApiConfig WcsApi_Config = new WebApiConfig();
         public static ASRSINI lcsini;
         public static string[] gsCraneID = new string[4];
         public static int L2L_MaxCount = 5;
-        
+        public static string SHC_IP;
+        public static int SHC_port;
+        public static string STN_NO;
+
 
         //API
         [DllImport("kernel32.dll")]
@@ -43,9 +47,8 @@ namespace Mirle.ASRS.WCS.Library
                 FunDeviceConfig(lcsini);
                 FunPlcConfig(lcsini);
                 FunStnNoConfig(lcsini);
-                FunCVErrorConfig(lcsini);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
@@ -78,8 +81,8 @@ namespace Mirle.ASRS.WCS.Library
             DbConfig_WMS.WriteLog = true;
         }
 
-       
-        
+
+
 
         private static void FunApiConfig(ASRSINI lcsini)
         {
@@ -96,95 +99,17 @@ namespace Mirle.ASRS.WCS.Library
 
         private static void FunPlcConfig(ASRSINI lcsini)
         {
-            CV_Config.InMemorySimulator = lcsini.CV.InMemorySimulator == 1 ? true : false;
-            CV_Config.MPLCIP = lcsini.CV.MPLCIP;
-            CV_Config.MPLCNo = lcsini.CV.MPLCNo;
-            CV_Config.MPLCPort = lcsini.CV.MPLCPort;
-            CV_Config.MPLCTimeout = lcsini.CV.MPLCTimeout;
-            CV_Config.UseMCProtocol = lcsini.CV.UseMCProtocol == 1 ? true : false;
+            CV_Config.IpAddress = lcsini.CV.MPLCIP;
+            SHC_IP = lcsini.CV.SHC_IP;
+            SHC_port =lcsini.CV.SHC_PORT;
         }
 
-        private static void FunStnNoConfig(ASRSINI lcsini) 
+        private static void FunStnNoConfig(ASRSINI lcsini)
         {
-            string str = "000000";
-            CranePortNo.A1 = str + lcsini.StnNo.A1;
-            CranePortNo.A5 = str + lcsini.StnNo.A5;
-            CranePortNo.A7 = str + lcsini.StnNo.A7;
-            CranePortNo.A9 = str + lcsini.StnNo.A9;
+            StnNo.STNNO_1F = lcsini.StnNo.STN;
         }
 
-        private static void FunCVErrorConfig(ASRSINI lcsini)
-        {
-            Dictionary<int, string> bitError = new Dictionary<int, string>();
-            Dictionary<int, string> A2bitError = new Dictionary<int, string>();
-            Dictionary<int, string> A4bitError = new Dictionary<int, string>();
-            Dictionary<int, string> PortStnbitError = new Dictionary<int, string>();
-
-            bitError.Add(0, lcsini.CVError.bit0);
-            bitError.Add(1, lcsini.CVError.bit1);
-            bitError.Add(2, lcsini.CVError.bit2);
-            bitError.Add(3, lcsini.CVError.bit3);
-            bitError.Add(4, lcsini.CVError.bit4);
-            bitError.Add(5, lcsini.CVError.bit5);
-            bitError.Add(6, lcsini.CVError.bit6);
-            bitError.Add(7, lcsini.CVError.bit7);
-            bitError.Add(8, lcsini.CVError.bit8);
-            bitError.Add(9, lcsini.CVError.bit9);
-            bitError.Add(10, lcsini.CVError.bitA);
-            bitError.Add(11, lcsini.CVError.bitB);
-            bitError.Add(12, lcsini.CVError.bitC);
-
-            CVErrorDefine.bitError=bitError;
-
-            A2bitError.Add(0, lcsini.CVError.bit0);
-            A2bitError.Add(1, lcsini.CVError.A2bit1);
-            A2bitError.Add(2, lcsini.CVError.A2bit2);
-            A2bitError.Add(3, lcsini.CVError.A2bit3);
-            A2bitError.Add(4, lcsini.CVError.A2bit4);
-            A2bitError.Add(5, lcsini.CVError.A2bit5);
-            A2bitError.Add(6, lcsini.CVError.A2bit6);
-            A2bitError.Add(7, lcsini.CVError.A2bit7);
-            A2bitError.Add(8, lcsini.CVError.A2bit8);
-            A2bitError.Add(9, lcsini.CVError.bit9);
-            A2bitError.Add(10, lcsini.CVError.bitA);
-            A2bitError.Add(11, lcsini.CVError.bitB);
-            A2bitError.Add(12, lcsini.CVError.bitC);
-
-            CVErrorDefine.A2bitError = A2bitError;
-
-            A4bitError.Add(0, lcsini.CVError.bit0);
-            A4bitError.Add(1, lcsini.CVError.A4bit1);
-            A4bitError.Add(2, lcsini.CVError.bit2);
-            A4bitError.Add(3, lcsini.CVError.A4bit3);
-            A4bitError.Add(4, lcsini.CVError.A4bit4);
-            A4bitError.Add(5, lcsini.CVError.A4bit5);
-            A4bitError.Add(6, lcsini.CVError.bit6);
-            A4bitError.Add(7, lcsini.CVError.bit7);
-            A4bitError.Add(8, lcsini.CVError.bit8);
-            A4bitError.Add(9, lcsini.CVError.bit9);
-            A4bitError.Add(10, lcsini.CVError.bitA);
-            A4bitError.Add(11, lcsini.CVError.bitB);
-            A4bitError.Add(12, lcsini.CVError.bitC);
-
-            CVErrorDefine.A4bitError = A4bitError;
-
-
-            PortStnbitError.Add(0, lcsini.CVError.UPLVbit0); 
-            PortStnbitError.Add(1, lcsini.CVError.bit1);
-            PortStnbitError.Add(2, lcsini.CVError.bit2);
-            PortStnbitError.Add(3, lcsini.CVError.bit3);
-            PortStnbitError.Add(4, lcsini.CVError.bit4);
-            PortStnbitError.Add(5, lcsini.CVError.bit5);
-            PortStnbitError.Add(6, lcsini.CVError.bit6);
-            PortStnbitError.Add(7, lcsini.CVError.bit7);
-            PortStnbitError.Add(8, lcsini.CVError.bit8);
-            PortStnbitError.Add(9, lcsini.CVError.bit9);
-            PortStnbitError.Add(10, lcsini.CVError.bitA);
-            PortStnbitError.Add(11, lcsini.CVError.bitB);
-            PortStnbitError.Add(12, lcsini.CVError.bitC);
-
-            CVErrorDefine.PortStnbitError = PortStnbitError;
-        }
+       
 
         /// <summary>
         /// 讀取ini檔的單一欄位

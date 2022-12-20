@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Mirle.Grid.U0NXMA30;
 using Mirle.DB.Object;
 using WCS_API_Server;
 using Unity;
@@ -11,21 +10,24 @@ using Mirle.ASRS.Close.Program;
 using System.Threading;
 using Mirle.ASRS.WCS.Library;
 using Mirle.ASRS.WCS.Controller;
-using Mirle.CENS.U0NXMA30;
 using Mirle.Def;
 using Mirle.DataBase;
+using HslCommunicationPLC.Siemens;
+using Mirle.IASC;
+using Mirle.ASRS.View;
 
 namespace Mirle.ASRS.WCS.View
 {
     public partial class MainForm : Form
     {
-       
 
-        private DB.ClearCmd.Proc.clsHost clearCmd;
         private WebApiHost _webApiHost;
         private UnityContainer _unityContainer;
-        private static WCSManager _wcsManager;
         private static System.Timers.Timer timRead = new System.Timers.Timer();
+        public static clsBufferData Plc1 = new clsBufferData();
+        private static WCSManager _wcsManager;
+        private ShuttleController _shuttleController;
+        private readonly MainView _mainView;
 
         public MainForm()
         {
@@ -41,7 +43,6 @@ namespace Mirle.ASRS.WCS.View
             this.Text = this.Text + "  v " + ProductVersion;
             clInitSys.FunLoadIniSys();
             FunInit();
-            FunEventInit();
             GridInit();
 
             Library.clsWriLog.Log.FunWriTraceLog_CV("WCS程式已開啟");
@@ -49,10 +50,6 @@ namespace Mirle.ASRS.WCS.View
             timer1.Start();
         }
 
-        private void FunEventInit()
-        {
-            
-        }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -192,6 +189,11 @@ namespace Mirle.ASRS.WCS.View
             try
             {
                 SubShowCmdtoGrid(ref GridCmd);
+                Plc1.FunProcess();
+                _wcsManager = new WCSManager();
+                _wcsManager.WCSManagerControl(Plc1);
+               
+                
             }
             catch (Exception ex)
             {
@@ -227,29 +229,41 @@ namespace Mirle.ASRS.WCS.View
 
         #endregion Timer
 
-       
+
         private void FunInit()
         {
             var archive = new AutoArchive();
             archive.Start();
             clsDB_Proc.Initial(clInitSys.DbConfig, clInitSys.DbConfig_WMS); //原DataAccessController功能
             ControllerReader.FunGetController(clInitSys.CV_Config);
-            clsWmsApi.FunInit(clInitSys.WmsApi_Config);
+            _shuttleController = new ShuttleController(clInitSys.SHC_IP, clInitSys.SHC_port);
+            _shuttleController.ChangeLayer += _shuttleController_OnLayerChange;
+            _shuttleController.Open();
+            Plc1 = ControllerReader.GetCVControllerr().GetPLC1();
+            
 
-            _wcsManager = new WCSManager();
-            _wcsManager.Start();
-            _unityContainer = new UnityContainer();
-            _unityContainer.RegisterInstance(new WCSController());
-            _webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
-            clearCmd = new DB.ClearCmd.Proc.clsHost();
-            ChangeSubForm(ControllerReader.GetCVControllerr().GetMainView());
+            //_unityContainer = new UnityContainer();
+            //_unityContainer.RegisterInstance(new WCSController());
+            //_webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
+            ChangeSubForm(new MainView(Plc1));
+        }
+
+        private void _shuttleController_OnLayerChange(object sender, ChangeLayerEventArgsLayer e)
+        {
+            _wcsManager.WCSManageControlSHC_Call(e);
+
+        }
+
+        public clsBufferData GetPLC1()
+        {
+            return Plc1;
         }
 
         #region Grid顯示
         private void GridInit()
         {
-            Grid.clInitSys.GridSysInit(ref GridCmd);
-            ColumnDef.CMD_MST.GridSetLocRange(ref GridCmd);
+            //Grid.clInitSys.GridSysInit(ref GridCmd);
+            //ColumnDef.CMD_MST.GridSetLocRange(ref GridCmd);
         }
 
         delegate void degShowCmdtoGrid(ref DataGridView oGrid);

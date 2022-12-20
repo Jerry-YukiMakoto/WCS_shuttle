@@ -4,8 +4,8 @@ using Mirle.ASRS.WCS.Controller;
 using Mirle.DB.Fun;
 using Mirle.Def;
 using Mirle.DataBase;
-using Mirle.Def.U0NXMA30;
-using Mirle.Grid.U0NXMA30;
+using Mirle.Def.T26YGAP0;
+using Mirle.Grid.T26YGAP0;
 using Mirle.Structure;
 using Mirle.Structure.Info;
 using System.Linq;
@@ -13,7 +13,10 @@ using WCS_API_Client.ReportInfo;
 using System.Data;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.WCS.Model.DataAccess;
-using Mirle.CENS.U0NXMA30;
+using Mirle.CENS.T26YGAP0;
+using HslCommunicationPLC.Siemens;
+using static Mirle.Def.clsConstValue;
+using Mirle.IASC;
 
 namespace Mirle.DB.Proc
 {
@@ -29,14 +32,11 @@ namespace Mirle.DB.Proc
         private Fun.clsCmd_Mst_His CMD_MST_HIS = new Fun.clsCmd_Mst_His();
         private Fun.clsUnitStsLog unitStsLog = new Fun.clsUnitStsLog();
 
-        public List<Element_Port>[] GetLstPort()
-        {
-            return PortDef.GetLstPort();
-        }
-
         private clsDbConfig _config = new clsDbConfig();
         private clsDbConfig _config_WMS = new clsDbConfig();
         private clsDbConfig _config_Sqlite = new clsDbConfig();
+        private ShuttleController? _shuttleController;
+        private ShuttleCommand? _shuttleCommand;
         public clsProc(clsDbConfig config, clsDbConfig config_WMS, clsDbConfig config_Sqlite)
         {
             _config = config;
@@ -50,7 +50,9 @@ namespace Mirle.DB.Proc
             return proc;
         }
 
-        public bool FunMoveTaskForceClear(string taskNo, ref string strEM)
+
+        #region StoreIn
+        public bool FunStoreInWriPlc1FA1andA3(clsBufferData Plc1, int bufferIndex)
         {
             try
             {
@@ -59,64 +61,207 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        CmdMstInfo cmd = new CmdMstInfo();
-                        if (CMD_MST.FunGetCommand_byTaskNo(taskNo, ref cmd, db))
+                        if (Plc1.oPLC.PLC[bufferIndex].CV.ReadBCR != true)//讀取開始才找命令
                         {
-                            if (cmd.CmdSts == clsConstValue.CmdSts.strCmd_Running)
-                            {
-                                strEM = "Error: 命令已開始執行，無法取消！";
-                                return false;
-                            }
-
-                            int iRet_Task = EQU_CMD.CheckHasEquCmd(cmd.CmdSno, db);
-                            if (iRet_Task == DBResult.Exception)
-                            {
-                                strEM = "取得設備命令失敗！";
-                                return false;
-                            }
-
-
-
-                            if (iRet_Task == DBResult.Success) EQU_CMD.FunInsertHisEquCmd(cmd.CmdSno, db);
-
-                            if (db.TransactionCtrl(TransactionTypes.Begin) != DBResult.Success)
-                            {
-                                strEM = "Error: Begin失敗！";
-                                if (strEM != cmd.Remark)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmd.CmdSno, strEM, db);
-                                }
-
-                                return false;
-                            }
-
-                            if (CMD_MST.UpdateCmdMstRemark(cmd.CmdSno, clsConstValue.CmdSts.strCmd_Cancel, "WMS命令取消", db).ResultCode != DBResult.Success)
-                            {
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                return false;
-                            }
-
-                            if (iRet_Task == DBResult.Success)
-                            {
-                                if (EQU_CMD.DeleteEquCmd(cmd.CmdSno, db).ResultCode != DBResult.Success)
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                            }
-
-                            db.TransactionCtrl(TransactionTypes.Commit);
-                            return true;
-                        }
-                        else
-                        {
-                            strEM = $"<taskNo> {taskNo} => 取得命令資料失敗！";
                             return false;
                         }
+
+                        //標籤上要有什麼資料讓我去命令找資料，這邊再加上連上BCR讀取抓資料的的流程，再加上去資料庫作比對的流程//          
+
+                        if (CMD_MST.GetCmdMstByStoreInStart(out var dataObject, db).ResultCode == DBResult.Success) //讀取入庫動作流程
+                        {
+                            string cmdSno = dataObject[0].CmdSno;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                            clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"Buffer Get Command => {cmdSno}, " +
+                                    $"{CmdMode}");
+
+                            #region//根據buffer狀態更新命令
+
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.AllowWriteCommand != true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CV_NOTallowWriteCommand, db);
+                                return false;
+                            }
+                            #endregion
+
+                            clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", "begin fail");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db).ResultCode == DBResult.Success)
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"Upadte cmd succeess => {cmdSno}");
+                            }
+                            else
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"Upadte cmd fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            string sdevice = "";
+                            if (bufferIndex == 1)
+                            {
+                                sdevice = "2";
+                            }
+                            else if (bufferIndex == 3)
+                            {
+                                sdevice = "4";
+                            }
+
+
+                            bool Result = Plc1.FunWriPLC_Word("DB" + sdevice + "0.0", cmdSno);//確認寫入PLC命令的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"WritePLC CV_Command Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            Result = Plc1.FunWriPLC_Word("DB" + sdevice + "2.0", CmdMode.ToString());//確認寫入PLC模式的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"WritePLC CV_mode Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            Result = Plc1.FunWriPLC_Bit("DB" + sdevice + "6.1", true);//確認寫入PLC命令完成的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"WritePLC CV_writeCommandComplete Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            Result = Plc1.FunWriPLC_Bit("DB" + sdevice + "6.2", true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", $"WritePLC CV_BCRReadComplete Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.StoreInLogTrace(bufferIndex, "1F", "Commit Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            else return true;
+
+                        }
+                        
+
+                        if (CMD_MST.GetCmdMstByCycleIN(out dataObject, db).ResultCode == DBResult.Success) //讀取撿料動作
+                        {
+                            string cmdSno = dataObject[0].CmdSno;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                            clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Buffer Get Command => {cmdSno}, " +
+                                    $"{CmdMode}");
+
+                            #region//根據buffer狀態更新命令
+
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.AllowWriteCommand != true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CV_NOTallowWriteCommand, db);
+                                return false;
+                            }
+                            #endregion
+
+                            clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", "begin fail");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db).ResultCode == DBResult.Success)
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Upadte cmd succeess => {cmdSno}");
+                            }
+                            else
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Upadte cmd fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            string sdevice = "";
+                            if (bufferIndex == 1)
+                            {
+                                sdevice = "2";
+                            }
+                            else if (bufferIndex == 3)
+                            {
+                                sdevice = "4";
+                            }
+
+
+                            bool Result = Plc1.FunWriPLC_Word("DB" + sdevice + "0.0", cmdSno);//確認寫入PLC命令的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"WritePLC CV_Command Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            Result = Plc1.FunWriPLC_Word("DB" + sdevice + "2.0", CmdMode.ToString());//確認寫入PLC模式的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"WritePLC CV_mode Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            Result = Plc1.FunWriPLC_Bit("DB" + sdevice + "6.1", true);//確認寫入PLC命令完成的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"WritePLC CV_writeCommandComplete Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            Result = Plc1.FunWriPLC_Bit("DB" + sdevice + "6.2", true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"WritePLC CV_BCRReadComplete Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", "Commit Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            else return true;
+
+                        }
+                        else return false;
+
                     }
                     else
                     {
-                        strEM = "Error: 開啟DB失敗！";
+                        string strEM = "Error: 開啟DB失敗！";
                         clsWriLog.Log.FunWriTraceLog_CV(strEM);
                         return false;
                     }
@@ -124,15 +269,14 @@ namespace Mirle.DB.Proc
             }
             catch (Exception ex)
             {
-                strEM = ex.Message;
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
                 return false;
             }
         }
 
-        #region StoreIn
-        public bool FunStoreInWriPlc(string sStnNo, int bufferIndex)
+        public bool FunStoreInFA1andA3CallLifterAndSHC(clsBufferData Plc1, string sStnNo, int bufferIndex)
         {
             try
             {
@@ -141,167 +285,411 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
+
+                        if (CMD_MST.CheckCMDLifterOnlyONECMDatAtime(out var dataObject1, db).ResultCode == DBResult.Success)//對於此案電梯的流程一次只會執行一筆命令，所以要做卡控的動作
+                        {
+                            return false;
+                        }
+
+                        string Sno = Plc1.oPLC.PLC[bufferIndex].CV.Sno;
+
+                        if (CMD_MST.GetCmdMstByStoreInLifterStart(Sno, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                         {
 
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-                            string IOType = dataObject[0].IOType;
-                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
-                            string palletNo = dataObject[0].palletNo;
-                            var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
-                                    $"{CmdMode}");
-
-                            #region//確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
-                            if (_conveyor.GetBuffer(bufferIndex-2).Ready != Ready.StoreInReady
-                                && _conveyor.GetBuffer(bufferIndex-2).Switch_Ack == 1)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 2).BufferIndex, _conveyor.GetBuffer(bufferIndex - 2).BufferName, "Not StoreOut Ready, Can Switchmode");
-
-                                var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex - 2).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result1 = WritePlccheck1;
-                                if (Result1 != true)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 2).BufferIndex, _conveyor.GetBuffer(bufferIndex - 2).BufferName, $"Normal-StoreOut Switchmode fail");
-                                    return false;
-                                }
-                                else
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 2).BufferIndex, _conveyor.GetBuffer(bufferIndex - 2).BufferName, "Normal-StoreOut Switchmode Complete");
-                                }
-                            }
-                            #endregion
-
+                            string Loc= dataObject[0].Loc;
+                        
+                            clsWriLog.StoreInLogTrace(bufferIndex, sStnNo, $"Buffer Get StoreIn Command => {cmdSno}, " + $"{CmdMode}");
 
                             #region//根據buffer狀態更新命令
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.AutoManual != true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.Presence != true)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.idle != true)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotIdle, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.StoreInInfo != true)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NoStoreInInfo, db);
                                 return false;
                             }
-                            //if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 3)//為了不跟撿料命令衝突的條件
-                            //{
-                            //    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                            //    return false;
-                            //}
-                            //if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-                            //{
-                            //    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                            //    return false;
-                            //}
-                            if (_conveyor.GetBuffer(bufferIndex - 2).Ready != Ready.StoreInReady)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreInReady, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex + 1).Presence != true && IOType=="1") //在一般入庫時要確認A4是否有空棧板，沒有則不寫入命令=>目前不加入條件因為會與空棧版入庫衝突
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.A4NoEmpty, db);
-                                return false;
-                            }
-                                #endregion
+                            #endregion
 
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
+                            clsWriLog.StoreInLogTrace(bufferIndex, sStnNo, $"Buffer Ready Call Shuttle and Lifter=> {cmdSno}");
+
+                            //這邊需要作流程為與shuttle交握，需要告知SHC有入庫命令去得知車子在哪一層
+
+                            _shuttleCommand = new ShuttleCommand(cmdSno, "A" , 1,StnNo.STNNO_1F, Loc, "BOX_ID", "0000");//入庫待修改參數 儲位由WMS給 箱子號為掃bCR得到，vehicle固定0000
+                            _shuttleController?.CreateShuttleCommand(_shuttleCommand);
+
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
+                                clsWriLog.StoreInLogTrace(bufferIndex, sStnNo, "begin fail");
                                 return false;
                             }
-                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db).ResultCode == DBResult.Success)
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInCallSHCMoveCar, db).ResultCode == DBResult.Success)
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd succeess => {cmdSno}");
+                                clsWriLog.StoreInLogTrace(bufferIndex, sStnNo, $"Upadte cmd succeess => {cmdSno}");
                             }
                             else
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
+                                clsWriLog.StoreInLogTrace(bufferIndex, sStnNo, $"Upadte cmd fail => {cmdSno}");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
 
-                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
-                                //填入回報訊息
-
-                                locationId = "A3",
-                                taskNo = cmdSno.ToString(),
-                                state = "1", //任務開始
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                            {
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
-                                return false;
-                            }
-                            //填入訊息
-                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                            {
-
-                                taskNo = cmdSno,
-                                palletNo = palletNo,
-                                bussinessType = IOType,
-                                state = "12",
-                                errMsg = ""
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                            {
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
-                                return false;
-                            }
-
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                            bool Result = WritePlccheck;
-                            if (Result != true)//寫入命令和模式
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
+                                clsWriLog.StoreInLogTrace(bufferIndex, sStnNo, "Commit Fail");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (!(IOType == clsConstValue.IoType.ManualPalletStockIn || IOType == clsConstValue.IoType.CycleIn))
+                            else return true;
+
+                        }
+                        else return false;
+
+                    }
+                    else
+                    {
+                        string strEM = "Error: 開啟DB失敗！";
+                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return false;
+            }
+        }
+
+        public bool FunSHC_ChangeLayerReq(clsBufferData Plc1, ChangeLayerEventArgsLayer e)//SHC協定P83呼叫
+        {
+            try
+            {
+
+                //這邊需要作流程為與shuttle交握，流程起始點為SHC呼叫WCS=>Change_layer request 
+                //WCS呼叫lifter換層 
+                string cmdSno="";
+                string DestinationLayer = "";
+                DestinationLayer = e.DestinationLayer;
+
+
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+
+                        if (CMD_MST.CheckCMDLifterOnlyONECMDatAtimeWith_SHCCALL(out var dataObject, db).ResultCode == DBResult.Success) //檢查會唯一在執行的一筆電梯命令
+                        {
+
+                            cmdSno = dataObject[0].CmdSno;
+                            string Loc = dataObject[0].Loc;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string trace = dataObject[0].Trace;
+                            string TaskNo = dataObject[0].TaskNo;
+                            string Vehicle_ID = dataObject[0].Vehicle_ID;
+                            bool Result;
+                            string CallLift_Floor = "";
+                            string CarmoveCompleteFloor = "";
+                            string NewTrace = "";
+                            string loc_destination = Loc.Substring(9, 1);
+                            bool WriteCMD=false;
+
+                            clsWriLog.LifterLogTrace(0, "Lifter", $"Start_Get SHC Chanege Layer Req=> {cmdSno}");
+
+                            #region 根據Trace去做動作分類
+                            if (trace == Trace.StoreInLiftOK_CallSHCCarGoinLifter)//寫入命令以及PLC=>寫入樓層以及車子移動完成
                             {
-                                WritePlccheck = _conveyor.GetBuffer(4).A4EmptysupplyOn().Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                Result = WritePlccheck;
-                                if (Result != true)//請A4補充母托一版
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Start Write CMD TO Lifter=> {cmdSno}");
+
+                                if (Plc1.oPLC.PLC[0].Lifter.CMDno == "")//確認命令符合狀態也確認lifter內沒有命令才寫入
                                 {
-                                    clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC A4EmptySupply Fail");
 
+                                    Result = Plc1.FunWriPLC_Word("DB20.0", Vehicle_ID);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Vehicle_ID  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Word("DB22.0", cmdSno);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter CmdSno(Big)  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Word("DB24.0", TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter TaskNo(small)  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Bit("DB26.1", true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter WriteCMD_Complete  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+                                }
+                                else return false;
+                                CarmoveCompleteFloor = "";
+                                CallLift_Floor = DestinationLayer;//到裝卸層
+                                NewTrace = Trace.StoreInSHCCallWCS_CarinLift_ChangeLayer;
+                                WriteCMD = true;
+                            }
+                            else if (trace == Trace.StoreInCallSHCMoveCar)//入庫換成車子所在的那層
+                            {
+                                CallLift_Floor = DestinationLayer;
+                                NewTrace = Trace.StoreInSHCcallWCSChangeLifter;
+                            }
+                            else if (trace == Trace.StoreInLiftAtStorinLevel)//入庫換成入庫儲位的那層
+                            {
+                                CallLift_Floor = DestinationLayer;
+                                NewTrace = Trace.StoreInLiftToLoc;
+                            }
+                            if (trace == Trace.PickUpLifterToStartLevel || DestinationLayer=="01")
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Start Write CMD TO Lifter=> {cmdSno}");
+
+                                if (Plc1.oPLC.PLC[0].Lifter.CMDno == "")//確認命令符合狀態也確認lifter內沒有命令才寫入
+                                {
+
+                                    Result = Plc1.FunWriPLC_Word("DB20.0", Vehicle_ID);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Vehicle_ID  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Word("DB22.0", cmdSno);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter CmdSno(Big)  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Word("DB24.0", TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter TaskNo(small)  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Bit("DB26.1", true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter WriteCMD_Complete  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+                                }
+                                else return false;
+                                CarmoveCompleteFloor = Loc.Substring(8,2);
+                                CallLift_Floor = DestinationLayer;//到裝卸層
+                                NewTrace = Trace.PickUpSHCCallWcsChangeLifterToStorinLevel;
+                                WriteCMD = true;
+
+                            }
+                            else if (trace == Trace.PickUpStart)//撿料換成車子所在的那層
+                            {
+                                CallLift_Floor = DestinationLayer;
+                                NewTrace = Trace.PickUpSHCcallWCSChangeLifter;
+                            }
+                            else if (trace == Trace.PickUpLifterToStorinLevel)//撿料換成車子回收的那層
+                            {
+                                CallLift_Floor = DestinationLayer;
+                                NewTrace = Trace.PickUpCarReturn;
+                            }
+                            else if (trace == Trace.PickUpLiftOK_CallSHCCarGoinLifter)
+                            {
+                                CallLift_Floor = DestinationLayer;
+                                NewTrace = Trace.PickUpSHCcallWCSChangeLifterToStartLevel;
+                            }
+                            #endregion
+
+                            //此案有許多一樣Change Layer的功能，可以共用只要照SHC的REQ以及命令的類別做區分即可
+
+                            clsWriLog.LifterLogTrace(0, "Lifter", $"{trace}:Call Lifter Change Layer To{CallLift_Floor}=> {cmdSno},{TaskNo}");
+
+                            #region 車子移動完成樓層
+
+                            if (WriteCMD)
+                            {
+                                if (CarmoveCompleteFloor == "01")
+                                {
+                                    CarmoveCompleteFloor = CallLifterFloorCarMoveCompleteBits.Floor1;
+                                }
+                                else if (CarmoveCompleteFloor == "02")
+                                {
+                                    CarmoveCompleteFloor = CallLifterFloorCarMoveCompleteBits.Floor2;
+                                }
+                                else if (CarmoveCompleteFloor == "03")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor3);
+                                }
+                                else if (CarmoveCompleteFloor == "04")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor4);
+                                }
+                                else if (CarmoveCompleteFloor == "05")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor5);
+                                }
+                                else if (CarmoveCompleteFloor == "06")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor6);
+                                }
+                                else if (CarmoveCompleteFloor == "07")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor7);
+                                }
+                                else if (CarmoveCompleteFloor == "08")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor8);
+                                }
+                                else if (CarmoveCompleteFloor == "09")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor9);
+                                }
+                                else if (CarmoveCompleteFloor == "10")
+                                {
+                                    CarmoveCompleteFloor = (CallLifterFloorCarMoveCompleteBits.Floor10);
+                                }
+                            }
+                            #endregion
+
+                            #region Call車子樓層
+                            if (CallLift_Floor == "1")
+                            {
+                                CallLift_Floor = CallLifterFloorBits.Floor1;
+                            }
+                            else if (CallLift_Floor == "2")
+                            {
+                                CallLift_Floor = CallLifterFloorBits.Floor2;
+                            }
+                            else if (CallLift_Floor == "3")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor3);
+                            }
+                            else if (CallLift_Floor == "4")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor4);
+                            }
+                            else if (CallLift_Floor == "5")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor5);
+                            }
+                            else if (CallLift_Floor == "6")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor6);
+                            }
+                            else if (CallLift_Floor == "7")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor7);
+                            }
+                            else if (CallLift_Floor == "8")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor8);
+                            }
+                            else if (CallLift_Floor == "9")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor9);
+                            }
+                            else if (CallLift_Floor == "10")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor10);
+                            }
+                            #endregion
+
+                            Result = Plc1.FunWriPLC_Bit("DB" + CallLift_Floor, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"WritePLC CallLifter Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            if (WriteCMD)//只有在此類型下才需要做CAR完成移動的PLC交握
+                            {
+                                Result = Plc1.FunWriPLC_Bit("DB" + CarmoveCompleteFloor, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WritePLC CarmoveCompleteFloor Fail");
                                     db.TransactionCtrl2(TransactionTypes.Rollback);
                                     return false;
                                 }
                             }
 
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
+                                clsWriLog.LifterLogTrace(0, "Lifter", "begin fail");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, NewTrace, db).ResultCode == DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd succeess => {cmdSno}");
+                            }
+                            else
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd fail => {cmdSno}");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            else return true;
+
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", "Commit Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            _shuttleController?.P85("1", "Q", "0000");//Result_Code:0000=Succeess
+                            _shuttleController?.P85("1", "S", "0000");//Result_Code:0000=Succeess
+                            return true;
 
                         }
                         else return false;
-                        
+
                     }
                     else
                     {
@@ -320,7 +708,8 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public bool FunStoreInA2ToA4WriPlc(string sStnNo, int bufferIndex)
+
+        public bool FunStoreCarInLifter_ReportSHC(clsBufferData Plc1, int floor)//這邊寫入命令跟入庫跟出庫一樣的觸發條件所以可以共用，去找符合命令符合條件的
         {
             try
             {
@@ -329,555 +718,570 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success)
+                        #region lifter狀態符不符合狀態
+                        if (Plc1.oPLC.PLC[0].Lifter.AllowWriteCommand != true)
                         {
+                            return false;
+                        }
+
+                        if (floor == 1)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor1_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 2)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor2_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 3)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor3_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 4)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor4_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 5)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor5_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 6)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor6_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 7)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor7_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 8)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor8_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 9)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor9_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 10)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.Floor10_SafetyCheck != true)//
+                            {
+                                return false;
+                            }
+                        }
+
+
+                        if (floor == 1)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor1 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 2)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor2 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 3)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor3 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 4)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor4 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 5)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor5 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 6)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor6 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 7)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor7 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 8)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor8 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 9)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor9 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (floor == 10)
+                        {
+                            if (Plc1.oPLC.PLC[0].Lifter.MoveToFloor10 != false)
+                            {
+                                return false;
+                            }
+                        }
+                        #endregion
+
+                        if (CMD_MST.CheckCMDLifterOnlyONECMDatAtime(out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
+                        {
+
                             string cmdSno = dataObject[0].CmdSno;
-                            string IOType = dataObject[0].IOType;
+                            string TaskNo = dataObject[0].TaskNo;
+                            string Vehicle_ID = dataObject[0].Vehicle_ID;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-                            string palletNo = dataObject[0].palletNo;
-                            var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
+                            string trace = dataObject[0].Trace;
 
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreIn Command => {cmdSno}, " +
-                                    $"{CmdMode}");
+                           
 
-                            #region//根據buffer狀態更新命令
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
+                            if (CmdMode == 1)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                return false;
+                                clsWriLog.StoreInLogTrace(0, "Lifter", $"Start Respone Shuttle Car Lifter Floor=> {cmdSno}, " + $"{CmdMode}");
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
+                            else if (CmdMode == 2)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
-                                return false;
+                                clsWriLog.StoreOutLogTrace(0, "Lifter", $"Start Respone Shuttle Car Lifter Floor=> {cmdSno}, " + $"{CmdMode}");
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            else if (CmdMode == 3)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
+                                clsWriLog.PickUpLogTrace(0, "Lifter", $"Start Respone Shuttle Car Lifter Floor=> {cmdSno}, " + $"{CmdMode}");
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex - 1).CmdMode == 3)//為了不跟撿料命令衝突的條件
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex - 1).Ready != Ready.StoreInReady)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreInReady, db);
-                                return false;
-                            }
-                            #endregion
 
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreIn Command=> {cmdSno}");
+                            string NewTrace = "";
+
+                            if (trace == Trace.StoreInSHCcallWCSChangeLifter)
+                            {
+                                NewTrace = Trace.StoreInLiftOK_CallSHCCarGoinLifter;
+                            }
+                            else if (trace == Trace.StoreInSHCCallWCS_CarinLift_ChangeLayer)
+                            {
+                                NewTrace = Trace.StoreInLiftAtStorinLevel;
+                            }
+                            else if (trace != Trace.StoreInLiftToLoc)
+                            {
+                                NewTrace = Trace.StoreInLiftToLocLevel;
+                            }
+                            else if (trace == Trace.PickUpSHCcallWCSChangeLifter)
+                            {
+                                NewTrace = Trace.PickUpLiftOK_CallSHCCarGoinLifter;
+                            }
+                            else if (trace == Trace.PickUpSHCcallWCSChangeLifterToStartLevel)
+                            {
+                                NewTrace = Trace.PickUpLifterToStartLevel;
+                            }
+                            else if (trace == Trace.PickUpSHCCallWcsChangeLifterToStorinLevel)
+                            {
+                                NewTrace = Trace.PickUpLifterToStorinLevel;
+                            }
+                            else if (trace == Trace.PickUpCarReturn)
+                            {
+                                NewTrace = Trace.PickUpCarToReturnCarLevel;
+                            }
+
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
+                                clsWriLog.LifterLogTrace(0, "Lifter", "begin fail");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, NewTrace, db).ResultCode == DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd succeess => {cmdSno}");
+                            }
+                            else
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", "Commit Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            //回報shuttle樓層
+                            _shuttleController?.P85("1", "C", "0000");//Result_Code:0000=Succeess
+
+
+
+                            if (NewTrace == Trace.StoreInLiftToLocLevel)
+                            {
+                                //命令結束要做特殊結尾，更新為九以及要多寫觸發PLC的點位讓電梯PLC清直
+                                CMD_MST.UpdateCmdMstEnd(cmdSno, ASRS.WCS.Model.DataAccess.CmdSts.CompleteWaitUpdate, NewTrace, db);
+
+                            }
+
+
+                            return true;
+
+                        }
+                        else return false;
+                    }
+                    else
+                    {
+                        string strEM = "Error: 開啟DB失敗！";
+                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return false;
+            }
+        }
+
+
+        public bool FunStoreOut_SHC_CMDStart(clsBufferData Plc1)//暫不用
+        {
+            try
+            {
+                //等待shuttle回應=>Change_LayerReq=>類型為車子進入電梯需要寫入命令號到電梯裡面
+
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+
+                        if (CMD_MST.GetCmdMstLifterCmd(out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
+                        {
+
+                            string cmdSno = dataObject[0].CmdSno;
+                            string TaskNo = dataObject[0].TaskNo;
+                            string Vehicle_ID = dataObject[0].Vehicle_ID;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+
+                            bool Result;
+
+                            if (Plc1.oPLC.PLC[0].Lifter.CMDno == "")//確認命令符合狀態也確認lifter內沒有命令才寫入
+                            {
+
+                                Result = Plc1.FunWriPLC_Word("DB20.0", Vehicle_ID);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Vehicle_ID  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Word("DB22.0", cmdSno);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter CmdSno(Big)  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Word("DB24.0", TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter TaskNo(small)  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB26.1", true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter WriteCMD_Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+
+                            //寫入命令到lifter裡面=>入庫接下來為呼叫lifter到一樓拿貨物
+                            //                    =>出庫也是接下來到一樓出庫貨物
+
+                            string storageFloor = "1";//卸貨層
+
+
+                            #region 挑樓層選
+                            if (storageFloor == "1")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor1, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor1, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "2")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor2, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor2, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "3")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor3, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor3, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "4")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor4, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor3, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "5")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor5, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor5, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "6")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor6, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor6, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "7")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor7, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor7, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "8")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor8, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor8, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "9")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor9, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor9, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            else if (storageFloor == "10")
+                            {
+                                Result = Plc1.FunWriPLC_Word("DB1" + CallLifterFloorCarMoveCompleteBits.Floor10, TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Complete  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+
+                                Result = Plc1.FunWriPLC_Bit("DB1" + CallLifterFloorBits.Floor10, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                if (Result != true)
+                                {
+                                    clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Call floor{storageFloor}  Fail");
+                                    db.TransactionCtrl2(TransactionTypes.Rollback);
+                                    return false;
+                                }
+                            }
+                            #endregion
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", "begin fail");
                                 return false;
                             }
                             if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreInWriteCmdToCV, db).ResultCode == DBResult.Success)
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd succeess => {cmdSno}");
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd succeess => {cmdSno}");
                             }
                             else
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
-
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd fail => {cmdSno}");
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-
-                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                            {
-                                //填入回報訊息
-
-                                locationId = sStnNo,
-                                taskNo = cmdSno.ToString(),
-                                state = "1", //任務開始
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                            {
-                                
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
-                                return false;
-                            }
-                            //填入訊息
-                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                            {
-
-                                taskNo = cmdSno,
-                                palletNo = palletNo,
-                                bussinessType = IOType.ToString(),
-                                state = "12",
-                                errMsg = ""
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                            {
-                                
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
-                                return false;
-                            }
-
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                            bool Result = WritePlccheck;
-                            if (Result != true)//寫入命令和模式
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-
-
 
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Commit Fail");
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
                             else return true;
-
                         }
                         else return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
 
-        public bool FunStoreInCreateEquCmd(int bufferIndex)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString().PadLeft(5,'0');
-
-                        if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-                            //clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer StoreIn Get Command");
-
-                            #region//根據buffer狀態更新命令
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
-                                return false;
-                            }
-                            #endregion
-
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreIn=> {cmdSno}");
-
-                            string source = $"{CranePortNo.A1}";
-                            string IOType = dataObject[0].IOType;
-                            string CmdMode = dataObject[0].CmdMode;
-                            string dest = "";
-                            if (CmdMode == "3")//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
-                            {
-                                dest = $"{dataObject[0].Loc}";
-                            }
-                            else
-                            {
-                                dest = $"{dataObject[0].NewLoc}";
-                            }
-
-                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-
-                                return false;
-                            }
-                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Update CmdMst Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Insert EquCmd Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            return true;
-                        }
-                        else return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunStoreInA2toA4CreateEquCmd(int bufferIndex)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        
-                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString().PadLeft(5, '0');
-                        if (CMD_MST.GetCmdMstByStoreInCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-
-                            #region//根據buffer狀態更新命令
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
-                                return false;
-                            }
-                            #endregion
-
-                            clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreIn=> {cmdSno}");
-
-                            string source = "";
-                            if (bufferIndex == 5)
-                            {
-                                source = $"{CranePortNo.A5}";
-                            }
-                            else if (bufferIndex == 7)
-                            {
-                                source = $"{CranePortNo.A7}";
-                            }
-                            else if (bufferIndex == 9)
-                            {
-                                source = $"{CranePortNo.A9}";
-                            }
-                            string IOType = dataObject[0].IOType;
-                            string CmdMode = dataObject[0].CmdMode;
-                            string dest = "";
-                            if (CmdMode == "3")//如果是撿料，入庫儲位欄位是LOC，一般入庫是NewLoc
-                            {
-                                dest = $"{dataObject[0].Loc}";
-                            }
-                            else
-                            {
-                                dest = $"{dataObject[0].NewLoc}";
-                            };
-
-                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Create Crane StoreIn Command, Begin Fail");
-
-                                return false;
-                            }
-                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Update CmdMst Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Insert EquCmd Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            else return true;
-                            
-                        }
-                        else return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunStoreInEquCmdFinish()
-        {
-            try
-            {
-                var stn1 = new List<string>()
-                {
-                    StnNo.A3,
-                    StnNo.A6,
-                    StnNo.A8,
-                    StnNo.A10,
-                };
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-
-                        if (CMD_MST.GetCmdMstByStoreInFinish(stn1, out var dataObject,db).ResultCode == DBResult.Success)
-                        {
-                            foreach (var cmdMst in dataObject.Data)
-                            {
-                                string locationId = cmdMst.StnNo;
-
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd,db).ResultCode == DBResult.Success)
-                                {
-                                    if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-                                    {
-                                        string cmdsts = "";
-                                        string cmdabnormal = "";
-                                        string remark = "";
-                                        bool bflag = false;
-
-                                        if (equCmd[0].CompleteCode == "92")//正常完成
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = "NA";
-                                            remark = "存取車搬送命令完成";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "13",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = locationId,
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode.StartsWith("W"))
-                                        {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                            bflag = false;
-                                        }
-                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
-                                        {
-                                            cmdsts = CmdSts.CmdCancel;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
-                                            remark = "存取車地上盤強制取消命令";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "15",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = locationId,
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
-                                            remark = "存取車地上盤強制完成命令";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "14",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = locationId,
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        if (bflag == true)
-                                        {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreInCraneCmdFinish, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            return true;
-                        }
-                        else return true;
                     }
                     else
                     {
@@ -899,7 +1303,7 @@ namespace Mirle.DB.Proc
         #endregion StoreIn
 
         #region StoreOut
-        public bool FunStoreOutWriPlc(string sStnNo, int bufferIndex)//出庫主要流程與空棧板出庫共用
+        public bool FunStoreOutWriPlc1FA2andA4(clsBufferData Plc1, int bufferIndex)
         {
             try
             {
@@ -908,1620 +1312,232 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        if (CMD_MST.GetCmdMstByStoreOutStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
+                        if (CMD_MST.CheckCMDLifterOnlyONECMDatAtime(out var dataObject4, db).ResultCode == DBResult.Success)//對於此案電梯的流程一次只會執行一筆命令，所以要做卡控的動作
                         {
+                            return false;
+                        }
+
+                        if (CMD_MST.GetCmdMstByPickUpStart(out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
+                        {
+
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-                            string IOType = dataObject[0].IOType;
-                            int whetherAllOut = Convert.ToInt32(dataObject[0].whetherAllOut);
-                            int lastpallet = Convert.ToInt32(dataObject[0].lastpallet);
-                            string palletNo = dataObject[0].palletNo;
-                            var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                            bool Result;
+                            string Loc = dataObject[0].Loc;
+                            string Loc_DD = "";
+                            string Loc_Sts = "";
+                            string Lvl_Z = "";
+                            string newLoc = "";
 
-                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}, " +
-                                    $"{CmdMode}");
+                            clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Buffer Get Pick Up Command => {cmdSno}, " +
+                                       $"{CmdMode}");
 
-                            #region//確認目前模式，是否可以切換模式，可以就寫入切換成出庫的請求
-                            if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady
-                                && _conveyor.GetBuffer(bufferIndex).Switch_Ack == 1)
+                            if (Loc.Substring(6, 1) == "1")//此案子外儲位為第六位數為一的儲位
                             {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreOut Ready, Can Switchmode");
-
-                                var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex).Switch_Mode(2).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                Result = WritePlccheck1;
-                                if (Result != true)
+                                if (LocMst.GetLoc_DD(Loc, out var dataObject1, db).ResultCode == DBResult.Success)
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Normal-StoreOut Switchmode fail");
-                                    return false;
+                                    Loc_DD = dataObject1[0].Loc_DD;
+                                    clsWriLog.PickUpLogTrace(0, "Lifter", $"LOCtoLOC=>Find Loc_DD succeess");
                                 }
                                 else
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Normal-StoreOut Switchmode Complete");
-                                }
-                            }
-                            #endregion
-
-                            #region//確認站口狀態
-                            if (_conveyor.GetBuffer(bufferIndex).Auto!=true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                return false;
-                            }
-                            if(_conveyor.GetBuffer(bufferIndex).OutMode!=true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).CommandId >0)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)//為了不跟減料命令衝突的條件
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence==true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreOutReady, db);
-                                return false;
-                            }
-                            if (CheckEmptyWillBefullOrNot() == true)//檢查一樓buffer是否整體滿九版空棧板了
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.EmptyWillBefull, db);
-                                return false;
-                            }
-                            #endregion
-
-                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreOut Command => {cmdSno}, " +
+                                    clsWriLog.PickUpLogTrace(0, "Lifter", $"Command Get Loc_DD Fail => {cmdSno}, " +
                                     $"{CmdMode}");
+                                    return false; }
 
-
-                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                                if(LocMst.GetLoc_DD_Sts(Loc_DD,out var dataObject2,db).ResultCode==DBResult.Success)
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Begin Fail => {cmdSno}");
-                                    return false;
-                                }
-                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreOutWriteCraneCmdToCV, db).ResultCode == DBResult.Success)
-                                {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
-                                $"{CmdMode}");
+                                    Loc_Sts = dataObject2[0].Loc_Sts;
+                                    Lvl_Z = dataObject2[0].LVl_Z;
+                                    clsWriLog.PickUpLogTrace(0, "Lifter", $"LOCtoLOC=>Find Loc_DD_STS succeess");
                                 }
                                 else
                                 {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}, " +
-                                $"{CmdMode}");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                                }
-
-                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                            {
-                                //填入回報訊息
-
-                                locationId = "A3",
-                                taskNo = cmdSno.ToString(),
-                                state = "1", //任務開始
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                            {
-                                
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
-                                return false;
-                            }
-                            //填入訊息
-                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                            {
-
-                                taskNo = cmdSno,
-                                palletNo = palletNo,
-                                bussinessType = IOType,
-                                state = "12",
-                                errMsg = ""
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                            {
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
-                                return false;
-                            }
-
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                Result = WritePlccheck;
-                                if (Result != true)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                            if (IOType == clsConstValue.IoType.PalletStockOut)
-                            {
-                                WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path3_toA4).Result;//錯誤時回傳exmessage
-                                Result = WritePlccheck;
-                                if (Result != true)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path3_toA4 Fail");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                            }
-                            //出庫都要寫入路徑編號，編號1為堆疊，編號2為直接出庫，編號3為補充母棧板
-                            else if (whetherAllOut==1/*|| (IOType == clsConstValue.IoType.NormalStockOut && lastpallet == 1 && _conveyor.GetBuffer(2).A2LV2==0)*/ )//Iotype如果是撿料,空棧板整版出,盤點出庫或是出庫命令的最後一版，直接到A3
-                                {
-                                    WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path1_toA2).Result;//錯誤時回傳exmessage
-                                    Result = WritePlccheck;
-                                    if (Result != true)
-                                    {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path1_toA2 Fail");
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return false;
-                                    }
-                                }
-                                
-                                else
-                                {
-                                    WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path2_toA3).Result;//錯誤時回傳exmessage
-                                    Result = WritePlccheck;
-                                    if (Result != true)
-                                    {
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path2_toA3 Fail");
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-                                        return false;
-                                    }
-                                }
-
-
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            else return true;
-                            
-                        }
-                        else return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunStoreOutA2ToA4WriPlc(string sStnNo, int bufferIndex) 
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        if (CMD_MST.GetCmdMstByStoreOutStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-                            string cmdSno = dataObject[0].CmdSno;
-                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-                            string iotype = dataObject[0].IOType;
-                            string palletNo = dataObject[0].palletNo;
-                            var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-
-                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get StoreOut Command => {cmdSno}, " +
+                                    clsWriLog.PickUpLogTrace(0, "Lifter", $"Command Get Loc_DD_STS Fail => {cmdSno}, " +
                                     $"{CmdMode}");
-
-                            #region//確認站口狀態
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 6)//為了不跟撿料命令衝突的條件
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreOutReady, db);
-                                return false;
-                            }
-                            #endregion
-
-
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready Receive StoreOut Command => {cmdSno}, " +
-                                    $"{CmdMode}");
-
-                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Begin Fail => {cmdSno}");
                                     return false;
                                 }
-                                if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.StoreOutWriteCraneCmdToCV, db).ResultCode == DBResult.Success)
+                                if (Loc_Sts=="S")
                                 {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd Success => {cmdSno}, " +
-                                    $"{CmdMode}");
-                                }
-                                else
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}, " +
-                                    $"{CmdMode}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-
-                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                            {
-                                //填入回報訊息
-
-                                locationId = sStnNo,
-                                taskNo = cmdSno.ToString(),
-                                state = "1", //任務開始
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                            {
-                                
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailDisplay, db);
-                                return false;
-                            }
-                            //填入訊息
-                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                            {
-
-                                taskNo = cmdSno,
-                                palletNo = palletNo,
-                                bussinessType = iotype,
-                                state = "12",
-                                errMsg = ""
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                            {
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSOutReportFailTask, db);
-                                return false;
-                            }
-
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//寫入命令和模式//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result = WritePlccheck;
-                                if (Result != true)//寫入命令和模式
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            else return true;
-                            
-                        }
-                        else return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunStoreOutCreateEquCmd(int bufferIndex)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString().PadLeft(5, '0');
-
-                        if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-                                #region//站口狀態確認
-                            if (_conveyor.GetBuffer(bufferIndex).Auto!=true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
-                            #endregion
-
-                                #region 擋下出庫命令，當儲位是外儲位檢查內儲位現在是否有命令(庫對庫)，如果有就擋下
-                                string source = dataObject[0].Loc;
-                                string dest = $"{CranePortNo.A1}";
-                                int checkcource = Int32.Parse(source.Substring(0, 2));
-                                bool bcheck;
-                                if (checkcource > 2)
-                                {
-                                    bcheck = funChkInsideLoc(source, db);
-                                    if (bcheck == true)
+                                    if (LocMst.GetEmptyLoc_SameFloor_OutFirst(Lvl_Z, out var dataObject3, db).ResultCode == DBResult.Success)//找尋空儲位放貨物
                                     {
-                                        CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.InsideLocWait, db);
-                                        clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
-                                        return false;
-                                    }
-                                }
-                                #endregion
-
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
-                                
-                                if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
-                                    return false;
-                                }
-                                if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Update CmdMst Fail => {cmdSno}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Commit Fail => {cmdSno}");
-                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                    return false;
-                                }
-                                else return true;
-                                
-                        }
-                        return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunStoreOutA2toA4CreateEquCmd(int bufferIndex)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = _conveyor.GetBuffer(bufferIndex).CommandId.ToString().PadLeft(5, '0');
-
-                        if (CMD_MST.GetCmdMstByStoreOutCrane(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-                            cmdSno = dataObject[0].CmdSno;
-                            string source = dataObject[0].Loc;
-                            string dest = "";
-                                
-                            #region//站口狀態確認
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                return false;
-                            }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-                            {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-                                return false;
-                            }
-                        #endregion
-
-                            #region 擋下出庫命令，當儲位是外儲位檢查內儲位現在是否有命令(庫對庫)，如果有就擋下
-                            int checkcource = Int32.Parse(source.Substring(0, 2));
-                            bool bcheck;
-                            if (checkcource > 2)
-                            {
-                                bcheck = funChkInsideLoc(source, db);
-                                if (bcheck == true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.InsideLocWait, db);
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"InsideLoc has Cmd,Please Wait => {cmdSno}");
-                                    return false;
-                                }
-                            }
-                            #endregion
-
-                            switch (bufferIndex)
-                            {
-                                case 5:
-                                    dest = $"{CranePortNo.A5}";
-                                    break;
-                                case 7:
-                                    dest = $"{CranePortNo.A7}";
-                                    break;
-                                case 9:
-                                    dest = $"{CranePortNo.A9}";
-                                    break;
-                            }
-                                
-                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready StoreOut => {cmdSno}");
-
-                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
-                                return false;
-                            }
-                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.StoreOutCreateCraneCmd, db).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Update CmdMst Fail => {cmdSno}");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Commit Fail => {cmdSno}");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            return true;
-                            
-                        }
-                            return true;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunStoreOutEquCmdFinish(IEnumerable<string> stations) 
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        if (CMD_MST.GetCmdMstByStoreOutFinish(stations, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-                            foreach (var cmdMst in dataObject.Data)
-                            {
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db).ResultCode == DBResult.Success)
-                                {
-                                    if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-                                    {
-                                        string cmdsts="";
-                                        string cmdabnormal="";
-                                        string remark="";
-                                        bool bflag=false;
-                                        string sStnNo;
-
-                                        if (cmdMst.StnNo == StnNo.A4)
-                                        {
-                                            sStnNo = StnNo.A3;
-                                        }
-                                        else
-                                        {
-                                            sStnNo=cmdMst.StnNo;
-                                        }
-
-                                        if (equCmd[0].CompleteCode == "92")//正常完成
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = "NA";
-                                            remark = "存取車搬送命令完成";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-                                                lineId = "1",
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "13",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
-                                                return false;
-                                            }
-
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = sStnNo,
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode.StartsWith("W"))
-                                        {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                            bflag = false;
-                                        }
-                                        else if(equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
-                                        {
-                                            cmdsts = CmdSts.CmdCancel;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
-                                            remark = "存取車地上盤強制取消命令";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "15",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = sStnNo,
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
-                                            remark = "存取車地上盤強制完成命令";
-                                            bflag=true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "14",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
-                                                return false;
-                                            }
-
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = sStnNo,
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSOutReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        if (bflag == true)
-                                        {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                        //if ((cmdMst.CmdMode != "3") || equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString())
-                                        //    {
-                                                if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.StoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
-                                                {
-                                                    db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                    return false;
-                                                }
-                                        //}
-                                        if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            return true;
-                        }
-                        else return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-        
-        #endregion StoreOut
-
-        #region Other
-        public bool FunEmptyStoreInWriPlc(string sStnNo, int bufferIndex)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                            if (CMD_MST.GetCmdMstByStoreInStart(sStnNo, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
-                            {
-                            string cmdSno = dataObject[0].CmdSno;
-                            string iotype = dataObject[0].IOType;
-                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-                            string palletNo = dataObject[0].palletNo;
-
-                            clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreIn Command => {cmdSno}");
-
-                            #region//確認目前模式，是否可以切換模式，可以就寫入切換成入庫的請求
-                            if (_conveyor.GetBuffer(bufferIndex - 3).Ready != Ready.StoreInReady
-                                && _conveyor.GetBuffer(bufferIndex - 3).Switch_Ack == 1)
-                            {
-                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, "Not StoreOut Ready, Can Switchmode");
-
-                                var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex - 3).Switch_Mode(1).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                bool Result1 = WritePlccheck1;
-                                if (Result1 != true)
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, $"Normal-StoreOut Switchmode fail");
-                                    return false;
-                                }
-                                else
-                                {
-                                    clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex - 3).BufferIndex, _conveyor.GetBuffer(bufferIndex - 3).BufferName, "Normal-StoreOut Switchmode Complete");
-                                }
-                            }
-                            #endregion
-
-                            #region//站口狀態確認
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-                                    return false;
-                                }
-                                //if (_conveyor.GetBuffer(bufferIndex).InMode != true)
-                                //{
-                                //    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-                                //    return false;
-                                //}
-                                if (_conveyor.GetBuffer(bufferIndex).Error == true)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
-                                    return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex - 1).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 2).CmdMode == 6 || _conveyor.GetBuffer(bufferIndex - 3).CmdMode == 6)//為了不跟撿料命令衝突的條件
-                                {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-                                return false;
-                                }
-                                if (_conveyor.GetBuffer(bufferIndex-3).Ready != Ready.StoreInReady)
-                                {
-                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreInReady, db);
-                                    return false;
-                                }
-                                #endregion
-
-                                    clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreIn Command");
-
-                                    if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                    {
-                                        clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "begin fail");
-                                        return false;
-                                    }
-                                    if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.EmptyStoreInWriteCraneCmdToCV, db).ResultCode == DBResult.Success)
-                                    {
-                                        clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Update cmd suceess => {cmdSno}");
+                                        newLoc = dataObject3[0].Loc;
+                                        clsWriLog.PickUpLogTrace(0, "Lifter", $"LOCtoLOC=>Find Same Floor EmptyLoc succeess");
                                     }
                                     else
                                     {
-                                        clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
-
-                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        clsWriLog.PickUpLogTrace(0, "Lifter", $"Command Find EmptyLoc Fail => {cmdSno}, " +
+                                        $"{CmdMode}");
                                         return false;
                                     }
-                            DisplayTaskStatusInfo info = new DisplayTaskStatusInfo
-                            {
-                                //填入回報訊息
 
-                                locationId = "A3",
-                                taskNo = cmdSno.ToString(),
-                                state = "1", //任務開始
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info))
-                            {
-                                
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailDisplay, db);
-                                return false;
-                            }
-                            //填入訊息
-                            TaskStateUpdateInfo info1 = new TaskStateUpdateInfo
-                            {
-
-                                taskNo = cmdSno,
-                                palletNo = palletNo,
-                                bussinessType = iotype,
-                                state = "12",
-                                errMsg = ""
-                            };
-                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info1))
-                            {
-                                
-                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.WMSReportFailTask, db);
-                                return false;
-                            }
-
-                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-                                    bool Result = WritePlccheck;
-                                    if (Result != true)//寫入命令和模式
+                                    CmdMstInfo stuCmdMst = new CmdMstInfo();
+                                    cmdSno = SNO.FunGetSeqNo(clsEnum.enuSnoType.CMDSNO, db); //尋找最新不重複的命令號
+                                    if (cmdSno == "" || cmdSno == "00000")
                                     {
-                                        clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail");
+                                        clsWriLog.PickUpLogTrace(0,"Lifter" , $"LOCtoLOC=>Find cmdSno fail");
+                                        return false;
+                                    }
+                                    stuCmdMst.CmdSno = cmdSno;
+                                    stuCmdMst.CmdSts = "0";
+                                    stuCmdMst.CmdMode = "5";
+                                    stuCmdMst.Prt = "1";
+                                    stuCmdMst.IoType = "51";
+                                    stuCmdMst.Loc = Loc_DD;
+                                    stuCmdMst.NewLoc = newLoc;
+                                    stuCmdMst.CrtDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                                    stuCmdMst.TrnUser = "WCS";
+
+                                    if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                                    {
+                                        clsWriLog.PickUpLogTrace(0, "Lifter", "loctoloc_begin fail");
+                                        return false;
+                                    }
+                                    if (CMD_MST.FunInsCmdMst(stuCmdMst, db).ResultCode!=DBResult.Success)
+                                    {
+                                        clsWriLog.PickUpLogTrace(0, "Lifter", $"LocToLocCMDInsert Fail!");
                                         db.TransactionCtrl2(TransactionTypes.Rollback);
                                         return false;
                                     }
+                                    if (LocMst.UpdateStoreOutLocMst(Loc_DD, db).ResultCode != DBResult.Success)
+                                    {
+                                        clsWriLog.PickUpLogTrace(0, "Lifter", $"LocToLoc_LocMSTOutupdate Fail!");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+                                    if (LocMst.UpdateStoreInLocMst(newLoc, db).ResultCode != DBResult.Success)
+                                    {
+                                        clsWriLog.PickUpLogTrace(0, "Lifter", $"LocToLoc_LocMSTInupdate Fail!");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+                                    if(db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                                    {
+                                        clsWriLog.PickUpLogTrace(0, "Lifter", "Loctoloc_Commit Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+                                    //_shuttleCommand = new ShuttleCommand(cmdSno, "A", 1, Loc_DD, newLoc, "BOX_ID", "0000");//庫對褲命令 待修改參數 箱子號為原本資料表得到，vehicle固定0000
+                                    //_shuttleController?.CreateShuttleCommand(_shuttleCommand);
 
+                                }
+                                if(Loc_Sts!="N")
+                                {
+                                    CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.Loc_DDexistSTS_S, db);
+                                    return false;
+                                }
+                            }
 
+                            clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Buffer Get PickUp Command => {cmdSno}, " +
+                                    $"{CmdMode}");
 
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            #region//根據buffer狀態更新命令
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.Mode != 3)
                             {
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotPickUpMode, db);
                                 return false;
                             }
-                            else return true;
-                            
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.Sno != "")
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.ExistCmdSno, db);
+                                return false;
                             }
-                            return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        public bool FunEmptyStoreInCreateEquCmd(int bufferIndex)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString().PadLeft(5, '0');
-
-                        if (CMD_MST.GetEmptyCmdMstByStoreIn(cmdSno, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-                            string source = $"{CranePortNo.A1}";
-                            string dest = $"{dataObject[0].NewLoc}";
-
-                            #region//站口狀態確認
-                            if (_conveyor.GetBuffer(bufferIndex).Auto != true)
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.AutoManual != true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).InMode != true)
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.Presence != false)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotInMode, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).Error == true)
+                            if (Plc1.oPLC.PLC[bufferIndex].CV.idle != true)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotIdle, db);
                                 return false;
                             }
-                            if (_conveyor.GetBuffer(bufferIndex).Presence == false)
+                            if (Plc1.oPLC.PLC[0].Lifter.LiftMode != true)
                             {
-                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceNotExist, db);
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.LifterNotAutoMode, db);
+                                return false;
+                            }
+                            if (Plc1.oPLC.PLC[0].Lifter.LiftIdle != true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.LifterNotIdleMode, db);
                                 return false;
                             }
                             #endregion
 
+                            clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Buffer Ready Receive PickUp Command=> {cmdSno}");
 
-                            clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Ready EmptyStoreIn => {cmdSno}");
+                            //接收到撿料命令，以及Buffer符合狀態，，也同時可先預約buffer
+
+
+                            //先告知shuttle有撿料命令
+                            //重要!!這邊的判斷要先做內外儲位的判斷，當是外儲位的時候，需要做內儲位是否需要先做搬運的動作，如果需要就得先做庫對庫命令，此出庫命令就先不產生 記得追加判斷命令function在這裡
+
+                            _shuttleCommand = new ShuttleCommand(cmdSno, "A", 1, Loc, StnNo.STNNO_1F, "BOX_ID", "0000");//撿料命令 待修改參數 儲位由WMS給 箱子號為原本資料表得到，vehicle固定0000
+                            _shuttleController?.CreateShuttleCommand(_shuttleCommand);
+
 
                             if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
                             {
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Begin Fail => {cmdSno}");
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", "begin fail");
                                 return false;
                             }
-                            if (CMD_MST.UpdateCmdMst(cmdSno, Trace.EmptyStoreInCreateCraneCmd, db).ResultCode != DBResult.Success)
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.PickUpStart, db).ResultCode == DBResult.Success)
                             {
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Update CmdMst Fail => {cmdSno}");
-                                   
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Upadte cmd succeess => {cmdSno}");
                             }
-                            if (EQU_CMD.InsertStoreInEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
+                            else
                             {
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane EmptyStoreIn Command, Insert EquCmd Fail => {cmdSno}");
-
-                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                return false;
-                            }
-                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                            {
-                                clsWriLog.EmptyStoreInLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreIn Command, Commit Fail => {cmdSno}");
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"Upadte cmd fail => {cmdSno}");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                             return true;
-                        }
-                        return true;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
 
-        public bool FunEmptyStoreInEquCmdFinish()
-        {
-            try
-            {
-                var stn1 = new List<string>()
-                {
-                    StnNo.A4,
-                };
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        if (CMD_MST.GetEmptyCmdMstByStoreInFinish(stn1, out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-                            foreach (var cmdMst in dataObject.Data)
+                            string sdevice = "";
+                            if (bufferIndex == 2)
                             {
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db).ResultCode == DBResult.Success)
-                                {
-                                    if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-                                    {
-                                        string cmdsts = "";
-                                        string cmdabnormal = "";
-                                        string remark = "";
-                                        bool bflag = false;
-
-                                        if (equCmd[0].CompleteCode == "92")//正常完成
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = "NA";
-                                            remark = "存取車搬送命令完成";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "13",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                               
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = "A3",
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode.StartsWith("W"))
-                                        {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                            bflag = false;
-                                        }
-                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
-                                        {
-                                            cmdsts = CmdSts.CmdCancel;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
-                                            remark = "存取車地上盤強制取消命令";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "15",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                               
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = "A3",
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
-                                            remark = "存取車地上盤強制完成命令";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "14",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailTaskFinish, db);
-                                                return false;
-                                            }
-                                            DisplayTaskStatusInfo info1 = new DisplayTaskStatusInfo
-                                            {
-                                                //填入回報訊息
-
-                                                locationId = "A3",
-                                                taskNo = cmdMst.CmdSno,
-                                                state = "2", //任務結束
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetDisplayTaskStatus().FunReport(info1))
-                                            {
-                                                
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                CMD_MST.UpdateCmdMstRemark(cmdMst.CmdSno, Remark.WMSInReportFailDisplayFinish, db);
-                                                return false;
-                                            }
-                                        }
-                                        if (bflag == true)
-                                        {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.EmptyStoreInCraneCmdFinish, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                        }
-                                    }
-                                }
+                                sdevice = "3";
                             }
-                            return true;
-                        }
-                        else return false;
-                    }
-                    else
-                    {
-                        string strEM = "Error: 開啟DB失敗！";
-                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return false;
-            }
-        }
-
-        //public bool FunEmptyStoreOutWriPlc(string sStnNo, int bufferIndex)
-        //{
-        //    try
-        //    {
-        //        using (var db = clsGetDB.GetDB(_config))
-        //        {
-        //            int iRet = clsGetDB.FunDbOpen(db);
-        //            if (iRet == DBResult.Success)
-        //            {
-        //                string cmdSno = "";
-        //                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-        //                    if (CMD_MST.GetCmdMstByStoreOutStart(sStnNo, out var dataObject, db) == GetDataResult.Success) //讀取CMD_MST 
-        //                    {
-        //                        cmdSno = dataObject[0].CmdSno;
-        //                        int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
-
-        //                        clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get EmptyStoreOut Command => {cmdSno}, " +
-        //                            $"{CmdMode}");
-
-        //                        #region//確認目前模式，是否可以切換模式，可以就寫入切換成出庫的請求
-        //                        if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreInReady
-        //                        && _conveyor.GetBuffer(bufferIndex).Switch_Ack == 1)
-        //                        {
-        //                            clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Not StoreOut Ready, Can Switchmode");
-
-        //                            var WritePlccheck1 = _conveyor.GetBuffer(bufferIndex).Switch_Mode(2).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-        //                            bool Result1 = WritePlccheck1.Item1;
-        //                            string exmessage1 = WritePlccheck1.Item2;
-        //                            if (Result1 != true)
-        //                            {
-        //                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Empty StoreOut Switchmode fail:{exmessage1}");
-        //                                return false;
-        //                            }
-        //                            else
-        //                            {
-        //                                clsWriLog.StoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Empty StoreOut Switchmode Complete");
-        //                            }
-        //                        }
-        //                        #endregion
-
-        //                        #region//站口狀態確認
-        //                        if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).Error == true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).CommandId > 0)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CmdLeftOver, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).Ready != Ready.StoreOutReady)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotStoreOutReady, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 1).CmdMode == 3 || _conveyor.GetBuffer(bufferIndex + 2).CmdMode == 3)//為了不跟盤點命令衝突的條件
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CycleOperating, db);
-        //                            return false;
-        //                        }
-        //                        #endregion
-
-
-        //                        clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready Receive EmptyStoreOut Command");
-
-        //                            if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-        //                            {
-        //                                clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Begin Fail => {cmdSno}");
-        //                                return false;
-        //                            }
-        //                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.EmptyStoreOutWriteCraneCmdToCV, db) == ExecuteSQLResult.Success)
-        //                            {
-        //                                clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Update cmd success => {cmdSno}");
-        //                            }
-        //                            else
-        //                            {
-        //                                clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Upadte cmd fail => {cmdSno}");
-        //                                db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                                return false;
-        //                            }
-        //                            var WritePlccheck = _conveyor.GetBuffer(bufferIndex).WriteCommandIdAsync(cmdSno, CmdMode).Result;//確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-        //                            bool Result = WritePlccheck.Item1;
-        //                            string exmessage = WritePlccheck.Item2;
-        //                            if (Result != true)//寫入命令和模式
-        //                            {
-        //                                clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Command-mode Fail:{exmessage}");
-        //                                db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                                return false;
-        //                            }
-
-        //                            WritePlccheck = _conveyor.GetBuffer(bufferIndex).WritePathChabgeNotice(PathNotice.Path3_toA4).Result;//一樓出庫都要寫入路徑編號，確認寫入PLC的方法是否正常運作，傳回結果和有異常的時候的訊息
-        //                            Result = WritePlccheck.Item1;
-        //                            exmessage = WritePlccheck.Item2;
-        //                            if (Result != true)
-        //                            {
-        //                                clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"WritePLC Path3_toA4 Fail:{exmessage}");
-        //                                db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                                return false;
-        //                            }
-        //                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-        //                        {
-        //                            clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Commit Fail");
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return false;
-        //                        }
-        //                        else return true;
-        //                    }
-        //                    return true;
-        //            }
-        //            else
-        //            {
-        //                string strEM = "Error: 開啟DB失敗！";
-        //                clsWriLog.Log.FunWriTraceLog_CV(strEM);
-        //                return false;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-        //        return false;
-        //    }
-        //}
-
-        //public bool FunEmptyStoreOutCreateEquCmd(int bufferIndex)
-        //{
-        //    try
-        //    {
-        //        using (var db = clsGetDB.GetDB(_config))
-        //        {
-        //            int iRet = clsGetDB.FunDbOpen(db);
-        //            if (iRet == DBResult.Success)
-        //            {
-        //                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-
-        //                    clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, "Buffer Ready EmptyStoreOut");
-
-        //                    string cmdSno = (_conveyor.GetBuffer(bufferIndex).CommandId).ToString();
-        //                    if (CMD_MST.GetCmdMstByEmptyStoreOutCrane(cmdSno, out var dataObject, db) == GetDataResult.Success)
-        //                    {
-
-        //                        string source = $"{dataObject[0].Loc}";
-        //                        string dest = $"{CranePortNo.A1}";
-
-        //                        #region//站口狀態確認
-        //                        if (_conveyor.GetBuffer(bufferIndex).Auto != true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotAutoMode, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).OutMode != true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.NotOutMode, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).Error == true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.BufferError, db);
-        //                            return false;
-        //                        }
-        //                        if (_conveyor.GetBuffer(bufferIndex).Presence == true)
-        //                        {
-        //                            CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.PresenceExist, db);
-        //                            return false;
-        //                        }
-        //                        #endregion
-
-
-        //                        clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Buffer Get Command => {cmdSno}");
-
-        //                        if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-        //                        {
-        //                            clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Begin Fail => {cmdSno}");
-        //                            return false;
-        //                        }
-        //                        if (CMD_MST.UpdateCmdMst(cmdSno, Trace.EmptyStoreOutCreateCraneCmd, db) != ExecuteSQLResult.Success)
-        //                        {
-        //                            clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Update CmdMst Fail => {cmdSno}");
-
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return false;
-        //                        }
-        //                        if (EQU_CMD.InsertStoreOutEquCmd(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, 1, cmdSno, source, dest, 5, db) == false)
-        //                        {
-        //                            clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Insert EquCmd Fail => {cmdSno}");
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return false;
-        //                        }
-        //                        if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-        //                        {
-        //                            clsWriLog.EmptyStoreOutLogTrace(_conveyor.GetBuffer(bufferIndex).BufferIndex, _conveyor.GetBuffer(bufferIndex).BufferName, $"Create Crane StoreOut Command, Commit Fail => {cmdSno}");
-        //                            db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                            return false;
-        //                        }
-        //                    }
-        //                    return true;
-                       
-        //            }
-        //            else
-        //            {
-        //                string strEM = "Error: 開啟DB失敗！";
-        //                clsWriLog.Log.FunWriTraceLog_CV(strEM);
-        //                return false;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-        //        return false;
-        //    }
-        //}
-
-        //public bool FunEmptyStoreOutEquCmdFinish()
-        //{
-        //    try
-        //    {
-        //        var stn1 = new List<string>()
-        //        {
-        //            StnNo.A4
-        //        };
-        //        using (var db = clsGetDB.GetDB(_config))
-        //        {
-        //            int iRet = clsGetDB.FunDbOpen(db);
-        //            if (iRet == DBResult.Success)
-        //            {
-        //                var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-        //                if (CMD_MST.GetEmptyCmdMstByStoreOutFinish(stn1, out var dataObject, db) == GetDataResult.Success)
-        //                {
-        //                    foreach (var cmdMst in dataObject.Data)
-        //                    {
-        //                        if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db) == GetDataResult.Success)
-        //                        {
-        //                            if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-        //                            {
-        //                                if (equCmd[0].CompleteCode == "92")
-        //                                {
-        //                                    if (db.TransactionCtrl2(TransactionTypes.Begin) != TransactionCtrlResult.Success)
-        //                                    {
-        //                                        return false;
-        //                                    }
-        //                                    if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, $"{CmdSts.CompleteWaitUpdate}", Trace.EmptyStoreOutCraneCmdFinish, db) != ExecuteSQLResult.Success)
-        //                                    {
-        //                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                                        return false;
-        //                                    }
-        //                                    if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
-        //                                    {
-        //                                        db.TransactionCtrl2(TransactionTypes.Rollback);
-        //                                        return false;
-        //                                    }
-        //                                    if (db.TransactionCtrl2(TransactionTypes.Commit) != TransactionCtrlResult.Success)
-        //                                    {
-        //                                        return false;
-        //                                    }
-        //                                }
-        //                                else if (equCmd[0].CompleteCode.StartsWith("W"))
-        //                                {
-        //                                    if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db) != ExecuteSQLResult.Success)
-        //                                    {
-        //                                        return false;
-        //                                    }
-        //                                }
-        //                            }
-        //                        }
-        //                    }
-        //                    return true;
-        //                }
-        //                else return false;
-        //            }
-        //            else
-        //            {
-        //                string strEM = "Error: 開啟DB失敗！";
-        //                clsWriLog.Log.FunWriTraceLog_CV(strEM);
-        //                return false;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-        //        var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-        //        clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-        //        return false;
-        //    }
-        //}
-
-        public bool FunLocToLoc()
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        if (CMD_MST.GetLocToLoc(out var dataObject, db).ResultCode == DBResult.Success)
-                        {
-
-                            string source = $"{dataObject[0].Loc}";
-                            string dest = $"{dataObject[0].NewLoc}";
-                            string cmdSno = $"{dataObject[0].CmdSno}";
-                            string IOtype = $"{dataObject[0].IOType}";
-                            string palletNo = dataObject[0].palletNo;
-
-
-                            clsWriLog.L2LLogTrace(5, "LocToLoc", $"LocToLoc Command Received => {cmdSno}");
-
-                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            else if (bufferIndex == 4)
                             {
-                                clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command, Begin Fail => {cmdSno}");
-                                return false;
+                                sdevice = "5";
                             }
-                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, Trace.LoctoLocReady, db).ResultCode != DBResult.Success)
+
+                            //預約buffer
+                            bool Result = Plc1.FunWriPLC_Word("DB" + sdevice + "0.0", cmdSno);//確認寫入PLC命令的方法是否正常運作
+
+                            if (Result != true)
                             {
-                                clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command, Update CmdMst Fail => {cmdSno}");
-                                
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"WritePLC CV_Command Fail");
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            if (EQU_CMD.InsertLocToLocEquCmd(5, "LocToLoc", 1, cmdSno, source, dest, 1, db) == false)
+
+                            Result = Plc1.FunWriPLC_Word("DB" + sdevice + "2.0", CmdMode.ToString());//確認寫入PLC模式的方法是否正常運作
+
+                            if (Result != true)
                             {
-                                clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command, Insert EquCmd Fail => {cmdSno}");
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", $"WritePLC CV_mode Fail");
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                                //填入訊息
-                                TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                {
-                                     
-                                    taskNo = cmdSno,
-                                    palletNo = palletNo,
-                                    bussinessType = IOtype,
-                                    state = "12",
-                                    errMsg = ""
-                                };
-                                if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                {
-                                    db.TransactionCtrl(TransactionTypes.Rollback);
-                                    return false;
-                                }
 
                             if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
                             {
-                                clsWriLog.L2LLogTrace(5, "LocToLoc", $"Create Crane LocToLoc Command Commit Fail => {cmdSno}");
+                                clsWriLog.PickUpLogTrace(bufferIndex, "1F", "Commit Fail");
 
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
                             else return true;
-                             
+
                         }
                         else return false;
+
                     }
                     else
                     {
@@ -2540,7 +1556,212 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public bool FunLocToLocCmdFinish()
+        public bool FunPickUpShuttleChangeLayer(clsBufferData Plc1)//暫不用
+        {
+            try
+            {
+
+                //這邊需要作流程為與shuttle交握，流程起始點為SHC呼叫WCS=>Change_layer request 
+                //WCS呼叫lifter換層 
+
+                using (var db = clsGetDB.GetDB(_config))
+                {
+                    int iRet = clsGetDB.FunDbOpen(db);
+                    if (iRet == DBResult.Success)
+                    {
+
+                        if (CMD_MST.GetCMDPICKUpRunning(out var dataObject, db).ResultCode == DBResult.Success) //檢查會唯一在執行的一筆電梯命令
+                        {
+
+                            string cmdSno = dataObject[0].CmdSno;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string trace = dataObject[0].Trace;
+                            string TaskNo = dataObject[0].TaskNo;
+                            string Vehicle_ID = dataObject[0].Vehicle_ID;
+                            bool Result;
+                            string Loc = dataObject[0].Loc;
+                            string CallLift_Floor = "";
+                            string NewTrace = "";
+
+                            clsWriLog.LifterLogTrace(0, "Lifter", $"Start_Get SHC Chanege Layer Req=> {cmdSno}");
+
+                            #region 根據Trace去做動作分類
+                            if (trace == Trace.PickUpLifterToStartLevel)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Start Write CMD TO Lifter=> {cmdSno}");
+
+                                if (Plc1.oPLC.PLC[0].Lifter.CMDno == "")//確認命令符合狀態也確認lifter內沒有命令才寫入
+                                {
+
+                                    Result = Plc1.FunWriPLC_Word("DB20.0", Vehicle_ID);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter Vehicle_ID  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Word("DB22.0", cmdSno);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter CmdSno(Big)  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Word("DB24.0", TaskNo);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter TaskNo(small)  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+
+                                    Result = Plc1.FunWriPLC_Bit("DB26.1", true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                    if (Result != true)
+                                    {
+                                        clsWriLog.LifterLogTrace(0, "Lifter", $"WriteLifter WriteCMD_Complete  Fail");
+                                        db.TransactionCtrl2(TransactionTypes.Rollback);
+                                        return false;
+                                    }
+                                }
+                                else return false;
+
+                                NewTrace = Trace.PickUpSHCCallWcsChangeLifterToStorinLevel;
+
+                            }
+                            else if (trace == Trace.PickUpStart)//撿料換成車子所在的那層
+                            {
+                                CallLift_Floor = "";
+                                NewTrace = Trace.PickUpSHCcallWCSChangeLifter;
+                            }
+                            else if (trace == Trace.PickUpLifterToStorinLevel)//撿料換成車子回收的那層
+                            {
+                                CallLift_Floor = "";
+                                NewTrace = Trace.PickUpCarReturn;
+                            }
+                            else if (trace == Trace.PickUpLiftOK_CallSHCCarGoinLifter)
+                            {
+                                CallLift_Floor = Loc.Substring(9, 1);
+                                NewTrace = Trace.PickUpSHCcallWCSChangeLifterToStartLevel;
+                            }
+                            #endregion
+
+                            //此案有許多一樣Change Layer的功能，可以共用只要照SHC的REQ以及命令的類別做區分即可
+
+                            clsWriLog.LifterLogTrace(0, "Lifter", $"{trace}:Call Lifter Change Layer To{CallLift_Floor}=> {cmdSno},{TaskNo}");
+
+
+
+                            #region Call車子樓層
+                            if (CallLift_Floor == "1")
+                            {
+                                CallLift_Floor = CallLifterFloorBits.Floor1;
+                            }
+                            else if (CallLift_Floor == "2")
+                            {
+                                CallLift_Floor = CallLifterFloorBits.Floor2;
+                            }
+                            else if (CallLift_Floor == "3")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor3);
+                            }
+                            else if (CallLift_Floor == "4")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor4);
+                            }
+                            else if (CallLift_Floor == "5")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor5);
+                            }
+                            else if (CallLift_Floor == "6")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor6);
+                            }
+                            else if (CallLift_Floor == "7")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor7);
+                            }
+                            else if (CallLift_Floor == "8")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor8);
+                            }
+                            else if (CallLift_Floor == "9")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor9);
+                            }
+                            else if (CallLift_Floor == "10")
+                            {
+                                CallLift_Floor = (CallLifterFloorBits.Floor10);
+                            }
+                            #endregion
+
+                            Result = Plc1.FunWriPLC_Bit("DB" + CallLift_Floor, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                            if (Result != true)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"WritePLC CallLifter Fail");
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", "begin fail");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, NewTrace, db).ResultCode == DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd succeess => {cmdSno}");
+                            }
+                            else
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"Upadte cmd fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
+                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", "Commit Fail");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+                            else return true;
+
+                        }
+                        else return false;
+
+                    }
+                    else
+                    {
+                        string strEM = "Error: 開啟DB失敗！";
+                        clsWriLog.Log.FunWriTraceLog_CV(strEM);
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                return false;
+            }
+        }
+
+
+        #endregion StoreOut
+
+
+        public bool FunL2L(clsBufferData Plc1)
         {
             try
             {
@@ -2549,128 +1770,66 @@ namespace Mirle.DB.Proc
                     int iRet = clsGetDB.FunDbOpen(db);
                     if (iRet == DBResult.Success)
                     {
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        if (CMD_MST.GetLoctoLocFinish(out var dataObject, db).ResultCode == DBResult.Success)
+
+                        if (CMD_MST.GetLocToLoc(out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                         {
-                            foreach (var cmdMst in dataObject.Data)
+
+                            string cmdSno = dataObject[0].CmdSno;
+                            int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string Loc = dataObject[0].Loc;
+                            string NewLoc = dataObject[0].NewLoc;
+
+                            clsWriLog.L2LLogTrace(5, "L2L", $"Get L2L Command => {cmdSno}, " +
+                                       $"{CmdMode}");
+
+
+                            #region//根據buffer狀態更新命令
+                            if (Plc1.oPLC.PLC[0].Lifter.LiftMode != true)
                             {
-                                if (EQU_CMD.GetEquCmd(cmdMst.CmdSno, out var equCmd, db).ResultCode == DBResult.Success)
-                                {
-                                    if (equCmd[0].ReNeqFlag != "F" && equCmd[0].CmdSts == "9")
-                                    {
-                                        string cmdsts = "";
-                                        string cmdabnormal = "";
-                                        string remark = "";
-                                        bool bflag = false;
-
-                                        if (equCmd[0].CompleteCode == "92")//正常完成
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = "NA";
-                                            remark = "存取車搬送命令完成";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-                                                 
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "13",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode.StartsWith("W"))
-                                        {
-                                            if (EQU_CMD.UpdateEquCmdRetry(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                            bflag = false;
-                                        }
-                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.EF.ToString()) //地上盤強制取消 EF
-                                        {
-                                            cmdsts = CmdSts.CmdCancel;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.EF.ToString();
-                                            remark = "存取車地上盤強制取消命令";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-                                                 
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "15",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                        }
-                                        else if (equCmd[0].CompleteCode == clsEnum.Cmd_Abnormal.FF.ToString()) //地上盤強制完成 FF
-                                        {
-                                            cmdsts = CmdSts.CompleteWaitUpdate;
-                                            cmdabnormal = clsEnum.Cmd_Abnormal.FF.ToString();
-                                            remark = "存取車地上盤強制完成命令";
-                                            bflag = true;
-
-                                            //填入訊息
-                                            TaskStateUpdateInfo info = new TaskStateUpdateInfo
-                                            {
-                                                taskNo = cmdMst.CmdSno,
-                                                palletNo = cmdMst.palletNo,
-                                                bussinessType = cmdMst.IOType,
-                                                state = "14",
-                                                errMsg = ""
-                                            };
-                                            if (!clsWmsApi.GetApiProcess().GetTaskStateUpdate().FunReport(info))
-                                            {
-                                                db.TransactionCtrl(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                        }
-                                        if (bflag == true)
-                                        {
-                                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMst(equCmd[0].CmdSno, cmdsts, Trace.LoctoLocReadyFinish, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (CMD_MST.UpdateCmdMstRemarkandAbnormal(equCmd[0].CmdSno, remark, cmdabnormal, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (EQU_CMD.DeleteEquCmd(equCmd[0].CmdSno, db).ResultCode != DBResult.Success)
-                                            {
-                                                db.TransactionCtrl2(TransactionTypes.Rollback);
-                                                return false;
-                                            }
-                                            if (db.TransactionCtrl2(TransactionTypes.Commit).ResultCode != DBResult.Success)
-                                            {
-                                                return false;
-                                            }
-                                        }
-                                    }
-                                }
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.LifterNotAutoMode, db);
+                                return false;
                             }
+                            if (Plc1.oPLC.PLC[0].Lifter.LiftIdle != true)
+                            {
+                                CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.LifterNotIdleMode, db);
+                                return false;
+                            }
+                            #endregion
+
+                            clsWriLog.L2LLogTrace(5, "Lifter", $"Ready Receive L2L Command=> {cmdSno}");
+
+                            //接收到庫對庫命令
+
+
+                            //先告知shuttle有庫對庫命令
+
+
+                            _shuttleCommand = new ShuttleCommand(cmdSno, "A", 1, Loc, NewLoc, "BOX_ID", "0000");//庫對庫命令 待修改參數 儲位由WMS給 箱子號為原本資料表得到，vehicle固定0000
+                            _shuttleController?.CreateShuttleCommand(_shuttleCommand);
+
+
+                            if (db.TransactionCtrl2(TransactionTypes.Begin).ResultCode != DBResult.Success)
+                            {
+                                clsWriLog.L2LLogTrace(5, "1F", "begin fail");
+                                return false;
+                            }
+                            if (CMD_MST.UpdateCmdMstTransferring(cmdSno, "", db).ResultCode == DBResult.Success)//庫對庫流程
+                            {
+                                clsWriLog.L2LLogTrace(5, "1F", $"Upadte cmd succeess => {cmdSno}");
+                            }
+                            else
+                            {
+                                clsWriLog.L2LLogTrace(5, "1F", $"Upadte cmd fail => {cmdSno}");
+
+                                db.TransactionCtrl2(TransactionTypes.Rollback);
+                                return false;
+                            }
+
                             return true;
+
                         }
                         else return false;
+
                     }
                     else
                     {
@@ -2688,86 +1847,5 @@ namespace Mirle.DB.Proc
                 return false;
             }
         }
-        #endregion
-
-        #region//根據判斷去決定一樓空棧板總數是否滿了，去擋下出庫命令
-        private bool CheckEmptyWillBefullOrNot()
-        {
-            var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-            if ((_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).CommandId != 0) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).CommandId != 0)  
-                || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(3).CommandId != 0) || _conveyor.GetBuffer(4).EmptyINReady == 9
-                || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(1).Presence ) || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(2).Presence)
-                || (_conveyor.GetBuffer(4).EmptyINReady == 8 && _conveyor.GetBuffer(3).Presence))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        #endregion
-
-        #region//判斷function:當檢查命令是最後一個以及一樓buffer沒有貨物，便要直接路徑到A3，狀態正確寫入1:現在沒有用這個作為判斷，現在用WMS傳我們的whetherAllOut參數作為判斷
-        private int LastCargoOrNot()
-        {
-            using (var db = clsGetDB.GetDB(_config))
-            {
-                int iRet = clsGetDB.FunDbOpen(db);
-                if (iRet == DBResult.Success)
-                {
-                    if (CMD_MST.GetCmdMstByStoreOutcheck(StnNo.A3, out var dataObject, db).ResultCode == DBResult.Success)
-                    {
-                        int COUNT = Convert.ToInt32(dataObject[0].COUNT);
-                        var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
-                        if (_conveyor.GetBuffer(2).A2LV2 == 0 && COUNT == 1 && _conveyor.GetBuffer(2).CommandId == 0 && _conveyor.GetBuffer(1).CommandId == 0)
-                        {
-                            return 1;
-                        }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
-                    else
-                    {
-                        return 99;//異常連不到資料庫
-                    }
-                }
-                else
-                {
-                    string strEM = "Error: 開啟DB失敗！";
-                    clsWriLog.Log.FunWriTraceLog_CV(strEM);
-                    return 0;
-                }
-            }
-        }
-        #endregion
-
-        #region//判斷是否是外儲位，是的話檢查內儲位是否有命令，如果有命令傳回true擋下命令
-        private bool funChkInsideLoc(string Loc, SqlServer db)
-        {
-            string sInsideLoc = "";
-
-            if (Loc.Substring(0, 2) == "03")
-            {
-                sInsideLoc = "01";
-            }
-            else if (Loc.Substring(0, 2) == "04")
-            {
-                sInsideLoc = "02";
-            }
-            sInsideLoc = sInsideLoc + Loc.Substring(2, 5);
-            if(CMD_MST.GetCmdMstByLOC(sInsideLoc, out var dataObject, db).ResultCode==DBResult.NoDataSelect)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        #endregion
-
     }
 }

@@ -12,7 +12,7 @@ namespace Mirle.DB.Object.Service
         {
             try
             {
-                clsDB_Proc.GetDB_Object().GetDisplayTask().ErrorReportTaskStart();
+                
             }
             catch (Exception ex)
             {

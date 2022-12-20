@@ -38,13 +38,11 @@ namespace WCS_API_Server
 
                 cmd.CmdSno = Body.taskNo;
                 cmd.CmdMode = BusinessTypeConvert.cvtCmdMode(Body.bussinessType, Body.WhetherAllout);
-                cmd.palletNo = Body.palletNo;
                 cmd.IoType = Body.bussinessType;
                 cmd.taskNo = Body.taskNo;
                 cmd.StnNo = BusinessTypeConvert.cvtStnNo(Body.bussinessType, Body.locationFrom, Body.locationTo);
                 cmd.Loc = Body.locationFrom;
                 cmd.NewLoc = Body.locationTo;
-                cmd.WhetherAllout = Body.WhetherAllout;
                 cmd.CrtDate = Body.deliveryTime;
                 cmd.Userid = "WMS";
                 #endregion
@@ -52,8 +50,8 @@ namespace WCS_API_Server
                 //var _conveyor = ControllerReader.GetCVControllerr().GetConveryor();
 
                 //寫入DB
-                if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))
-                    throw new Exception(strEM);
+                //if (!clsDB_Proc.GetDB_Object().GetCmd_Mst().FunInsCmdMst(cmd, ref strEM))
+                //    throw new Exception(strEM);
 
                 rMsg.success = true;
                 rMsg.errMsg = "";
@@ -79,44 +77,7 @@ namespace WCS_API_Server
     
         }
         
-        [Route("api/WCS/MoveTaskForceClear")]
-        [HttpPost]
-        public IHttpActionResult MOVE_TASK_FORCE_CLEAR([FromBody] MoveTaskForceClearInfo Body)
-        {
-            clsWriLog.Log.FunWriTraceLog_CV($"<MOVE_TASK_FORCE_CLEAR> <WMS Send>\n{JsonConvert.SerializeObject(Body)}");
-            ReturnMessage rMsg = new ReturnMessage
-            {
-                lineId = Body.lineId,
-                taskNo = Body.taskNo
-            };
-            clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_FORCE_CLEAR start!");
-            try
-            {
-                string strEM = "";
-                if (!clsDB_Proc.GetDB_Object().GetProcess().FunMoveTaskForceClear(Body.taskNo, ref strEM))
-                    throw new Exception(strEM);
-                rMsg.success = true;
-                rMsg.errMsg = "";
-                clsWriLog.Log.FunWriTraceLog_CV($"<{Body.taskNo}>MOVE_TASK_FORCE_CLEAR end!");
-                return Json(rMsg);
-                
-                //return Ok();
-            }
-            catch(Exception ex)
-            {
-                
-                rMsg.success = false;
-                rMsg.errMsg = ex.Message;
 
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
-
-                return Json(rMsg);
-                
-                //return NotFound();
-            }
-            
-        }
         
     }
 }

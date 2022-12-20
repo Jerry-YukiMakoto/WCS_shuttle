@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ProjectName>Mirle.IASC</ProjectName>
+		<Product>$(ProjectName) v$(Version)</Product>
+		<TargetFramework>net472</TargetFramework>
+		<Title Condition="'$(TargetFramework)' == 'net5.0-windows'">$(ProjectName) .NET 5.0</Title>
+		<Authors>Mirle Intellectual System, LouisTseng</Authors>
+		<Company>Mirle Automation Corporation.</Company>
+		<CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
+		<Copyright>Copyright© 2019-$(CurrentYear) Mirle Automation Corporation.</Copyright>
+		<FileVersion>1.0.0.0</FileVersion>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<Version>1.0.0</Version>
+		<OutputType>Library</OutputType>
+    <LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Mirle" Version="2.0.6" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Reference Include="PSDriver">
+			<HintPath>Library\PSDriver.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+	
+</Project>

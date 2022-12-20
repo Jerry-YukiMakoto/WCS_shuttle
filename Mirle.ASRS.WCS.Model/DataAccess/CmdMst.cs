@@ -12,6 +12,8 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
     public sealed class CmdMst : ValueObject
     {
         public string CmdSno { get; private set; }
+        public string TaskNo { get; private set; }
+        public string Vehicle_ID { get; private set; }
         public string CmdMode { get; private set; }
         public string StnNo { get; private set; }
         public string Loc { get; private set; }
@@ -30,6 +32,14 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             if (row.Table.Columns.Contains("CMDSNO"))
             {
                 CmdSno = Convert.ToString(row["CMDSNO"]);
+            }
+            if (row.Table.Columns.Contains("TaskNo"))
+            {
+                TaskNo = Convert.ToString(row["TaskNo"]);
+            }
+            if (row.Table.Columns.Contains("Vehicle_ID "))
+            {
+                Vehicle_ID = Convert.ToString(row["Vehicle_ID "]);
             }
             if (row.Table.Columns.Contains("CMDMODE"))
             {
