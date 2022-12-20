@@ -476,7 +476,7 @@ namespace Mirle.DB.Proc
                                 CallLift_Floor = DestinationLayer;
                                 NewTrace = Trace.StoreInLiftToLoc;
                             }
-                            if (trace == Trace.PickUpLifterToStartLevel || DestinationLayer=="01")
+                            else if (trace == Trace.PickUpLifterToStartLevel || DestinationLayer=="01")
                             {
                                 clsWriLog.LifterLogTrace(0, "Lifter", $"Start Write CMD TO Lifter=> {cmdSno}");
 
@@ -540,6 +540,11 @@ namespace Mirle.DB.Proc
                             {
                                 CallLift_Floor = DestinationLayer;
                                 NewTrace = Trace.PickUpSHCcallWCSChangeLifterToStartLevel;
+                            }
+                            else
+                            {
+                                clsWriLog.LifterLogTrace(0, "Lifter", $"{trace}:Can't find Trace,please check{CallLift_Floor}=> {cmdSno},{TaskNo}");
+                                return false;
                             }
                             #endregion
 
@@ -952,12 +957,161 @@ namespace Mirle.DB.Proc
                             //回報shuttle樓層
                             _shuttleController?.P85("1", "C", "0000");//Result_Code:0000=Succeess
 
-
+                            string strfloor = floor.ToString();
+                            string CallLift_Floor="";
+                            string Complete_Floor="";
 
                             if (NewTrace == Trace.StoreInLiftToLocLevel)
                             {
                                 //命令結束要做特殊結尾，更新為九以及要多寫觸發PLC的點位讓電梯PLC清直
                                 CMD_MST.UpdateCmdMstEnd(cmdSno, ASRS.WCS.Model.DataAccess.CmdSts.CompleteWaitUpdate, NewTrace, db);
+
+                                #region 車子移動完成樓層
+
+                                if (strfloor == "1")
+                                {
+                                    Complete_Floor = CallLifterFloorCarMoveCompleteBits.Floor1;
+                                }
+                                else if (strfloor == "2")
+                                {
+                                    Complete_Floor = CallLifterFloorCarMoveCompleteBits.Floor2;
+                                }
+                                else if (strfloor == "3")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor3);
+                                }
+                                else if (strfloor == "4")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor4);
+                                }
+                                else if (strfloor == "5")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor5);
+                                }
+                                else if (strfloor == "6")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor6);
+                                }
+                                else if (strfloor == "7")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor7);
+                                }
+                                else if (strfloor == "8")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor8);
+                                }
+                                else if (strfloor == "9")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor9);
+                                }
+                                else if (strfloor == "10")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor10);
+                                }
+                                #endregion
+
+                                #region Call車子樓層
+                                if (strfloor == "1")
+                                {
+                                    CallLift_Floor = CallLifterFloorBits.Floor1;
+                                }
+                                else if (strfloor == "2")
+                                {
+                                    CallLift_Floor = CallLifterFloorBits.Floor2;
+                                }
+                                else if (strfloor == "3")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor3);
+                                }
+                                else if (strfloor == "4")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor4);
+                                }
+                                else if (strfloor == "5")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor5);
+                                }
+                                else if (strfloor == "6")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor6);
+                                }
+                                else if (strfloor == "7")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor7);
+                                }
+                                else if (strfloor == "8")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor8);
+                                }
+                                else if (strfloor == "9")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor9);
+                                }
+                                else if (strfloor == "10")
+                                {
+                                    CallLift_Floor = (CallLifterFloorBits.Floor10);
+                                }
+                                #endregion
+
+                                bool Result;
+
+                                Result = Plc1.FunWriPLC_Bit("DB" + Complete_Floor, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                                Result = Plc1.FunWriPLC_Bit("DB" + CallLift_Floor, true);//確認寫入PLC讀取完成的方法是否正常運作
+
+                            }
+
+                            if (NewTrace == Trace.PickUpCarToReturnCarLevel)
+                            {
+                                //命令結束要做特殊結尾，更新為九以及要多寫觸發PLC的點位讓電梯PLC清直
+                                CMD_MST.UpdateCmdMstEnd(cmdSno, ASRS.WCS.Model.DataAccess.CmdSts.CompleteWaitUpdate, NewTrace, db);
+                                bool Result;
+
+                                #region 車子移動完成樓層
+
+                                if (strfloor == "1")
+                                {
+                                    Complete_Floor = CallLifterFloorCarMoveCompleteBits.Floor1;
+                                }
+                                else if (strfloor == "2")
+                                {
+                                    Complete_Floor = CallLifterFloorCarMoveCompleteBits.Floor2;
+                                }
+                                else if (strfloor == "3")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor3);
+                                }
+                                else if (strfloor == "4")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor4);
+                                }
+                                else if (strfloor == "5")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor5);
+                                }
+                                else if (strfloor == "6")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor6);
+                                }
+                                else if (strfloor == "7")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor7);
+                                }
+                                else if (strfloor == "8")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor8);
+                                }
+                                else if (strfloor == "9")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor9);
+                                }
+                                else if (strfloor == "10")
+                                {
+                                    Complete_Floor = (CallLifterFloorCarMoveCompleteBits.Floor10);
+                                }
+                                #endregion
+
+                                Result = Plc1.FunWriPLC_Bit("DB" + Complete_Floor, true);//確認寫入PLC讀取完成的方法是否正常運作
 
                             }
 
@@ -1474,8 +1628,7 @@ namespace Mirle.DB.Proc
 
 
                             //先告知shuttle有撿料命令
-                            //重要!!這邊的判斷要先做內外儲位的判斷，當是外儲位的時候，需要做內儲位是否需要先做搬運的動作，如果需要就得先做庫對庫命令，此出庫命令就先不產生 記得追加判斷命令function在這裡
-
+                            
                             _shuttleCommand = new ShuttleCommand(cmdSno, "A", 1, Loc, StnNo.STNNO_1F, "BOX_ID", "0000");//撿料命令 待修改參數 儲位由WMS給 箱子號為原本資料表得到，vehicle固定0000
                             _shuttleController?.CreateShuttleCommand(_shuttleCommand);
 
