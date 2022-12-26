@@ -10,7 +10,6 @@ namespace Mirle.DB.Proc
         private readonly clsCmd_Mst CMD_MST;
         private readonly clsSno SNO;
         private readonly clsLocMst LocMst;
-        private readonly clsEqu_Cmd EQU_CMD;
         private readonly clsAlarmData ALARMDATA;
         private readonly clsCmd_Mst_His CMD_MST_HIS;
         private readonly clsUnitStsLog unitStsLog;
@@ -41,7 +40,6 @@ namespace Mirle.DB.Proc
             CMD_MST = new clsCmd_Mst(config);
             SNO = new clsSno(config);
             LocMst = new clsLocMst(config);
-            EQU_CMD = new clsEqu_Cmd(config, config_WMS, _config_Sqlite);
             ALARMDATA = new clsAlarmData(config);
             CMD_MST_HIS = new clsCmd_Mst_His(config);
             unitStsLog = new clsUnitStsLog(config);
@@ -61,11 +59,6 @@ namespace Mirle.DB.Proc
         public clsLocMst GetLocMst()
         {
             return LocMst;
-        }
-
-        public clsEqu_Cmd GetEqu_Cmd()
-        {
-            return EQU_CMD;
         }
 
         public clsSno GetSNO()

@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Linq;
-using WCS;
 using HslCommunicationPLC.Siemens;
 
 namespace Mirle.ASRS.View

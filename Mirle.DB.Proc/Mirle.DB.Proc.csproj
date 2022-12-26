@@ -52,7 +52,6 @@
     <Compile Include="clsAlarmData.cs" />
     <Compile Include="clsCmd_Mst.cs" />
     <Compile Include="clsCmd_Mst_His.cs" />
-    <Compile Include="clsEqu_Cmd.cs" />
     <Compile Include="clsEQ_Alarm.cs" />
     <Compile Include="clsGetDB.cs" />
     <Compile Include="clsHost.cs" />

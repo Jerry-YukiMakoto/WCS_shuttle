@@ -32,10 +32,7 @@ namespace Mirle.DB.ClearCmd.Proc
                 {
                     if (DB.Proc.clsHost.IsConn)
                     {
-                        if (clsDB_Proc.GetDB_Object().GetEqu_Cmd().FunDelHisEquCmd(1))
-                        {
-                            strLastExportTime = strNowTime;
-                        }
+                       
                     }
                 }
             }

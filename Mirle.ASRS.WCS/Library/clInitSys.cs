@@ -27,6 +27,7 @@ namespace Mirle.ASRS.WCS.Library
         public static string SHC_IP;
         public static int SHC_port;
         public static string STN_NO;
+        public static string BCR_IP;
 
 
         //API
@@ -102,6 +103,7 @@ namespace Mirle.ASRS.WCS.Library
             CV_Config.IpAddress = lcsini.CV.MPLCIP;
             SHC_IP = lcsini.CV.SHC_IP;
             SHC_port =lcsini.CV.SHC_PORT;
+            StnNo.BCR_IP = lcsini.CV.BCR_IP;
         }
 
         private static void FunStnNoConfig(ASRSINI lcsini)

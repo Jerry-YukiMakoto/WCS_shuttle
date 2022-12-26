@@ -17,6 +17,7 @@ using Mirle.CENS.T26YGAP0;
 using HslCommunicationPLC.Siemens;
 using static Mirle.Def.clsConstValue;
 using Mirle.IASC;
+using Mirle.BarcodeReader;
 
 namespace Mirle.DB.Proc
 {
@@ -24,7 +25,6 @@ namespace Mirle.DB.Proc
     {
         private clsPortDef PortDef = new clsPortDef();
         private Fun.clsCmd_Mst CMD_MST = new Fun.clsCmd_Mst();
-        private Fun.clsEqu_Cmd EQU_CMD = new Fun.clsEqu_Cmd();
         private Fun.clsSno SNO = new Fun.clsSno();
         private Fun.clsLocMst LocMst = new Fun.clsLocMst();
         private Fun.clsProc proc;
@@ -66,7 +66,9 @@ namespace Mirle.DB.Proc
                             return false;
                         }
 
-                        //標籤上要有什麼資料讓我去命令找資料，這邊再加上連上BCR讀取抓資料的的流程，再加上去資料庫作比對的流程//          
+                        //標籤上要有什麼資料讓我去命令找資料，這邊再加上連上BCR讀取抓資料的的流程，再加上去資料庫作比對的流程//
+                        //
+                        new SocketListen(StnNo.BCR_IP, 123);
 
                         if (CMD_MST.GetCmdMstByStoreInStart(out var dataObject, db).ResultCode == DBResult.Success) //讀取入庫動作流程
                         {
@@ -172,7 +174,6 @@ namespace Mirle.DB.Proc
                                     $"{CmdMode}");
 
                             #region//根據buffer狀態更新命令
-
                             if (Plc1.oPLC.PLC[bufferIndex].CV.AllowWriteCommand != true)
                             {
                                 CMD_MST.UpdateCmdMstRemark(cmdSno, Remark.CV_NOTallowWriteCommand, db);
@@ -291,7 +292,7 @@ namespace Mirle.DB.Proc
                             return false;
                         }
 
-                        string Sno = Plc1.oPLC.PLC[bufferIndex].CV.Sno;
+                        string Sno = Plc1.oPLC.PLC[bufferIndex].CV.Sno.PadLeft(5, '0');
 
                         if (CMD_MST.GetCmdMstByStoreInLifterStart(Sno, out var dataObject, db).ResultCode == DBResult.Success) //讀取CMD_MST
                         {
@@ -299,7 +300,8 @@ namespace Mirle.DB.Proc
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
                             string Loc= dataObject[0].Loc;
-                        
+                            string Loc_ID = dataObject[0].LOC_ID;
+
                             clsWriLog.StoreInLogTrace(bufferIndex, sStnNo, $"Buffer Get StoreIn Command => {cmdSno}, " + $"{CmdMode}");
 
                             #region//根據buffer狀態更新命令
@@ -329,7 +331,7 @@ namespace Mirle.DB.Proc
 
                             //這邊需要作流程為與shuttle交握，需要告知SHC有入庫命令去得知車子在哪一層
 
-                            _shuttleCommand = new ShuttleCommand(cmdSno, "A" , 1,StnNo.STNNO_1F, Loc, "BOX_ID", "0000");//入庫待修改參數 儲位由WMS給 箱子號為掃bCR得到，vehicle固定0000
+                            _shuttleCommand = new ShuttleCommand(cmdSno, "A" , 1,StnNo.STNNO_1F, Loc, Loc_ID, "0000");//入庫待修改參數 儲位由WMS給 箱子號為掃bCR得到，vehicle固定0000
                             _shuttleController?.CreateShuttleCommand(_shuttleCommand);
 
 
@@ -461,7 +463,8 @@ namespace Mirle.DB.Proc
                                     }
                                 }
                                 else return false;
-                                CarmoveCompleteFloor = "";
+
+                                CarmoveCompleteFloor = Plc1.oPLC.PLC[0].Lifter.LiftPosition.ToString().PadLeft(2,'0');
                                 CallLift_Floor = DestinationLayer;//到裝卸層
                                 NewTrace = Trace.StoreInSHCCallWCS_CarinLift_ChangeLayer;
                                 WriteCMD = true;
@@ -476,7 +479,7 @@ namespace Mirle.DB.Proc
                                 CallLift_Floor = DestinationLayer;
                                 NewTrace = Trace.StoreInLiftToLoc;
                             }
-                            else if (trace == Trace.PickUpLifterToStartLevel || DestinationLayer=="01")
+                            else if (trace == Trace.PickUpLifterToStartLevel)
                             {
                                 clsWriLog.LifterLogTrace(0, "Lifter", $"Start Write CMD TO Lifter=> {cmdSno}");
 
@@ -520,7 +523,7 @@ namespace Mirle.DB.Proc
                                     }
                                 }
                                 else return false;
-                                CarmoveCompleteFloor = Loc.Substring(8,2);
+                                CarmoveCompleteFloor = Plc1.oPLC.PLC[0].Lifter.LiftPosition.ToString().PadLeft(2, '0');
                                 CallLift_Floor = DestinationLayer;//到裝卸層
                                 NewTrace = Trace.PickUpSHCCallWcsChangeLifterToStorinLevel;
                                 WriteCMD = true;
@@ -543,18 +546,18 @@ namespace Mirle.DB.Proc
                             }
                             else
                             {
+                                CallLift_Floor = DestinationLayer;
                                 clsWriLog.LifterLogTrace(0, "Lifter", $"{trace}:Can't find Trace,please check{CallLift_Floor}=> {cmdSno},{TaskNo}");
-                                return false;
                             }
                             #endregion
 
                             //此案有許多一樣Change Layer的功能，可以共用只要照SHC的REQ以及命令的類別做區分即可
 
                             clsWriLog.LifterLogTrace(0, "Lifter", $"{trace}:Call Lifter Change Layer To{CallLift_Floor}=> {cmdSno},{TaskNo}");
-
+                            CallLift_Floor.PadLeft(2, '0');
                             #region 車子移動完成樓層
 
-                            if (WriteCMD)
+                            if (WriteCMD||CallLift_Floor=="01")
                             {
                                 if (CarmoveCompleteFloor == "01")
                                 {
@@ -600,39 +603,39 @@ namespace Mirle.DB.Proc
                             #endregion
 
                             #region Call車子樓層
-                            if (CallLift_Floor == "1")
+                            if (CallLift_Floor == "01")
                             {
                                 CallLift_Floor = CallLifterFloorBits.Floor1;
                             }
-                            else if (CallLift_Floor == "2")
+                            else if (CallLift_Floor == "02")
                             {
                                 CallLift_Floor = CallLifterFloorBits.Floor2;
                             }
-                            else if (CallLift_Floor == "3")
+                            else if (CallLift_Floor == "03")
                             {
                                 CallLift_Floor = (CallLifterFloorBits.Floor3);
                             }
-                            else if (CallLift_Floor == "4")
+                            else if (CallLift_Floor == "04")
                             {
                                 CallLift_Floor = (CallLifterFloorBits.Floor4);
                             }
-                            else if (CallLift_Floor == "5")
+                            else if (CallLift_Floor == "05")
                             {
                                 CallLift_Floor = (CallLifterFloorBits.Floor5);
                             }
-                            else if (CallLift_Floor == "6")
+                            else if (CallLift_Floor == "06")
                             {
                                 CallLift_Floor = (CallLifterFloorBits.Floor6);
                             }
-                            else if (CallLift_Floor == "7")
+                            else if (CallLift_Floor == "07")
                             {
                                 CallLift_Floor = (CallLifterFloorBits.Floor7);
                             }
-                            else if (CallLift_Floor == "8")
+                            else if (CallLift_Floor == "08")
                             {
                                 CallLift_Floor = (CallLifterFloorBits.Floor8);
                             }
-                            else if (CallLift_Floor == "9")
+                            else if (CallLift_Floor == "09")
                             {
                                 CallLift_Floor = (CallLifterFloorBits.Floor9);
                             }
@@ -651,7 +654,7 @@ namespace Mirle.DB.Proc
                                 return false;
                             }
 
-                            if (WriteCMD)//只有在此類型下才需要做CAR完成移動的PLC交握
+                            if (WriteCMD || CallLift_Floor == "01")//只有在此類型下才需要做CAR完成移動的PLC交握
                             {
                                 Result = Plc1.FunWriPLC_Bit("DB" + CarmoveCompleteFloor, true);//確認寫入PLC讀取完成的方法是否正常運作
 
@@ -1476,6 +1479,7 @@ namespace Mirle.DB.Proc
 
                             string cmdSno = dataObject[0].CmdSno;
                             int CmdMode = Convert.ToInt32(dataObject[0].CmdMode);
+                            string Loc_ID = dataObject[0].LOC_ID;
                             string Loc = dataObject[0].Loc;
                             string Loc_DD = "";
                             string Loc_Sts = "";
@@ -1629,7 +1633,7 @@ namespace Mirle.DB.Proc
 
                             //先告知shuttle有撿料命令
                             
-                            _shuttleCommand = new ShuttleCommand(cmdSno, "A", 1, Loc, StnNo.STNNO_1F, "BOX_ID", "0000");//撿料命令 待修改參數 儲位由WMS給 箱子號為原本資料表得到，vehicle固定0000
+                            _shuttleCommand = new ShuttleCommand(cmdSno, "A", 1, Loc, StnNo.STNNO_1F, Loc_ID, "0000");//撿料命令 待修改參數 儲位由WMS給 箱子號為原本資料表得到，vehicle固定0000
                             _shuttleController?.CreateShuttleCommand(_shuttleCommand);
 
 

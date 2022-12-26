@@ -126,7 +126,6 @@
     <Compile Include="clsDBConnCheck_Proc.cs" />
     <Compile Include="Library\clInitSys.cs" />
     <Compile Include="Library\clsWriLog.cs" />
-    <Compile Include="Service\SwitchInMode.cs" />
     <Compile Include="View\Level_Signal.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -287,7 +286,9 @@
       <Name>WCS_API_Server</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Service\" />
+  </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>

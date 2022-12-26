@@ -85,6 +85,9 @@ namespace Mirle.Def.T26YGAP0
         int SHC_PORT { get; }
 
         [Option(DefaultValue = 0)]
+        string BCR_IP { get; }
+
+        [Option(DefaultValue = 0)]
         int UseMCProtocol { get; }
 
         [Option(DefaultValue = 0)]

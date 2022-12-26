@@ -17,6 +17,7 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string CmdMode { get; private set; }
         public string StnNo { get; private set; }
         public string Loc { get; private set; }
+        public string LOC_ID { get; private set; }
         public string NewLoc { get; private set; }
         public string LoadType { get; private set; }
         public string TrayId { get; private set; }
@@ -36,6 +37,10 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             if (row.Table.Columns.Contains("TaskNo"))
             {
                 TaskNo = Convert.ToString(row["TaskNo"]);
+            }
+            if (row.Table.Columns.Contains("LOC_ID"))
+            {
+                LOC_ID = Convert.ToString(row["LOC_ID"]);
             }
             if (row.Table.Columns.Contains("Vehicle_ID "))
             {

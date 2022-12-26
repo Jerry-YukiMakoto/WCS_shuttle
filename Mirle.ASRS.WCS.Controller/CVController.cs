@@ -14,7 +14,6 @@ namespace Mirle.ASRS.WCS.Controller
     {
         private readonly clsHost _plcHost;
         private readonly Form1 _form;
-        private readonly Conveyors.Conveyor _converyor;
         private readonly bool _InMemorySimulator;
         public static clsBufferData Plc1 = new clsBufferData();
 
@@ -29,10 +28,6 @@ namespace Mirle.ASRS.WCS.Controller
 
 
 
-        public Conveyors.Conveyor GetConveryor()
-        {
-            return _converyor;
-        }
 
         public clsBufferData GetPLC1()
         {
@@ -49,7 +44,7 @@ namespace Mirle.ASRS.WCS.Controller
             {
                 if (disposing)
                 {
-                    _converyor.Dispose();
+                  
                     _plcHost.Dispose();
                 }
 
