@@ -71,7 +71,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IASCTest", "..\IASCTest\IAS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConnect", "..\TestConnect\TestConnect.csproj", "{635863DE-4C01-4C8F-BB83-6086478F677B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HslCommunicationPLC", "..\WCS_New -2.0\WCS_New -2.0\HslCommunicationPLC\HslCommunicationPLC.csproj", "{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HslCommunicationPLCTool", "HslCommunicationPLC\HslCommunicationPLCTool.csproj", "{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

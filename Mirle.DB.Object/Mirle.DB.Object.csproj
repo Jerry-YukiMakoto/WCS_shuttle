@@ -61,9 +61,9 @@
     <Compile Include="Service\clsStoreOut.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\WCS_New -2.0\WCS_New -2.0\HslCommunicationPLC\HslCommunicationPLC.csproj">
+    <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLCTool.csproj">
       <Project>{30f65faa-8471-4ec4-8ea3-5a4e7b78aae2}</Project>
-      <Name>HslCommunicationPLC</Name>
+      <Name>HslCommunicationPLCTool</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
       <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
