@@ -61,7 +61,7 @@
     <Compile Include="Service\clsStoreOut.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLC.csproj">
+    <ProjectReference Include="..\..\WCS_New -2.0\WCS_New -2.0\HslCommunicationPLC\HslCommunicationPLC.csproj">
       <Project>{30f65faa-8471-4ec4-8ea3-5a4e7b78aae2}</Project>
       <Name>HslCommunicationPLC</Name>
     </ProjectReference>
