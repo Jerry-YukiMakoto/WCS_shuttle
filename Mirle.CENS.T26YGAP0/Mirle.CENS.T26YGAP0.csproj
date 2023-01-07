@@ -45,10 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
-      <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
-      <Name>Mirle.ASRS.Conveyors</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.Def.T26YGAP0\Mirle.Def.T26YGAP0.csproj">
       <Project>{e6f732fe-3905-49a7-b2cf-b4fa79c2dc5d}</Project>
       <Name>Mirle.Def.T26YGAP0</Name>

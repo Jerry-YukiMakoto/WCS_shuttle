@@ -63,10 +63,6 @@
     <Compile Include="clsPortDef.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
-      <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
-      <Name>Mirle.ASRS.Conveyors</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
       <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
       <Name>Mirle.ASRS.WCS.Controller</Name>
