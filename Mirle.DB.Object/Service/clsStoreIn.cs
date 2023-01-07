@@ -12,6 +12,7 @@ namespace Mirle.DB.Object.Service
 {
     public class clsStoreIn
     {
+        private ShuttleController? _shuttleController;
         public static void StoreIn_WriteCV(clsBufferData Plc1)
         {
             try
@@ -74,11 +75,15 @@ namespace Mirle.DB.Object.Service
             }
         }
 
-        public static void FunSHC_ChangeLayerReq(clsBufferData Plc1, ChangeLayerEventArgsLayer e )//對lifter寫入命令
+        public void FunSHC_ChangeLayerReq(clsBufferData Plc1, ChangeLayerEventArgsLayer e )//對lifter寫入命令
         {
             try
             {
-                clsDB_Proc.GetDB_Object().GetProcess().FunSHC_ChangeLayerReq(Plc1,e);
+                if(clsDB_Proc.GetDB_Object().GetProcess().FunSHC_ChangeLayerReq(Plc1,e)==false)
+                {
+                    _shuttleController?.S84("1", "0001");//Result_Code:0000=Succeess
+                    _shuttleController?.P85("1", "F", "0001");//Result_Code:0000=Succeess
+                }
 
             }
             catch (Exception ex)

@@ -434,7 +434,7 @@ namespace Mirle.DB.Proc
                             string CarmoveCompleteFloor = "";
                             string NewTrace = "";
                             string loc_destination = Loc.Substring(9, 1);
-                            bool WriteCMD=false;
+                            bool WriteCMD = false;
 
                             clsWriLog.LifterLogTrace(0, "Lifter", $"Start_Get SHC Chanege Layer Req=> {cmdSno}");
 
@@ -484,7 +484,7 @@ namespace Mirle.DB.Proc
                                 }
                                 else return false;
 
-                                CarmoveCompleteFloor = Plc1.oPLC.PLC[0].Lifter.LiftPosition.ToString().PadLeft(2,'0');
+                                CarmoveCompleteFloor = Plc1.oPLC.PLC[0].Lifter.LiftPosition.ToString().PadLeft(2, '0');
                                 CallLift_Floor = DestinationLayer;//到裝卸層
                                 NewTrace = Trace.StoreInSHCCallWCS_CarinLift_ChangeLayer;
                                 WriteCMD = true;
@@ -499,7 +499,7 @@ namespace Mirle.DB.Proc
                                 CallLift_Floor = DestinationLayer;
                                 NewTrace = Trace.StoreInLiftToLoc;
                             }
-                            else if (trace == Trace.PickUpLifterToStartLevel)
+                            else if (trace == Trace.PickUpLifterToStartLevel || (DestinationLayer == "11" && (CmdMode == 2 || CmdMode == 3)))
                             {
                                 clsWriLog.LifterLogTrace(0, "Lifter", $"Start Write CMD TO Lifter=> {cmdSno}");
 
@@ -577,7 +577,7 @@ namespace Mirle.DB.Proc
                             CallLift_Floor.PadLeft(2, '0');
                             #region 車子移動完成樓層
 
-                            if (WriteCMD||CallLift_Floor=="01")
+                            if (WriteCMD || CallLift_Floor == "01")
                             {
                                 if (CarmoveCompleteFloor == "01")
                                 {
@@ -718,15 +718,18 @@ namespace Mirle.DB.Proc
                                 db.TransactionCtrl2(TransactionTypes.Rollback);
                                 return false;
                             }
-                            //_shuttleController?.S84("1", "Q", "0000");//Result_Code:0000=Succeess
+                            //_shuttleController?.S84("0", "0000");//Result_Code:0000=Succeess
                             _shuttleController?.P85("1", "Q", "0000");//Result_Code:0000=Succeess
                             _shuttleController?.P85("1", "S", "0000");//Result_Code:0000=Succeess
                             return true;
 
                         }
-                        else return false;
+                        else {
+                            //_shuttleController?.S84("1", "0001");//Result_Code:0000=Succeess
+                            return false;
+                        }
 
-                    }
+                        }
                     else
                     {
                         string strEM = "Error: 開啟DB失敗！";
@@ -740,6 +743,7 @@ namespace Mirle.DB.Proc
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+                //_shuttleController?.S84("1", "0001");//Result_Code:0000=Succeess
                 return false;
             }
         }

@@ -947,6 +947,23 @@ namespace Mirle.IASC
             }
         }
 
+        public void S84(string Acknowledge, string ReasonCode)
+        {
+            try
+            {
+                PSTransactionXClass msg_send = new();
+                msg_send.PSPrimaryMessage.Type = "S";
+                msg_send.PSPrimaryMessage.Number = "84";
+                msg_send.PSPrimaryMessage.PSMessage = Acknowledge.PadLeft(1, '0') + ReasonCode.PadLeft(4, '0');
+                _psWrapperXClass.PrimarySent(ref msg_send);
+                PrimaryMessageLog(msg_send);
+            }
+            catch (Exception ex)
+            {
+                Exception(ex);
+            }
+        }
+
         public void P89(string CommandID, string VehicleID)
         {
             try
