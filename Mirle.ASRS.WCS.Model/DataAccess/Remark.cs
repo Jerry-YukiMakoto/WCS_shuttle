@@ -9,6 +9,7 @@
         public const string BufferError = "站口buffer異常中";
         public const string CycleOperating = "站口執行盤點中";
         public const string PresenceExist = "站口有荷有訊號，請移除荷有";
+        public const string PresenceShuttle = "電梯有shuttle荷有";
         public const string PresenceNotExist = "站口沒有荷有訊號，請確認貨物和訊號";
         public const string CmdLeftOver = "站口有命令號，請確認命令號是否是異常殘留";
         public const string CmdNotOnBuffer = "站口沒有命令號，請確認命令號是否異常消失";

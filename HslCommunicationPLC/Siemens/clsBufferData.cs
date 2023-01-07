@@ -21,6 +21,7 @@ namespace HslCommunicationPLC.Siemens
         private bool bThread_OpenPlc = false;
         public CV_Structure oPLC;
         private int[] iPlcIdx = new int[6];
+        private int[] lifterIdx = new int[1];
         private int[] iPcIdx = new int[6];
         private int iCvIdx_Total = 0;
         private int buffer_count = 4;
@@ -62,18 +63,20 @@ namespace HslCommunicationPLC.Siemens
                 
             }
 
-            iPlcIdx[0] = 45;
-            iPlcIdx[1] = 15;
-            iPlcIdx[2] = 15;
-            iPlcIdx[3] = 15;
-            iPlcIdx[4] = 15;
-            iPlcIdx[5] = 15;
+            iPlcIdx[0] = 2;
+            iPlcIdx[1] = 5;
+            iPlcIdx[2] = 5;
+            iPlcIdx[3] = 5;
+            iPlcIdx[4] = 5;
+            iPlcIdx[5] = 5;
 
-            iPcIdx[0] = 30;
-            iPcIdx[1] = 15;
-            iPcIdx[2] = 15;
-            iPcIdx[3] = 15;
-            iPcIdx[4] = 15;
+            lifterIdx[0] = 8;
+
+            iPcIdx[0] = 2;
+            iPcIdx[1] = 5;
+            iPcIdx[2] = 5;
+            iPcIdx[3] = 5;
+            iPcIdx[4] = 5;
 
         }
 
@@ -83,6 +86,9 @@ namespace HslCommunicationPLC.Siemens
         {
             if(bConnectPLC == true)
             {
+                FunWriPLC_Bit("DB1.27.2", true);
+                FunWriPLC_Word("DB1.20", "1234");
+                FunWriPLC_Word("DB2.0.0", "123");
                 ReadPlc();
                 ReadPlc_1();
 
@@ -157,6 +163,7 @@ namespace HslCommunicationPLC.Siemens
                 FunWriPLC_Word("DB1.4", YM);
                 FunWriPLC_Word("DB1.6", DH);
                 FunWriPLC_Word("DB1.8", ms);
+                
 
             }
             catch(Exception ex)
@@ -179,25 +186,25 @@ namespace HslCommunicationPLC.Siemens
                 for(int i = 1; i <= buffer_count; i++)
                 {
                     #region BUFFER_PC->PLC清值
-                    if(oPLC.PLC[i].CV.Sno!=""&& oPLC.PLC[i].CV.Sno== oPLC.PC[i].CV.Sno)
+                    if (oPLC.PLC[i].CV.Sno != "" && oPLC.PLC[i].CV.Sno == oPLC.PC[i].CV.Sno)
                     {
-                        FunWriPLC_Word("DB"+i+1+"0.0", "");
-                       
+                        FunWriPLC_Word("DB" + i + 1 + ".00", "");
+
                         //oPLC.PC[i].CV.Sno = "";
                     }
                     if (oPLC.PLC[i].CV.Mode != 0 && oPLC.PLC[i].CV.Mode == oPLC.PC[i].CV.Mode)
                     {
-                        FunWriPLC_Word("DB" + i + 1 + "2.0", "");
+                        FunWriPLC_Word("DB" + i + 1 + ".20", "");
                         //oPLC.PC[i].CV.Mode = 0;
                     }
-                    if(oPLC.PLC[i].CV.WriteCommandComplete==true&&oPLC.PC[i].CV.WriteCommandComplete==true)
+                    if (oPLC.PLC[i].CV.WriteCommandComplete == true && oPLC.PC[i].CV.WriteCommandComplete == true)
                     {
-                        FunWriPLC_Bit("DB" + i + 1 + "6.1", false);
+                        FunWriPLC_Bit("DB" + i + 1 + ".6.1", false);
                     }
-                    
-                    if(oPLC.PLC[i].CV.ReadBCR==false&& oPLC.PC[i].CV.ReadComplete==true)
+
+                    if (oPLC.PLC[i].CV.ReadBCR == false && oPLC.PC[i].CV.ReadComplete == true)
                     {
-                        FunWriPLC_Bit("DB" + i + 1 + "6.2", false);
+                        FunWriPLC_Bit("DB" + i + 1 + ".6.2", false);
                     }
                     #endregion buffer_PC->PLC清值
                 }
@@ -205,96 +212,104 @@ namespace HslCommunicationPLC.Siemens
                 #region Lifter PC->PLC清值
                 if (oPLC.PLC[0].Lifter.Vehicle_ID != "" && oPLC.PLC[0].Lifter.Vehicle_ID == oPLC.PC[0].Lifter.Vehicle_ID)
                 {
-                    FunWriPLC_Word("DB120.0", "");
+                    FunWriPLC_Word("DB1.20.0", "");
                 }
                 if (oPLC.PLC[0].Lifter.CMDno != "" && oPLC.PLC[0].Lifter.CMDno == oPLC.PC[0].Lifter.CMDno)
                 {
-                    FunWriPLC_Word("DB122.0", "");
-                    FunWriPLC_Bit("DB126.1", false);//寫入命令完成點位
+                    FunWriPLC_Word("DB1.22.0", "");
+                    FunWriPLC_Bit("DB1.26.1", false);//寫入命令完成點位
                 }
                 if (oPLC.PLC[0].Lifter.Taskno != "" && oPLC.PLC[0].Lifter.Taskno == oPLC.PC[0].Lifter.Taskno)
                 {
-                    FunWriPLC_Word("DB124.0", "");
+                    FunWriPLC_Word("DB1.24.0", "");
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor1 == true && oPLC.PC[0].Lifter.CallToFloor1 == true)
                 {
-                    FunWriPLC_Bit("DB126.2", false);
+                    FunWriPLC_Bit("DB1.27.0", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor2 == true && oPLC.PC[0].Lifter.CallToFloor2 == true)
                 {
-                    FunWriPLC_Bit("DB126.4", false);
+                    FunWriPLC_Bit("DB1.27.2", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor3 == true && oPLC.PC[0].Lifter.CallToFloor3 == true)
                 {
-                    FunWriPLC_Bit("DB126.6", false);
+                    FunWriPLC_Bit("DB1.27.4", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor4 == true && oPLC.PC[0].Lifter.CallToFloor4 == true)
                 {
-                    FunWriPLC_Bit("DB127.0", false);
+                    FunWriPLC_Bit("DB1.27.6", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor5 == true && oPLC.PC[0].Lifter.CallToFloor5 == true)
                 {
-                    FunWriPLC_Bit("DB127.2", false);
+                    FunWriPLC_Bit("DB1.28.0", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor6 == true && oPLC.PC[0].Lifter.CallToFloor6 == true)
                 {
-                    FunWriPLC_Bit("DB127.4", false);
+                    FunWriPLC_Bit("DB1.28.2", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor7 == true && oPLC.PC[0].Lifter.CallToFloor7 == true)
                 {
-                    FunWriPLC_Bit("DB127.6", false);
+                    FunWriPLC_Bit("DB1.28.4", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor8 == true && oPLC.PC[0].Lifter.CallToFloor8 == true)
                 {
-                    FunWriPLC_Bit("DB128.0", false);
+                    FunWriPLC_Bit("DB1.28.6", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor9 == true && oPLC.PC[0].Lifter.CallToFloor9 == true)
                 {
-                    FunWriPLC_Bit("DB128.2", false);
+                    FunWriPLC_Bit("DB1.29.0", false);
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor10 == true && oPLC.PC[0].Lifter.CallToFloor10 == true)
                 {
-                    FunWriPLC_Bit("DB128.4", false);
+                    FunWriPLC_Bit("DB1.29.2", false);
+                }
+                if (oPLC.PLC[0].Lifter.MoveToFloor11 == true && oPLC.PC[0].Lifter.CallToFloor11 == true)
+                {
+                    FunWriPLC_Bit("DB1.29.4", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor1_SafetyCheck == false && oPLC.PC[0].Lifter.Floor1_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB126.3", false);
+                    FunWriPLC_Bit("DB1.27.1", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor2_SafetyCheck == false && oPLC.PC[0].Lifter.Floor2_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB126.5", false);
+                    FunWriPLC_Bit("DB1.27.3", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor3_SafetyCheck == false && oPLC.PC[0].Lifter.Floor3_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB126.7", false);
+                    FunWriPLC_Bit("DB1.27.5", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor4_SafetyCheck == false && oPLC.PC[0].Lifter.Floor4_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB127.1", false);
+                    FunWriPLC_Bit("DB1.27.7", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor5_SafetyCheck == false && oPLC.PC[0].Lifter.Floor5_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB127.3", false);
+                    FunWriPLC_Bit("DB1.28.1", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor6_SafetyCheck == false && oPLC.PC[0].Lifter.Floor6_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB127.5", false);
+                    FunWriPLC_Bit("DB1.28.3", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor7_SafetyCheck == false && oPLC.PC[0].Lifter.Floor7_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB127.7", false);
+                    FunWriPLC_Bit("DB1.28.5", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor8_SafetyCheck == false && oPLC.PC[0].Lifter.Floor8_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB128.1", false);
+                    FunWriPLC_Bit("DB1.28.7", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor9_SafetyCheck == false && oPLC.PC[0].Lifter.Floor9_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB128.3", false);
+                    FunWriPLC_Bit("DB1.29.1", false);
                 }
                 if (oPLC.PLC[0].Lifter.Floor10_SafetyCheck == false && oPLC.PC[0].Lifter.Floor10_CarMoveComplete == true)
                 {
-                    FunWriPLC_Bit("DB128.5", false);
+                    FunWriPLC_Bit("DB1.29.3", false);
+                }
+                if (oPLC.PLC[0].Lifter.Floor11_SafetyCheck == false && oPLC.PC[0].Lifter.Floor11_CarMoveComplete == true)
+                {
+                    FunWriPLC_Bit("DB1.29.5", false);
                 }
 
                 #endregion
@@ -319,52 +334,343 @@ namespace HslCommunicationPLC.Siemens
 
             try
             {
-                if (_plcHost.ReadBlock("DB1.0", ref iRetData_Plc))
+                if (_plcHost.ReadBlock("DB1.10", ref iRetData_Plc))
                 {
-                    oPLC.PLC[0].SYSTEM_PLC.HandShake = GetPlcBit(iRetData_Plc[10], 0);
+                    oPLC.PLC[0].SYSTEM_PLC.HandShake = GetPlcBit(iRetData_Plc[0], 0);
+                
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+
+                iRetData_Plc = new short[lifterIdx[0]];
+
+                bool content=false;
+
+                if(_plcHost.ReadPLCbit("DB1.36.0",ref content))
+                {
+                    oPLC.PLC[0].Lifter.AllowWriteCommand = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.0", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor1 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.1", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor1_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.2", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor2 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.3", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor2_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.4", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor3 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.5", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor3_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.6", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor4 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.37.7", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor4_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.0", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor5 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.1", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor5_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.2", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor6 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.3", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor6_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.4", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor7 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.5", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor7_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.6", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor8 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.38.7", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor8_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.0", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor9 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.1", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor9_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.2", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor10 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.3", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor10_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.4", ref content))
+                {
+                    oPLC.PLC[0].Lifter.MoveToFloor11 = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.5", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor11_SafetyCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.6", ref content))
+                {
+                    oPLC.PLC[0].Lifter.LiftMode = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.39.7", ref content))
+                {
+                    oPLC.PLC[0].Lifter.LiftRun = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.40.0", ref content))
+                {
+                    oPLC.PLC[0].Lifter.LiftDown = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.40.1", ref content))
+                {
+                    oPLC.PLC[0].Lifter.LiftIdle = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.0", ref content))
+                {
+                    oPLC.PLC[0].Lifter.presence_shuttle = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.1", ref content))
+                {
+                    oPLC.PLC[0].Lifter.UnloadingLocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.2", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor1LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.3", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor2LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.4", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor3LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.5", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor4LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.6", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor5LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.44.7", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor7LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.45.0", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor7LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.45.1", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor8LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.45.2", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor9LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+                if (_plcHost.ReadPLCbit("DB1.45.3", ref content))
+                {
+                    oPLC.PLC[0].Lifter.Floor10LocationCheck = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+
+
+
+                if (_plcHost.ReadBlock("DB1.30", ref iRetData_Plc))
+                {
                     #region Lifter PLC -> PC
-                    oPLC.PLC[0].Lifter.Vehicle_ID = iRetData_Plc[30].ToString();
-                    oPLC.PLC[0].Lifter.CMDno = iRetData_Plc[32].ToString();
-                    oPLC.PLC[0].Lifter.Taskno = iRetData_Plc[34].ToString();
-                    oPLC.PLC[0].Lifter.AllowWriteCommand = GetPlcBit(iRetData_Plc[36], 0);
-                    oPLC.PLC[0].Lifter.WriteCommandComplete = GetPlcBit(iRetData_Plc[36], 1);
-                    oPLC.PLC[0].Lifter.MoveToFloor1 = GetPlcBit(iRetData_Plc[36], 2);
-                    oPLC.PLC[0].Lifter.Floor1_SafetyCheck = GetPlcBit(iRetData_Plc[36], 3);
-                    oPLC.PLC[0].Lifter.MoveToFloor2 = GetPlcBit(iRetData_Plc[36], 4);
-                    oPLC.PLC[0].Lifter.Floor2_SafetyCheck = GetPlcBit(iRetData_Plc[36], 5);
-                    oPLC.PLC[0].Lifter.MoveToFloor3 = GetPlcBit(iRetData_Plc[36], 6);
-                    oPLC.PLC[0].Lifter.Floor3_SafetyCheck = GetPlcBit(iRetData_Plc[36], 7);
-                    oPLC.PLC[0].Lifter.MoveToFloor4 = GetPlcBit(iRetData_Plc[37], 0);
-                    oPLC.PLC[0].Lifter.Floor4_SafetyCheck = GetPlcBit(iRetData_Plc[37], 1);
-                    oPLC.PLC[0].Lifter.MoveToFloor5 = GetPlcBit(iRetData_Plc[37], 2);
-                    oPLC.PLC[0].Lifter.Floor5_SafetyCheck = GetPlcBit(iRetData_Plc[37], 3);
-                    oPLC.PLC[0].Lifter.MoveToFloor6 = GetPlcBit(iRetData_Plc[37], 4);
-                    oPLC.PLC[0].Lifter.Floor6_SafetyCheck = GetPlcBit(iRetData_Plc[37], 5);
-                    oPLC.PLC[0].Lifter.MoveToFloor7 = GetPlcBit(iRetData_Plc[37], 6);
-                    oPLC.PLC[0].Lifter.Floor7_SafetyCheck = GetPlcBit(iRetData_Plc[37], 7);
-                    oPLC.PLC[0].Lifter.MoveToFloor8 = GetPlcBit(iRetData_Plc[38], 0);
-                    oPLC.PLC[0].Lifter.Floor8_SafetyCheck = GetPlcBit(iRetData_Plc[38], 1);
-                    oPLC.PLC[0].Lifter.MoveToFloor9 = GetPlcBit(iRetData_Plc[38], 2);
-                    oPLC.PLC[0].Lifter.Floor9_SafetyCheck = GetPlcBit(iRetData_Plc[38], 3);
-                    oPLC.PLC[0].Lifter.MoveToFloor10 = GetPlcBit(iRetData_Plc[38], 4);
-                    oPLC.PLC[0].Lifter.Floor10_SafetyCheck = GetPlcBit(iRetData_Plc[38], 5);
-                    oPLC.PLC[0].Lifter.LiftMode = GetPlcBit(iRetData_Plc[38], 6);
-                    oPLC.PLC[0].Lifter.LiftRun = GetPlcBit(iRetData_Plc[38], 7);
-                    oPLC.PLC[0].Lifter.LiftDown = GetPlcBit(iRetData_Plc[39], 0);
-                    oPLC.PLC[0].Lifter.LiftIdle = GetPlcBit(iRetData_Plc[39], 1);
-                    oPLC.PLC[0].Lifter.LiftPosition = iRetData_Plc[40];
-                    oPLC.PLC[0].Lifter.presence_shuttle = GetPlcBit(iRetData_Plc[42], 0);
-                    oPLC.PLC[0].Lifter.UnloadingLocationCheck = GetPlcBit(iRetData_Plc[42], 1);
-                    oPLC.PLC[0].Lifter.Floor1LocationCheck = GetPlcBit(iRetData_Plc[42], 2);
-                    oPLC.PLC[0].Lifter.Floor2LocationCheck = GetPlcBit(iRetData_Plc[42], 3);
-                    oPLC.PLC[0].Lifter.Floor3LocationCheck = GetPlcBit(iRetData_Plc[42], 4);
-                    oPLC.PLC[0].Lifter.Floor4LocationCheck = GetPlcBit(iRetData_Plc[42], 5);
-                    oPLC.PLC[0].Lifter.Floor5LocationCheck = GetPlcBit(iRetData_Plc[42], 6);
-                    oPLC.PLC[0].Lifter.Floor6LocationCheck = GetPlcBit(iRetData_Plc[42], 7);
-                    oPLC.PLC[0].Lifter.Floor7LocationCheck = GetPlcBit(iRetData_Plc[43], 0);
-                    oPLC.PLC[0].Lifter.Floor8LocationCheck = GetPlcBit(iRetData_Plc[43], 1);
-                    oPLC.PLC[0].Lifter.Floor9LocationCheck = GetPlcBit(iRetData_Plc[43], 2);
-                    oPLC.PLC[0].Lifter.Floor10LocationCheck = GetPlcBit(iRetData_Plc[43], 3);
+                    oPLC.PLC[0].Lifter.Vehicle_ID = iRetData_Plc[0].ToString();
+                    oPLC.PLC[0].Lifter.CMDno = iRetData_Plc[1].ToString();
+                    oPLC.PLC[0].Lifter.Taskno = iRetData_Plc[2].ToString();
+                    oPLC.PLC[0].Lifter.LiftPosition = iRetData_Plc[6];
+
                     #endregion PLC -> PC
                 }
                 else
@@ -372,30 +678,56 @@ namespace HslCommunicationPLC.Siemens
                     bConnectPLC = false;
                 }
 
-              
-
                 for (int i = 1; i <= buffer_count; i++)
                 {
                     iRetData_Plc = new short[iPlcIdx[i]];
 
-                    if (_plcHost.ReadBlock("DB"+(i+1)+".0", ref iRetData_Plc))
+                    if (_plcHost.ReadBlock("DB"+(i+1)+".10", ref iRetData_Plc))
                     {
                         #region Conveyor PLC -> PC
-
-                        oPLC.PLC[i].CV.Sno = iRetData_Plc[8].ToString();
-                        oPLC.PLC[i].CV.Mode= iRetData_Plc[10];
-                        oPLC.PLC[i].CV.CV_Status= iRetData_Plc[12];
-                        oPLC.PLC[i].CV.AllowWriteCommand=GetPlcBit(iRetData_Plc[14], 0);
-                        oPLC.PLC[i].CV.WriteCommandComplete = GetPlcBit(iRetData_Plc[14], 1);
-                        oPLC.PLC[i].CV.ReadBCR = GetPlcBit(iRetData_Plc[14], 2);
-                        oPLC.PLC[i].CV.WaitToRelease = GetPlcBit(iRetData_Plc[14], 3);
-                        oPLC.PLC[i].CV.Presence = GetPlcBit(iRetData_Plc[14], 4);
-                        oPLC.PLC[i].CV.StoreInInfo = GetPlcBit(iRetData_Plc[14],5);
-                        oPLC.PLC[i].CV.AutoManual = GetPlcBit(iRetData_Plc[14],6);
-                        oPLC.PLC[i].CV.Run = GetPlcBit(iRetData_Plc[14], 7);
-                        oPLC.PLC[i].CV.Down = GetPlcBit(iRetData_Plc[15], 0);
-                        oPLC.PLC[i].CV.idle = GetPlcBit(iRetData_Plc[15], 1);
-                        oPLC.PLC[i].CV.Spare = GetPlcBit(iRetData_Plc[15], 2);
+                        oPLC.PLC[i].CV.Sno = iRetData_Plc[0].ToString();
+                        oPLC.PLC[i].CV.Mode= iRetData_Plc[1];
+                        oPLC.PLC[i].CV.CV_Status= iRetData_Plc[2];
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.0", ref content))
+                        {
+                            oPLC.PLC[i].CV.AllowWriteCommand = content;        
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.2", ref content))
+                        {
+                            oPLC.PLC[i].CV.WriteCommandComplete = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.3", ref content))
+                        {
+                            oPLC.PLC[i].CV.WaitToRelease = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.4", ref content))
+                        {
+                            oPLC.PLC[i].CV.Presence = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.5", ref content))
+                        {
+                            oPLC.PLC[i].CV.StoreInInfo = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.6", ref content))
+                        {
+                            oPLC.PLC[i].CV.AutoManual = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.7", ref content))
+                        {
+                            oPLC.PLC[i].CV.Run = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".17.0", ref content))
+                        {
+                            oPLC.PLC[i].CV.Down = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".17.1", ref content))
+                        {
+                            oPLC.PLC[i].CV.idle = content;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".17.2", ref content))
+                        {
+                            oPLC.PLC[i].CV.Spare = content;
+                        }
                         #endregion
 
                     }
@@ -428,35 +760,209 @@ namespace HslCommunicationPLC.Siemens
                 if(_plcHost.ReadBlock("DB1.0", ref iRetData_Pc))
                 {
                     oPLC.PC[0].SYSTEM_PC.HandShake=GetPlcBit(iRetData_Pc[0], 0);
+
+                }
+                else
+                {
+                    //objPLC.Close();
+                    bConnectPLC = false;
+                }
+
+                iRetData_Pc = new short[lifterIdx[0]];
+
+                if (_plcHost.ReadBlock("DB1.20", ref iRetData_Pc))
+                {
                     #region PC -> PLC
-                    oPLC.PC[0].Lifter.Vehicle_ID = iRetData_Pc[20].ToString();
-                    oPLC.PC[0].Lifter.CMDno=iRetData_Pc[22].ToString();
-                    oPLC.PC[0].Lifter.Taskno=iRetData_Pc[24].ToString();
-                    oPLC.PC[0].Lifter.WriteCommandComplete=GetPlcBit(iRetData_Pc[26], 1);
-                    oPLC.PC[0].Lifter.CallToFloor1 = GetPlcBit(iRetData_Pc[26], 2);
-                    oPLC.PC[0].Lifter.Floor1_CarMoveComplete = GetPlcBit(iRetData_Pc[26], 3);
-                    oPLC.PC[0].Lifter.CallToFloor2 = GetPlcBit(iRetData_Pc[26], 4);
-                    oPLC.PC[0].Lifter.Floor2_CarMoveComplete = GetPlcBit(iRetData_Pc[26], 5);
-                    oPLC.PC[0].Lifter.CallToFloor3 = GetPlcBit(iRetData_Pc[26], 6);
-                    oPLC.PC[0].Lifter.Floor3_CarMoveComplete = GetPlcBit(iRetData_Pc[26], 7);
-                    oPLC.PC[0].Lifter.CallToFloor4 = GetPlcBit(iRetData_Pc[27], 0);
-                    oPLC.PC[0].Lifter.Floor4_CarMoveComplete = GetPlcBit(iRetData_Pc[27], 1);
-                    oPLC.PC[0].Lifter.CallToFloor5 = GetPlcBit(iRetData_Pc[27], 2);
-                    oPLC.PC[0].Lifter.Floor5_CarMoveComplete = GetPlcBit(iRetData_Pc[27], 3);
-                    oPLC.PC[0].Lifter.CallToFloor6 = GetPlcBit(iRetData_Pc[27], 4);
-                    oPLC.PC[0].Lifter.Floor6_CarMoveComplete = GetPlcBit(iRetData_Pc[27], 5);
-                    oPLC.PC[0].Lifter.CallToFloor7 = GetPlcBit(iRetData_Pc[27], 6);
-                    oPLC.PC[0].Lifter.Floor7_CarMoveComplete = GetPlcBit(iRetData_Pc[27], 7);
-                    oPLC.PC[0].Lifter.CallToFloor8 = GetPlcBit(iRetData_Pc[28], 0);
-                    oPLC.PC[0].Lifter.Floor8_CarMoveComplete = GetPlcBit(iRetData_Pc[28], 1);
-                    oPLC.PC[0].Lifter.CallToFloor9 = GetPlcBit(iRetData_Pc[28], 2);
-                    oPLC.PC[0].Lifter.Floor9_CarMoveComplete = GetPlcBit(iRetData_Pc[28], 3);
-                    oPLC.PC[0].Lifter.CallToFloor10 = GetPlcBit(iRetData_Pc[28], 4);
-                    oPLC.PC[0].Lifter.Floor10_CarMoveComplete = GetPlcBit(iRetData_Pc[28], 5);
+                    oPLC.PC[0].Lifter.Vehicle_ID = iRetData_Pc[0].ToString();
+                    oPLC.PC[0].Lifter.CMDno = iRetData_Pc[1].ToString();
+                    oPLC.PC[0].Lifter.Taskno = iRetData_Pc[2].ToString();
 
+                    bool content =false;
+                    if (_plcHost.ReadPLCbit("DB1.26.1", ref content))
+                    {
+                        oPLC.PC[0].Lifter.WriteCommandComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.0", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor1 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.1", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor1_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.2", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor2 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.3", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor2_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.4", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor3 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.5", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor3_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.6", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor4 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.27.7", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor4_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.0", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor5 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.1", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor5_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.2", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor6 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.3", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor6_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.4", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor7 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.5", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor7_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.6", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor8 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.28.7", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor8_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.29.0", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor9 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.29.1", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor9_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.29.2", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor10 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.29.3", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor10_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.29.4", ref content))
+                    {
+                        oPLC.PC[0].Lifter.CallToFloor11 = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
+                    if (_plcHost.ReadPLCbit("DB1.29.5", ref content))
+                    {
+                        oPLC.PC[0].Lifter.Floor11_CarMoveComplete = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
                     #endregion PC -> PLC
-
-
 
                 }
                 else
@@ -474,11 +980,32 @@ namespace HslCommunicationPLC.Siemens
                         #region Conveyor PC -> PLC
 
                         oPLC.PC[i].CV.Sno = iRetData_Pc[0].ToString();
-                        oPLC.PC[i].CV.Mode = iRetData_Pc[2];
-                        oPLC.PC[i].CV.WriteCommandComplete =GetPlcBit(iRetData_Pc[6],1);
-                        oPLC.PC[i].CV.ReadComplete = GetPlcBit(iRetData_Pc[6], 2);
-                        oPLC.PC[i].CV.NoCommand = GetPlcBit(iRetData_Pc[6], 3);
-
+                        oPLC.PC[i].CV.Mode = iRetData_Pc[1];
+                        bool content = false;
+                        if (_plcHost.ReadPLCbit("DB"+(i+1)+".6.1", ref content))
+                        {
+                            oPLC.PC[i].CV.WriteCommandComplete = content;
+                        }
+                        else
+                        {
+                            bConnectPLC = false;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".6.2", ref content))
+                        {
+                            oPLC.PC[i].CV.ReadComplete = content;
+                        }
+                        else
+                        {
+                            bConnectPLC = false;
+                        }
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".6.3", ref content))
+                        {
+                            oPLC.PC[i].CV.NoCommand = content;
+                        }
+                        else
+                        {
+                            bConnectPLC = false;
+                        }
                         #endregion
 
                     }

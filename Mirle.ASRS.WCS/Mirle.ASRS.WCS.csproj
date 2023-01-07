@@ -45,8 +45,8 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net472\Mirle.dll</HintPath>
+    <Reference Include="Mirle, Version=2.0.11.2206, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mirle.2.0.11\lib\net48\Mirle.dll</HintPath>
     </Reference>
     <Reference Include="Mirle.ASRS.Close.Program">
       <HintPath>..\DLL\Mirle.ASRS.Close.Program.exe</HintPath>
@@ -221,10 +221,6 @@
       <Project>{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}</Project>
       <Name>HslCommunicationPLC</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.ASRS.Conveyors\Mirle.ASRS.Conveyors.csproj">
-      <Project>{20d2f96e-f248-4e52-9f5a-f1cf028f8e98}</Project>
-      <Name>Mirle.ASRS.Conveyors</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
       <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
       <Name>Mirle.ASRS.WCS.Controller</Name>
@@ -233,7 +229,7 @@
       <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
       <Name>Mirle.ASRS.WCS.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.CENS.U0NXMA30\Mirle.CENS.T26YGAP0.csproj">
+    <ProjectReference Include="..\Mirle.CENS.T26YGAP0\Mirle.CENS.T26YGAP0.csproj">
       <Project>{dcbe44b8-7c23-4dba-86ae-9ca5f9cb3774}</Project>
       <Name>Mirle.CENS.T26YGAP0</Name>
     </ProjectReference>

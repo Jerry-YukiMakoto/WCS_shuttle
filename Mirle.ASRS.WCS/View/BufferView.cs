@@ -86,11 +86,11 @@ namespace Mirle.ASRS.View
             string strCommandId = "序號\n未顯示表連線失敗";
             string strCmdMode = "模式:\n1 -> 入庫\n2 -> 出庫\n3 -> 盤點";
             string strAuto = "自動模式:\n綠燈A -> 自動ON\n黃燈M -> 手動\n紅燈M -> 連線失敗";
-            string strBCRReadNotice = "BCR讀取訊號:\n0 -> 未讀取\n1 -> 開始讀取"; 
+            string strBCRReadNotice = "BCR讀取訊號:\nF -> 未讀取\nT -> 開始讀取"; 
             string strAllowWriteCommand = "允許寫入命令:\n輸送機是否允許寫入命令"; 
             string strPresence = "荷有:\n橘色V -> 此位置有物";
-            string strWriteCommandComplete = "寫入命令完成:\n0 -> 未完成\n1 -> 完成"; 
-            string strStoreInInfo = "入庫資訊:\n1 -> 有入庫資訊";
+            string strWriteCommandComplete = "寫入命令完成:\nF -> 未完成\nT -> 完成"; 
+            string strStoreInInfo = "入庫資訊:\nT -> 有入庫資訊";
 
 
             ToolTip objToolTip = new ToolTip();
@@ -125,6 +125,20 @@ namespace Mirle.ASRS.View
             Refresh(lblPresence, Presence(Plc1.oPLC.PLC[index].CV.Presence), Plc1.oPLC.PLC[index].CV.Presence.ToColor(Color.Orange, Color.White));
             Refresh(WriteCommandComplete, Plc1.oPLC.PLC[index].CV.WriteCommandComplete.ToString());
             Refresh(StoreInInfo, Plc1.oPLC.PLC[index].CV.StoreInInfo.ToString());
+        }
+
+        public void Refresh_Buffer_PC(clsBufferData Plc1, int index)
+        {
+            lblAuto.Text = "";
+            AllowWriteCommand.Text = "";
+            lblPresence.Text = "";
+            StoreInInfo.Text = "";
+            Refresh(lblBufferName, "A" + index);
+            Refresh(lblCommandId, Plc1.oPLC.PC[index].CV.Sno);
+            Refresh(lblCmdMode, Plc1.oPLC.PC[index].CV.Mode.ToString());
+            Refresh(BCRReadNotice, Plc1.oPLC.PC[index].CV.ReadComplete.ToString());
+            Refresh(WriteCommandComplete, Plc1.oPLC.PC[index].CV.WriteCommandComplete.ToString());
+            //Refresh(StoreInInfo, Plc1.oPLC.PC[index].CV.NoCommand.ToString());
         }
 
         public void Refresh_BufferPLCError(clsBufferData Plc1)

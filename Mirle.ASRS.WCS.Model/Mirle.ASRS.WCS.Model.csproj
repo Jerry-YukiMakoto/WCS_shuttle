@@ -33,8 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net472\Mirle.dll</HintPath>
+    <Reference Include="Mirle, Version=2.0.11.2206, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mirle.2.0.11\lib\net472\Mirle.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.13.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -44,6 +44,7 @@
     <Reference Include="System.Data.SQLite, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\lib\net46\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -71,7 +72,7 @@
     <Compile Include="PLCDefinitions\Path.cs" />
     <Compile Include="PLCDefinitions\PathNotice.cs" />
     <Compile Include="PLCDefinitions\Ready.cs" />
-    <Compile Include="PLCDefinitions\StnNo.cs" />
+    <Compile Include="PLCDefinitions\ASRS_Setting.cs" />
     <Compile Include="PLCDefinitions\TrayType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

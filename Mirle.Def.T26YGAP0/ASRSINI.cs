@@ -11,14 +11,14 @@ namespace Mirle.Def.T26YGAP0
         [Option(Alias = "Data Base")]
         DatabaseConfig Database { get; }
 
-        [Option(Alias = "WMS Data Base")]
-        DatabaseConfig Database_WMS { get; }
+        //[Option(Alias = "WMS Data Base")]
+        //DatabaseConfig Database_WMS { get; }
 
-        [Option(Alias = "WMS API")]
-        APIConfig WMS_API { get; }
+        //[Option(Alias = "WMS API")]
+        //APIConfig WMS_API { get; }
 
-        [Option(Alias = "WCS API")]
-        APIConfig WCS_API { get; }
+        //[Option(Alias = "WCS API")]
+        //APIConfig WCS_API { get; }
 
         [Option(Alias = "Device")]
         DeviceConfig Device { get; }
@@ -68,15 +68,7 @@ namespace Mirle.Def.T26YGAP0
 
     public interface CV_PlcConfig
     {
-        [Option(DefaultValue = 0)]
-        int MPLCNo { get; }
-        string MPLCIP { get; }
-
-        [Option(DefaultValue = 0)]
-        int MPLCPort { get; }
-
-        [Option(DefaultValue = 0)]
-        int MPLCTimeout { get; }
+        string IP { get; }
 
         [Option(DefaultValue = "")]
         string SHC_IP  { get; }
@@ -84,14 +76,14 @@ namespace Mirle.Def.T26YGAP0
         [Option(DefaultValue = 0)]
         int SHC_PORT { get; }
 
-        [Option(DefaultValue = 0)]
-        string BCR_IP { get; }
+        [Option(DefaultValue = "")]
+        string BCR_IP_1 { get; }
 
-        [Option(DefaultValue = 0)]
-        int UseMCProtocol { get; }
+        [Option(DefaultValue = "")]
+        string BCR_IP_2 { get; }
 
-        [Option(DefaultValue = 0)]
-        int InMemorySimulator { get; }
+        [Option(DefaultValue = "")]
+        string BCR_port { get; }
 
     }
 

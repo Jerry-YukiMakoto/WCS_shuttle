@@ -13,7 +13,6 @@ namespace Mirle.ASRS.WCS.Controller
     public class CVController : IDisposable
     {
         private readonly clsHost _plcHost;
-        private readonly Form1 _form;
         private readonly bool _InMemorySimulator;
         public static clsBufferData Plc1 = new clsBufferData();
 

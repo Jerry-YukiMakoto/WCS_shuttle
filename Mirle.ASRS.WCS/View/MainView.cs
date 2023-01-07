@@ -11,7 +11,7 @@ namespace Mirle.ASRS.View
     {
         private readonly clsBufferData Plc1;
         private static int BufferCount = 4;
-        private static int Lifterlevel = 10;
+        private static int Lifterlevel = 11;
 
 
         public MainView(clsBufferData _Plc1)
@@ -100,12 +100,85 @@ namespace Mirle.ASRS.View
                 {
                     for (int index = 1; index <= Lifterlevel; index++)
                     {
-                        if (splitContainer1.Panel1.Controls.Find("level_Siganal" + index, true).FirstOrDefault() is Level_Signal level_Signal)
+                        if (splitContainer1.Panel1.Controls.Find("level_Signal" + index, true).FirstOrDefault() is Level_Signal level_Signal)
                         {
                             if (true)
                             {
                                 level_Signal.RefreshLevel_Lifter(Plc1,index);
                             }
+                        }
+                    }
+                }
+
+                if (!Plc1.bConnectPLC)
+                {
+
+                    if (splitContainer1.Panel1.Controls.Find("PC_bufferview", true).FirstOrDefault() is BufferView bufferView)
+                    {
+
+                        bufferView.Refresh_BufferPLCError(Plc1);
+
+                    }
+
+                }
+                else
+                {
+                    if (splitContainer1.Panel1.Controls.Find("PC_bufferview", true).FirstOrDefault() is BufferView bufferView)
+                    {
+                        if (true)
+                        {
+                            if (comboBox1.Text != "")
+                            {
+                                bufferView.Refresh_Buffer_PC(Plc1, Convert.ToInt32(comboBox1.Text));
+                            }
+                        }
+                    }
+                }
+
+                if (!Plc1.bConnectPLC)
+                {
+
+                    if (splitContainer1.Panel1.Controls.Find("PC_level_Signal", true).FirstOrDefault() is Level_Signal level_Signal)
+                    {
+                        if (comboBox2.Text != "")
+                        {
+                            level_Signal.Refresh_LifterlevelViewPLCError(Plc1, Convert.ToInt32(comboBox2.Text));
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (splitContainer1.Panel1.Controls.Find("PC_level_Signal", true).FirstOrDefault() is Level_Signal level_Signal)
+                    {
+                        if (true)
+                        {
+                            if (comboBox2.Text != "")
+                            {
+                                level_Signal.RefreshLevel_Lifter_PC(Plc1, Convert.ToInt32(comboBox2.Text));
+                            }
+                        }
+                    }
+                }
+
+                if (!Plc1.bConnectPLC)
+                {
+
+                    if (splitContainer1.Panel1.Controls.Find("PC_lifterView", true).FirstOrDefault() is LifterView LifterView)
+                    {
+
+                        LifterView.Refresh_LifterViewPLCError(Plc1);
+
+                    }
+
+                }
+                else
+                {
+                    if (splitContainer1.Panel1.Controls.Find("PC_lifterView", true).FirstOrDefault() is LifterView LifterView)
+                    {
+                        if (true)
+                        {
+                            LifterView.Refresh_Lifter_PC(Plc1);
                         }
                     }
                 }

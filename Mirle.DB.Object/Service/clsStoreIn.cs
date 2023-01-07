@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mirle.IASC;
+using Mirle.BarcodeReader;
 
 namespace Mirle.DB.Object.Service
 {
@@ -18,7 +19,7 @@ namespace Mirle.DB.Object.Service
 
                 for (int bufferIndex = 1; bufferIndex <= 3; bufferIndex += 2)
                 {
-                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreInWriPlc1FA1andA3(Plc1, bufferIndex);
+                    //clsDB_Proc.GetDB_Object().GetProcess().FunStoreInWriPlc1FA1andA3(Plc1, bufferIndex);
                 }
             }
             catch (Exception ex)
@@ -38,11 +39,11 @@ namespace Mirle.DB.Object.Service
                 {
                     if (bufferIndex == 2)
                     {
-                        stn = StnNo.A2;
+                        stn = ASRS_Setting.A2;
                     }
                     else if (bufferIndex == 4)
                     {
-                        stn = StnNo.A4;
+                        stn = ASRS_Setting.A4;
                     }
                     clsDB_Proc.GetDB_Object().GetProcess().FunStoreInFA1andA3CallLifterAndSHC(Plc1, stn, bufferIndex);
                 }
@@ -60,7 +61,7 @@ namespace Mirle.DB.Object.Service
             try
             {
 
-                for (int floor = 1; floor <= 10; floor++)
+                for (int floor = 1; floor <= 11; floor++)
                 {
                     clsDB_Proc.GetDB_Object().GetProcess().FunStoreCarInLifter_ReportSHC(Plc1, floor);
                 }
@@ -78,6 +79,21 @@ namespace Mirle.DB.Object.Service
             try
             {
                 clsDB_Proc.GetDB_Object().GetProcess().FunSHC_ChangeLayerReq(Plc1,e);
+
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+            }
+        }
+
+        public static void FunBCR_StoreINSocket(clsBufferData Plc1, SocketDataReceiveEventArgs e)//BCR入庫觸發
+        {
+            try
+            {
+                clsDB_Proc.GetDB_Object().GetProcess().FunStoreInWriPlc1FA1andA3(Plc1, e);
 
             }
             catch (Exception ex)

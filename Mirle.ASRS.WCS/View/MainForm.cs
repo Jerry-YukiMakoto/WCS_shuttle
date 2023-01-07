@@ -15,6 +15,9 @@ using Mirle.DataBase;
 using HslCommunicationPLC.Siemens;
 using Mirle.IASC;
 using Mirle.ASRS.View;
+using Mirle.BarcodeReader;
+using Mirle.ASRS.WCS.Model.PLCDefinitions;
+using Mirle.Grid.T26YGAP0;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -28,6 +31,7 @@ namespace Mirle.ASRS.WCS.View
         private static WCSManager _wcsManager;
         private ShuttleController _shuttleController;
         private readonly MainView _mainView;
+        public SocketListen SocketListen;
 
         public MainForm()
         {
@@ -92,49 +96,11 @@ namespace Mirle.ASRS.WCS.View
 
         #region 側邊欄buttons
 
-        private MainTestForm mainTest;
-        private void btnSendAPITest_Click(object sender, EventArgs e)
-        {
-            if (mainTest == null)
-            {
-                mainTest = new MainTestForm(clInitSys.WmsApi_Config);
-                mainTest.TopMost = true;
-                mainTest.FormClosed += new FormClosedEventHandler(funMainTest_FormClosed);
-                mainTest.Show();
-            }
-            else
-            {
-                mainTest.BringToFront();
-            }
-        }
+       
 
-        private void funMainTest_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (mainTest != null)
-                mainTest = null;
-        }
+   
 
-        private CraneSpeedMaintainView StockerSpeed;
-        private void btnCraneSpeedMaintain_Click(object sender, EventArgs e)
-        {
-            if (StockerSpeed == null)
-            {
-                StockerSpeed = new CraneSpeedMaintainView();
-                StockerSpeed.TopMost = true;
-                StockerSpeed.FormClosed += new FormClosedEventHandler(funCraneSpeedMaintain_FormClosed);
-                StockerSpeed.Show();
-            }
-            else
-            {
-                StockerSpeed.BringToFront();
-            }
-        }
 
-        private void funCraneSpeedMaintain_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (StockerSpeed != null)
-                StockerSpeed = null;
-        }
 
         private frmCmdMaintance cmdMaintance;
         private void btnCmdMaintain_Click(object sender, EventArgs e)
@@ -152,20 +118,7 @@ namespace Mirle.ASRS.WCS.View
             }
         }
 
-        private Form test;
-        private void test_Click(object sender, EventArgs e)
-        {
-            if (test == null)
-            {
-                test = new Form1();
-                test.FormClosed += new FormClosedEventHandler(funtest_FormClosed);
-                test.Show();
-            }
-            else
-            {
-                test.BringToFront();
-            }
-        }
+
 
         private void funCmdMaintain_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -173,11 +126,6 @@ namespace Mirle.ASRS.WCS.View
                 cmdMaintance = null;
         }
 
-        private void funtest_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (test != null)
-                test = null;
-        }
 
         #endregion 側邊欄buttons
 
@@ -239,6 +187,9 @@ namespace Mirle.ASRS.WCS.View
             _shuttleController = new ShuttleController(clInitSys.SHC_IP, clInitSys.SHC_port);
             _shuttleController.ChangeLayer += _shuttleController_OnLayerChange;
             _shuttleController.Open();
+            SocketListen = new SocketListen(Convert.ToInt32(ASRS_Setting.BCR_port));
+            SocketListen.OnDataReceive += SocketListen_OnDataReceive;
+            SocketListen.Listen();
             Plc1 = ControllerReader.GetCVControllerr().GetPLC1();
             
 
@@ -251,7 +202,11 @@ namespace Mirle.ASRS.WCS.View
         private void _shuttleController_OnLayerChange(object sender, ChangeLayerEventArgsLayer e)
         {
             _wcsManager.WCSManageControlSHC_Call(e);
+        }
 
+        private void SocketListen_OnDataReceive(object sender, SocketDataReceiveEventArgs arg)
+        {
+            _wcsManager.WCSManageControlBCRSocket_Call(arg);
         }
 
         public clsBufferData GetPLC1()
@@ -262,8 +217,8 @@ namespace Mirle.ASRS.WCS.View
         #region Grid顯示
         private void GridInit()
         {
-            //Grid.clInitSys.GridSysInit(ref GridCmd);
-            //ColumnDef.CMD_MST.GridSetLocRange(ref GridCmd);
+            Grid.clInitSys.GridSysInit(ref GridCmd);
+            ColumnDef.CMD_MST.GridSetLocRange(ref GridCmd);
         }
 
         delegate void degShowCmdtoGrid(ref DataGridView oGrid);

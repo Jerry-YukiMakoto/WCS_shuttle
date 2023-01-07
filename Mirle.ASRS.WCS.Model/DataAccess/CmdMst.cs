@@ -13,26 +13,20 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
     {
         public string CmdSno { get; private set; }
         public string TaskNo { get; private set; }
-        public string Vehicle_ID { get; private set; }
         public string CmdMode { get; private set; }
         public string StnNo { get; private set; }
         public string Loc { get; private set; }
-        public string LOC_ID { get; private set; }
+        public string Loc_ID { get; private set; }
         public string NewLoc { get; private set; }
-        public string LoadType { get; private set; }
-        public string TrayId { get; private set; }
         public string Trace { get; private set; }
         public string IOType { get; private set; }
         public string COUNT { get; internal set; }
-        public string whetherAllOut { get; internal set; }
-        public string lastpallet { get; internal set; }
-        public string palletNo { get; internal set; }
 
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
-            if (row.Table.Columns.Contains("CMDSNO"))
+            if (row.Table.Columns.Contains("CMD_SNO"))
             {
-                CmdSno = Convert.ToString(row["CMDSNO"]);
+                CmdSno = Convert.ToString(row["CMD_SNO"]);
             }
             if (row.Table.Columns.Contains("TaskNo"))
             {
@@ -40,61 +34,59 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
             }
             if (row.Table.Columns.Contains("LOC_ID"))
             {
-                LOC_ID = Convert.ToString(row["LOC_ID"]);
+                Loc_ID = Convert.ToString(row["LOC_ID"]);
             }
-            if (row.Table.Columns.Contains("Vehicle_ID "))
+            if (row.Table.Columns.Contains("CMD_MODE"))
             {
-                Vehicle_ID = Convert.ToString(row["Vehicle_ID "]);
+                CmdMode = Convert.ToString(row["CMD_MODE"]);
             }
-            if (row.Table.Columns.Contains("CMDMODE"))
+            if (row.Table.Columns.Contains("STN_NO"))
             {
-                CmdMode = Convert.ToString(row["CMDMODE"]);
-            }
-            if (row.Table.Columns.Contains("STNNO"))
-            {
-                StnNo = Convert.ToString(row["STNNO"]);
+                StnNo = Convert.ToString(row["STN_NO"]);
             }
             if (row.Table.Columns.Contains("LOC"))
             {
                 Loc = Convert.ToString(row["LOC"]);
             }
-            if (row.Table.Columns.Contains("NEWLOC"))
+            if (row.Table.Columns.Contains("NEW_LOC"))
             {
-                NewLoc = Convert.ToString(row["NEWLOC"]);
-            }
-            if (row.Table.Columns.Contains("LOADTYPE"))
-            {
-                LoadType = Convert.ToString(row["LOADTYPE"]);
-            }
-            if (row.Table.Columns.Contains("TRAYID"))
-            {
-                TrayId = Convert.ToString(row["TRAYID"]);
+                NewLoc = Convert.ToString(row["NEW_LOC"]);
             }
             if (row.Table.Columns.Contains("TRACE"))
             {
                 Trace = Convert.ToString(row["TRACE"]);
             }
-            if (row.Table.Columns.Contains("IOType"))
+            if (row.Table.Columns.Contains("IO_Type"))
             {
-                IOType = Convert.ToString(row["IOType"]);
+                IOType = Convert.ToString(row["IO_Type"]);
             }
             if (row.Table.Columns.Contains("COUNT"))
             {
                 COUNT = Convert.ToString(row["COUNT"]);
             }
-            if (row.Table.Columns.Contains("whetherAllOut"))
-            {
-                whetherAllOut = Convert.ToString(row["whetherAllOut"]);
-            }
-            if (row.Table.Columns.Contains("lastpallet"))
-            {
-                lastpallet = Convert.ToString(row["lastpallet"]);
-            }
-            if (row.Table.Columns.Contains("palletNo"))
-            {
-                palletNo = Convert.ToString(row["palletNo"]);
-            }
             return this;
         }
     }
-}
+    }
+
+    public struct struCmdDtl
+    {
+        public string Cmd_Txno { get; set; }
+    public string LOC_Txno { get; set; }
+    public string Cmd_Sno { get; set; }
+        public double Plt_Qty { get; set; }
+        public double ALO_Qty { get; set; }
+        public string In_Date { get; set; }
+        public string TRN_Date { get; set; }
+        public string CYCLE_Date { get; set; }
+        public string Item_No { get; set; }
+        public string Lot_No { get; set; }
+        public string QC_CODE { get; set; }
+        public string Tkt_NO { get; set; }
+        public string Tkt_SEQ { get; set; }
+        public string Item_TYPE { get; set; }
+        public string Store_CODE { get; set; }
+        public string BANK_CODE { get; set; }
+
+    public string expire_date { get; set; }
+    }

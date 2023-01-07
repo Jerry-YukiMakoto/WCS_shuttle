@@ -5,7 +5,6 @@ using Mirle.ASRS.WCS.Model.DataAccess;
 using Mirle.ASRS.WCS.Model.LogTrace;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.WCS.Controller;
-using Mirle.ASRS.Conveyors;
 using Mirle.DataBase;
 using Mirle.DB.Object.Service;
 using Mirle.Def;
@@ -13,6 +12,7 @@ using Mirle.DB.Proc;
 using HslCommunicationPLC;
 using HslCommunicationPLC.Siemens;
 using Mirle.IASC;
+using Mirle.BarcodeReader;
 
 namespace Mirle.ASRS.WCS
 {
@@ -37,7 +37,7 @@ namespace Mirle.ASRS.WCS
             {
                 clsStoreIn.StoreIn_WriteCV(Plc1);//一樓入庫PLC1寫入命令
 
-                clsStoreIn.StoreIn_CALL_LifterAndSHC(Plc1);//一樓入庫開始=>lifter與SHC交握
+                clsStoreIn.StoreIn_CALL_LifterAndSHC(Plc1);//一樓入庫開始=>lifter與SHC交握 
 
                 clsStoreIn.StoreIn_CarInLifter_WriteCmdInLifter(Plc1);
 
@@ -55,6 +55,16 @@ namespace Mirle.ASRS.WCS
             if (IsConnected)
             {
                 clsStoreIn.FunSHC_ChangeLayerReq(Plc, e);
+            }
+
+        }
+
+        public void WCSManageControlBCRSocket_Call(SocketDataReceiveEventArgs e)
+        {
+            IsConnected = Plc.bConnectPLC;
+            if (IsConnected)
+            {
+                clsStoreIn.FunBCR_StoreINSocket(Plc, e);
             }
 
         }

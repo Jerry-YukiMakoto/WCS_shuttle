@@ -79,7 +79,7 @@
       <Project>{553bd8cf-f4c1-4b39-97ab-42cc2f7c8187}</Project>
       <Name>Mirle.DB.WMS.Proc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.Def.U0NXMA30\Mirle.Def.T26YGAP0.csproj">
+    <ProjectReference Include="..\Mirle.Def.T26YGAP0\Mirle.Def.T26YGAP0.csproj">
       <Project>{e6f732fe-3905-49a7-b2cf-b4fa79c2dc5d}</Project>
       <Name>Mirle.Def.T26YGAP0</Name>
     </ProjectReference>
@@ -91,7 +91,7 @@
       <Project>{8ab5fac9-7cc2-4eec-b583-39778e66ce1f}</Project>
       <Name>Mirle.Grid</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.Grid.U0NXMA30\Mirle.Grid.T26YGAP0.csproj">
+    <ProjectReference Include="..\Mirle.Grid.T26YGAP0\Mirle.Grid.T26YGAP0.csproj">
       <Project>{39a4c47b-c53b-4057-9dc5-93b8907639e8}</Project>
       <Name>Mirle.Grid.T26YGAP0</Name>
     </ProjectReference>

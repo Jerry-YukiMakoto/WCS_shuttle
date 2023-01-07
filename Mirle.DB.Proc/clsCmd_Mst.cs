@@ -50,33 +50,7 @@ namespace Mirle.DB.Proc
             }
         }
 
-        public int GetCmdMstByStoreOutFinish(IEnumerable<string> stations, out DataObject<CmdMst> dataObject)
-        {
-            try
-            {
-                using (var db = clsGetDB.GetDB(_config))
-                {
-                    int iRet = clsGetDB.FunDbOpen(db);
-                    if (iRet == DBResult.Success)
-                    {
-                        return CMD_MST.GetCmdMstByStoreOutFinish(stations, out dataObject, db).ResultCode;
-                    }
-                    else
-                    {
-                        dataObject = new DataObject<CmdMst>();
-                        return iRet;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dataObject = new DataObject<CmdMst>();
-                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
-                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
-                return DBResult.Exception;
-            }
-        }
+   
 
        
 

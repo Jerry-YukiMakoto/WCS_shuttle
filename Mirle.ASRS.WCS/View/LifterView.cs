@@ -82,10 +82,10 @@ namespace Mirle.ASRS.View
             string strAuto = "自動模式:\n綠燈A -> 自動ON\n黃燈M -> 手動\n紅燈M -> 連線失敗";
             string strAllowWriteCommand = "允許寫入命令:\n輸送機是否允許寫入命令"; 
             string strPresence = "荷有:\n橘色V -> 荷有 (梭車)";
-            string strWriteCommandComplete = "寫入命令完成:\n0 -> 未完成\n1 -> 完成";
-            string strLifterDown = "Lifter_Down:\n1 -> Down";
-            string strLifterRun = "Lifter_Run:\n1 -> Run";
-            string strLifterIdle = "Lifter_Idle:\n1 -> Idle";
+            string strWriteCommandComplete = "寫入命令完成:\nF -> 未完成\nT -> 完成";
+            string strLifterDown = "Lifter_Down:\nT -> Down";
+            string strLifterRun = "Lifter_Run:\nT -> Run";
+            string strLifterIdle = "Lifter_Idle:\nT -> Idle";
             string strLiftPosition = "電梯位置";
 
 
@@ -112,11 +112,11 @@ namespace Mirle.ASRS.View
 
         public void Refresh_Lifter(clsBufferData Plc1)
         {
-            Refresh(lbVehicleID, "" , Plc1.oPLC.PLC[0].Lifter.presence_shuttle, Plc1.oPLC.PLC[0].CV.Down);
+            Refresh(lbVehicleID, Plc1.oPLC.PLC[0].Lifter.Vehicle_ID , Plc1.oPLC.PLC[0].Lifter.presence_shuttle, Plc1.oPLC.PLC[0].CV.Down);
             Refresh(lblCommandId, Plc1.oPLC.PLC[0].Lifter.CMDno);
             Refresh(lblTaskNo, Plc1.oPLC.PLC[0].Lifter.Taskno.ToString());
             Refresh(Liftermode, Auto(Plc1.oPLC.PLC[0].Lifter.LiftMode), Plc1.oPLC.PLC[0].Lifter.LiftMode.ToColor(Color.ForestGreen, Color.Yellow));
-            Refresh(WriteCommanComplete, Plc1.oPLC.PLC[0].Lifter.WriteCommandComplete.ToString());
+            //Refresh(WriteCommanComplete, Plc1.oPLC.PLC[0].Lifter.WriteCommandComplete.ToString());
             Refresh(lbAllowwritecommand, Plc1.oPLC.PLC[0].Lifter.AllowWriteCommand.ToString());
             Refresh(lbLiftPresence, Presence(Plc1.oPLC.PLC[0].Lifter.presence_shuttle), Plc1.oPLC.PLC[0].Lifter.presence_shuttle.ToColor(Color.Orange, Color.White));
             Refresh(LiftPosition, Plc1.oPLC.PLC[0].Lifter.LiftPosition.ToString());
@@ -124,13 +124,34 @@ namespace Mirle.ASRS.View
             Refresh(LifterRun, Plc1.oPLC.PLC[0].Lifter.LiftRun.ToString());
             Refresh(LifterIdle, Plc1.oPLC.PLC[0].Lifter.LiftIdle.ToString());
         }
+        public void Refresh_Lifter_PC(clsBufferData Plc1)
+        {
+            lbAllowwritecommand.Text = "";
+            lbLiftPresence.Text = "";
+            LiftPosition.Text = "";
+            LifterRun.Text = "";
+            LifterDown.Text = "";
+            LifterIdle.Text = "";
+            Liftermode.Text = "";
+
+            Refresh(lbVehicleID, Plc1.oPLC.PC[0].Lifter.Vehicle_ID,false,false);
+            Refresh(lblCommandId, Plc1.oPLC.PC[0].Lifter.CMDno);
+            Refresh(lblTaskNo, Plc1.oPLC.PC[0].Lifter.Taskno.ToString());
+            Refresh(WriteCommanComplete, Plc1.oPLC.PC[0].Lifter.WriteCommandComplete.ToString());
+            //Refresh(lbAllowwritecommand, Plc1.oPLC.PLC[0].Lifter.AllowWriteCommand.ToString());
+            //Refresh(lbLiftPresence, Presence(Plc1.oPLC.PLC[0].Lifter.presence_shuttle), Plc1.oPLC.PLC[0].Lifter.presence_shuttle.ToColor(Color.Orange, Color.White));
+            //Refresh(LiftPosition, Plc1.oPLC.PLC[0].Lifter.LiftPosition.ToString());
+            //Refresh(LifterDown, Plc1.oPLC.PLC[0].Lifter.LiftDown.ToString());
+            //Refresh(LifterRun, Plc1.oPLC.PLC[0].Lifter.LiftRun.ToString());
+            //Refresh(LifterIdle, Plc1.oPLC.PLC[0].Lifter.LiftIdle.ToString());
+        }
 
         public void Refresh_LifterViewPLCError(clsBufferData Plc1)
         {
             Refresh(lblCommandId, String.Empty);
             Refresh(lblTaskNo, strCmdMode.None);
             Refresh(Liftermode, "A", Color.Red);
-            Refresh(WriteCommanComplete, Ready.NoReady.ToString());
+            //Refresh(WriteCommanComplete, Ready.NoReady.ToString());
             Refresh(lbAllowwritecommand, "X");
             Refresh(lbLiftPresence, String.Empty, Color.White);
             Refresh(LiftPosition, Switch_Ack.NoAck.ToString());

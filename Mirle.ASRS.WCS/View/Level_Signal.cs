@@ -77,8 +77,8 @@ namespace Mirle.ASRS.View
         private void funInitToolTip()
         {
             string strLevel = "level樓層";
-            string strMoveFloor = "移動至第幾層";
-            string strSafetyCheck = "樓層Safety Check";
+            string strMoveFloor = "移動至第幾層/PC訊號:callToLevel";
+            string strSafetyCheck = "樓層Safety Check/PC訊號:carmoveComplete";
             string LevelSensor = "樓層位置確認";
 
 
@@ -166,12 +166,89 @@ namespace Mirle.ASRS.View
                 levelsensor = Plc1.oPLC.PLC[0].Lifter.Floor10LocationCheck.ToString();
                 Movetolevel = Plc1.oPLC.PLC[0].Lifter.MoveToFloor10.ToString();
             }
+            else if (index == 11)
+            {
+                safetycheck = Plc1.oPLC.PLC[0].Lifter.Floor11_SafetyCheck.ToString();
+                levelsensor = Plc1.oPLC.PLC[0].Lifter.UnloadingLocationCheck.ToString();
+                Movetolevel = Plc1.oPLC.PLC[0].Lifter.MoveToFloor11.ToString();
+            }
 
             Refresh(lbLevel, "Level"+index);
-            Refresh(lbLevelSafetyCheck, safetycheck);
-            Refresh(lbLevelSenSor, levelsensor);
-            Refresh(lblMovetoLevel, Movetolevel);
+            Refresh(lbLevelSafetyCheck, safetycheck,Convert.ToBoolean(safetycheck).ToColor(Color.Red,Color.White));
+            Refresh(lbLevelSenSor, levelsensor, Convert.ToBoolean(levelsensor).ToColor(Color.Red, Color.White));
+            Refresh(lblMovetoLevel, Movetolevel, Convert.ToBoolean(Movetolevel).ToColor(Color.Red, Color.White));
         }
+
+        public void RefreshLevel_Lifter_PC(clsBufferData Plc1, int index)
+        {
+            string carmovecomplete = "";
+            string levelsensor = "";
+            string Movetolevel = "";
+
+
+            if (index == 1)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor1_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor1.ToString();
+            }
+            else if (index == 2)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor2_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor2.ToString();
+
+            }
+            else if (index == 3)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor3_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor3.ToString();
+            }
+            else if (index == 4)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor4_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor4.ToString();
+            }
+            else if (index == 5)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor5_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor5.ToString();
+            }
+            else if (index == 6)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor6_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor6.ToString();
+            }
+            else if (index == 7)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor7_CarMoveComplete.ToString();;
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor7.ToString();
+            }
+            else if (index == 8)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor8_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor8.ToString();
+            }
+            else if (index == 9)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor9_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor9.ToString();
+            }
+            else if (index == 10)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor9_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor9.ToString();
+            }
+            else if (index == 11)
+            {
+                carmovecomplete = Plc1.oPLC.PC[0].Lifter.Floor11_CarMoveComplete.ToString();
+                Movetolevel = Plc1.oPLC.PC[0].Lifter.CallToFloor11.ToString();
+            }
+
+            lbLevelSenSor.Text = "";
+            Refresh(lbLevel, "Level" + index);
+            Refresh(lbLevelSafetyCheck, carmovecomplete, Convert.ToBoolean(carmovecomplete).ToColor(Color.Red, Color.White));
+            Refresh(lblMovetoLevel, Movetolevel, Convert.ToBoolean(Movetolevel).ToColor(Color.Red, Color.White));
+        }
+
 
         public void Refresh_LifterlevelViewPLCError(clsBufferData Plc1,int index)
         {

@@ -27,11 +27,10 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
-        public GetDataResult GetEmptyLoc_SameFloor(string Loc, out DataObject<Loc_Mst> dataObject, SqlServer db)
+        public GetDataResult GetLocdtlDATA(string Loc, out DataObject<Loc_Mst> dataObject, SqlServer db)
         {
-            string sql = "SELECT * FROM Loc_Mst ";
-            sql += $"WHERE Loc IN ('{Loc}') ";
-            sql += $"ORDER BY LVL_Z,BAY_Y,ROW_X desc";
+            string sql = "SELECT * FROM Loc_DTL ";
+            sql += $"WHERE Loc = ('{Loc}') ";
             return db.GetData(sql, out dataObject);
         }
 

@@ -156,6 +156,8 @@ namespace HslCommunicationPLC.Siemens
             public bool Floor9_CarMoveComplete = false;
             public bool CallToFloor10 = false;
             public bool Floor10_CarMoveComplete = false;
+            public bool CallToFloor11 = false;
+            public bool Floor11_CarMoveComplete = false;
 
         }
 
@@ -188,6 +190,8 @@ namespace HslCommunicationPLC.Siemens
             public bool Floor9_SafetyCheck = false;
             public bool MoveToFloor10 = false;
             public bool Floor10_SafetyCheck = false;
+            public bool MoveToFloor11 = false;//裝卸層
+            public bool Floor11_SafetyCheck = false;//裝卸層
 
             /// <summary>
             /// LIFT自動模式(ON：自動，OFF：手動)

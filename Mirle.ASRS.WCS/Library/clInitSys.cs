@@ -44,7 +44,7 @@ namespace Mirle.ASRS.WCS.Library
                     .Build();
 
                 FunDbConfig(lcsini);
-                FunApiConfig(lcsini);
+                //FunApiConfig(lcsini);
                 FunDeviceConfig(lcsini);
                 FunPlcConfig(lcsini);
                 FunStnNoConfig(lcsini);
@@ -71,25 +71,16 @@ namespace Mirle.ASRS.WCS.Library
             DbConfig.FODBServer = lcsini.Database.FODbServer;
             DbConfig.WriteLog = true;
 
-            DbConfig_WMS.CommandTimeOut = lcsini.Database_WMS.CommandTimeOut;
-            DbConfig_WMS.ConnectTimeOut = lcsini.Database_WMS.ConnectTimeOut;
-            DbConfig_WMS.DbName = lcsini.Database_WMS.DataBase;
-            DbConfig_WMS.DbPassword = lcsini.Database_WMS.DbPswd;
-            DbConfig_WMS.DbServer = lcsini.Database_WMS.DbServer;
-            DbConfig_WMS.DBType = (DBTypes)Enum.Parse(typeof(DBTypes), lcsini.Database_WMS.DBMS);
-            DbConfig_WMS.DbUser = lcsini.Database_WMS.DbUser;
-            DbConfig_WMS.FODBServer = lcsini.Database_WMS.FODbServer;
-            DbConfig_WMS.WriteLog = true;
         }
 
 
 
 
-        private static void FunApiConfig(ASRSINI lcsini)
-        {
-            WmsApi_Config.IP = lcsini.WMS_API.IP;
-            WcsApi_Config.IP = lcsini.WCS_API.IP;
-        }
+        //private static void FunApiConfig(ASRSINI lcsini)
+        //{
+        //    WmsApi_Config.IP = lcsini.WMS_API.IP;
+        //    WcsApi_Config.IP = lcsini.WCS_API.IP;
+        //}
 
         private static void FunDeviceConfig(ASRSINI lcsini)
         {
@@ -100,15 +91,17 @@ namespace Mirle.ASRS.WCS.Library
 
         private static void FunPlcConfig(ASRSINI lcsini)
         {
-            CV_Config.IpAddress = lcsini.CV.MPLCIP;
+            CV_Config.IpAddress = lcsini.CV.IP;
             SHC_IP = lcsini.CV.SHC_IP;
             SHC_port =lcsini.CV.SHC_PORT;
-            StnNo.BCR_IP = lcsini.CV.BCR_IP;
+            ASRS_Setting.BCR_IP_1 = lcsini.CV.BCR_IP_1;
+            ASRS_Setting.BCR_IP_2 = lcsini.CV.BCR_IP_2;
+            ASRS_Setting.BCR_port = lcsini.CV.BCR_port;
         }
 
         private static void FunStnNoConfig(ASRSINI lcsini)
         {
-            StnNo.STNNO_1F = lcsini.StnNo.STN;
+            ASRS_Setting.STNNO_1F = lcsini.StnNo.STN;
         }
 
        

@@ -80,6 +80,23 @@ namespace HslCommunicationPLC.Siemens
             return ReadBlock(StartAddress, ref Content, ref strEM);
         }
 
+        public bool ReadPLCbit(string PLCbit, ref bool Content)
+        {
+            string strEM = "";
+            return ReadPLCbit(PLCbit, ref Content, ref strEM);
+        }
+
+        public bool ReadPLCbit(string StartAddress, ref bool Content, ref string strEM)
+        {
+            OperateResult<bool> read = siemensTcpNet.ReadBool(StartAddress);
+            Content = read.Content;
+            isconn = read.IsSuccess;
+            if (!isconn) strEM = read.Message;
+
+            return read.IsSuccess;
+        }
+
+
         public bool ReadBlock(string StartAddress, ref short[] Content, ref string strEM)
         {
             OperateResult<short[]> read = siemensTcpNet.ReadInt16(StartAddress, ushort.Parse(Content.Length.ToString()));
