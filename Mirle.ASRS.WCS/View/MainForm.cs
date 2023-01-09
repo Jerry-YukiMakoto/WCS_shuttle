@@ -32,6 +32,7 @@ namespace Mirle.ASRS.WCS.View
         private ShuttleController _shuttleController;
         private readonly MainView _mainView;
         public SocketListen SocketListen;
+        private DB.ClearCmd.Proc.clsHost clearCmd;
 
         public MainForm()
         {
@@ -191,8 +192,8 @@ namespace Mirle.ASRS.WCS.View
             SocketListen.OnDataReceive += SocketListen_OnDataReceive;
             SocketListen.Listen();
             Plc1 = ControllerReader.GetCVControllerr().GetPLC1();
-            
 
+            clearCmd = new DB.ClearCmd.Proc.clsHost();//移動完成命令致歷史資料表以及定期清理歷史命令
             //_unityContainer = new UnityContainer();
             //_unityContainer.RegisterInstance(new WCSController());
             //_webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);

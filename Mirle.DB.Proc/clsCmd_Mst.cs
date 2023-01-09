@@ -282,7 +282,7 @@ namespace Mirle.DB.Proc
                         {
                             for (int i = 0; i < dtTmp.Rows.Count; i++)
                             {
-                                string sCmdSno = Convert.ToString(dtTmp.Rows[i]["CmdSno"]);
+                                string sCmdSno = Convert.ToString(dtTmp.Rows[i]["Cmd_Sno"]);
                                 string sRemark_Pre = Convert.ToString(dtTmp.Rows[i]["Remark"]);
                                 string sRemark = "";
                                 if (db.TransactionCtrl(TransactionTypes.Begin) != DBResult.Success)

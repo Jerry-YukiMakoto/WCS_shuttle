@@ -33,9 +33,9 @@ namespace Mirle.Def
         public class CmdSts
         {
             /// <summary>
-            /// 命令完成带过帐
+            /// 命令完成
             /// </summary>
-            public const string strCmd_Finished = "7";
+            public const string strCmd_Finished = "9";
             /// <summary>
             /// 命令取消带过帐
             /// </summary>

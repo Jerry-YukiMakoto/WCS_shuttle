@@ -35,7 +35,7 @@ namespace Mirle.ASRS.WCS
             IsConnected = Plc1.bConnectPLC;
             if (IsConnected)
             {
-                clsStoreIn.StoreIn_WriteCV(Plc1);//一樓入庫PLC1寫入命令
+                //clsStoreIn.StoreIn_WriteCV(Plc1);//一樓入庫PLC1寫入命令(改成BCR觸發
 
                 clsStoreIn.StoreIn_CALL_LifterAndSHC(Plc1);//一樓入庫開始=>lifter與SHC交握 
 
@@ -49,7 +49,7 @@ namespace Mirle.ASRS.WCS
 
         }
 
-        public void WCSManageControlSHC_Call(ChangeLayerEventArgsLayer e)
+        public void WCSManageControlSHC_Call(ChangeLayerEventArgsLayer e)//SHC觸發
         {
             IsConnected = Plc.bConnectPLC;
             if (IsConnected)
@@ -59,7 +59,7 @@ namespace Mirle.ASRS.WCS
 
         }
 
-        public void WCSManageControlBCRSocket_Call(SocketDataReceiveEventArgs e)
+        public void WCSManageControlBCRSocket_Call(SocketDataReceiveEventArgs e)//BCR_socket觸發
         {
             IsConnected = Plc.bConnectPLC;
             if (IsConnected)

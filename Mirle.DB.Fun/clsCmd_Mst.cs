@@ -271,8 +271,8 @@ namespace Mirle.DB.Fun
             try
             {
                 string strDelDay = DateTime.Today.Date.AddDays(1 * (-1)).ToString("yyyy-MM-dd");
-                string strSql = $"select * from CMDMST where CmdSts in ('{clsConstValue.CmdSts.strCmd_Cancel}', '{clsConstValue.CmdSts.strCmd_Finished}')";
-                strSql += $"And CrtDate <=  '" + strDelDay + "'";
+                string strSql = $"select * from CMD_MST where Cmd_Sts in ('{clsConstValue.CmdSts.strCmd_Cancel}', '{clsConstValue.CmdSts.strCmd_Finished}')";
+                strSql += $"And Crt_Date <=  '" + strDelDay + "'";
                 string strEM = "";
                 int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
                 if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
@@ -374,7 +374,7 @@ namespace Mirle.DB.Fun
             try
             {
                 string SQL = "INSERT INTO CMD_MST_His ";
-                SQL += $" SELECT '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}', * FROM CMD_MST ";
+                SQL += $" SELECT '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}', * FROM CMD_MST ";
                 SQL += $" WHERE Cmd_Sno='{sCmdSno}'";
 
                 int iRet = db.ExecuteSQL(SQL);
@@ -397,7 +397,7 @@ namespace Mirle.DB.Fun
             try
             {
                 string strDelDay = DateTime.Today.Date.AddDays(dblDay * (-1)).ToString("yyyy-MM-dd");
-                string strSql = "delete from CMD_MST_His where HisDT <= '" + strDelDay + "' ";
+                string strSql = "delete from CMD_MST_His where CRT_DATE <= '" + strDelDay + "' ";
 
                 int iRet = db.ExecuteSQL(strSql);
                 if (iRet == DBResult.Success)
