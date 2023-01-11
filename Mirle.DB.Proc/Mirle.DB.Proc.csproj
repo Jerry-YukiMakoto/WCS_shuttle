@@ -76,9 +76,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLC.csproj">
+=======
+    <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLCTool.csproj">
+>>>>>>> 3633a14f5a0e23e7655de4c760c46f65acc3e4e9
       <Project>{30f65faa-8471-4ec4-8ea3-5a4e7b78aae2}</Project>
-      <Name>HslCommunicationPLC</Name>
+      <Name>HslCommunicationPLCTool</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
       <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
