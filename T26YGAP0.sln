@@ -60,9 +60,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{08D6C32B-6FB2-4B87-96FD-94DD19901C8F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "通訊協定", "通訊協定", "{B0F1BD7B-4A17-4254-9152-6DB17F5D76E7}"
-	ProjectSection(SolutionItems) = preProject
-		Documents\通訊協定\后科MSC PLC Handshaking v1.4.xlsx = Documents\通訊協定\后科MSC PLC Handshaking v1.4.xlsx
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirle.CENS.T26YGAP0", "Mirle.CENS.T26YGAP0\Mirle.CENS.T26YGAP0.csproj", "{DCBE44B8-7C23-4DBA-86AE-9CA5F9CB3774}"
 EndProject
@@ -74,7 +71,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IASCTest", "..\IASCTest\IAS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConnect", "..\TestConnect\TestConnect.csproj", "{635863DE-4C01-4C8F-BB83-6086478F677B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HslCommunicationPLC", "WCS_New -2.0\HslCommunicationPLC\HslCommunicationPLC.csproj", "{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HslCommunicationPLC", "..\WCS_New -2.0\WCS_New -2.0\HslCommunicationPLC\HslCommunicationPLC.csproj", "{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HslCommunicationPLCTool", "HslCommunicationPLC\HslCommunicationPLCTool.csproj", "{E6A42420-40AE-4116-A466-63EED8431A16}"
 EndProject
