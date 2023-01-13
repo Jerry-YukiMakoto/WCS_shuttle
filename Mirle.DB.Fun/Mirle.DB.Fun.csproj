@@ -63,10 +63,6 @@
     <Compile Include="clsPortDef.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
-      <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
-      <Name>Mirle.ASRS.WCS.Controller</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
       <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
       <Name>Mirle.ASRS.WCS.Model</Name>
