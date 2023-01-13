@@ -1,0 +1,56 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="500" Width="800">
+    <Grid>
+        <Canvas>
+            <Label x:Name="label" Content="IP" Canvas.Left="10" Canvas.Top="10" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="21"/>
+            <TextBox x:Name="IP" TextWrapping="Wrap" Text="192.168.0.123" Width="97" Height="25" Canvas.Left="36" Canvas.Top="10" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label x:Name="labe2" Content="Port" Canvas.Left="138" Canvas.Top="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Width="36"/>
+            <TextBox x:Name="Port" TextWrapping="Wrap" Text="7878" Width="40" Height="25" Canvas.Left="179" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center"/>
+            <Button x:Name="open" Content="Open" Canvas.Left="224" Canvas.Top="10" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="55" Click="Open_Click"/>
+            <Label x:Name="label3" Content="CommandID" Canvas.Left="10" Canvas.Top="40" ToolTip="P43, P83, P89" VerticalContentAlignment="Center" Width="84" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="CommandID" TextWrapping="Wrap" Text="0001" Width="37" Height="25" Canvas.Left="117" Canvas.Top="40" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label x:Name="label4" Content="CommandType" Canvas.Left="10" Canvas.Top="70" VerticalContentAlignment="Center" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="CommandType" TextWrapping="Wrap" Text="A" Width="37" Height="25" Canvas.Left="117" Canvas.Top="70" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label x:Name="label5" Content="Priority" Canvas.Left="10" Canvas.Top="100" VerticalContentAlignment="Center" Width="50" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBox x:Name="Priority" TextWrapping="Wrap" Text="9" Width="37" Height="25" Canvas.Left="117" Canvas.Top="100" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label x:Name="label6" Content="Source" Canvas.Left="10" Canvas.Top="130" VerticalContentAlignment="Center" Width="50" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBox x:Name="Source" TextWrapping="Wrap" Text="001002001" Width="73" Height="25" Canvas.Left="117" Canvas.Top="130" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label x:Name="label7" Content="Destination" Canvas.Left="10" Canvas.Top="160" VerticalContentAlignment="Center" Width="75" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBox x:Name="Destination" TextWrapping="Wrap" Text="001003001" Width="73" Height="25" Canvas.Left="117" Canvas.Top="160" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label x:Name="label8" Content="CarrierID" Canvas.Left="10" Canvas.Top="190" VerticalContentAlignment="Center" Width="65" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="CarrierID" TextWrapping="Wrap" Text="S15000001" Width="73" Height="25" Canvas.Left="117" Canvas.Top="190" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label x:Name="label9" Content="VehicleID" Canvas.Left="10" Canvas.Top="220" ToolTip="P69, P89" VerticalContentAlignment="Center" Width="65" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBox x:Name="VehicleID" TextWrapping="Wrap" Text="0000" Width="37" Height="25" Canvas.Left="117" Canvas.Top="220" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button x:Name="P41" Content="P41" Canvas.Left="195" Canvas.Top="130" Height="25" Width="45" ToolTip="Create Shuttle Command" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P41_Click" />
+            <Button x:Name="P53" Content="P53" Canvas.Left="10" Canvas.Top="250" Height="25" Width="45" ToolTip="Reset All Alarm" HorizontalAlignment="Center" VerticalAlignment="Center" Click="P53_Click" />
+            <Button x:Name="P69" Content="P69" Canvas.Left="60" Canvas.Top="250" Height="25" Width="45" ToolTip="Query Vehicle Status" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P69_Click"/>
+            <Button x:Name="P43" Content="P43" Canvas.Left="110" Canvas.Top="250" Height="25" Width="46" ToolTip="Command Cancel" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P43_Click"/>
+            <Button x:Name="P83" Content="P83" Canvas.Left="161" Canvas.Top="250" Height="25" Width="46" ToolTip="Change Layer Request" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P83_Click"/>
+            <Button x:Name="P91" Content="P91" Canvas.Left="212" Canvas.Top="250" Height="25" Width="46" ToolTip="Lifter Arrival Report" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P91_Click"/>
+            <Button x:Name="P89" Content="P89" Canvas.Left="263" Canvas.Top="250" Height="25" Width="46" ToolTip="Cancel Change Layer Request" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P89_Click"/>
+            <Button x:Name="P21" Content="P21" Canvas.Left="10" Canvas.Top="280" Height="25" Width="44" ToolTip="Repair Door Interlock Removal Request" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P21_Click"/>
+            <Button x:Name="P29" Content="P29" Canvas.Left="59" Canvas.Top="280" Height="25" Width="46" ToolTip="Repair Door Interlock Status Change Report" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P29_Click"/>
+            <Button x:Name="P27" Content="P27" Canvas.Left="110" Canvas.Top="280" Height="25" Width="46" ToolTip="Repair Door Interlock Resume Request" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P27_Click"/>
+            <Button x:Name="P23" Content="P23" Canvas.Left="161" Canvas.Top="280" Height="25" Width="46" ToolTip="Repair Door Interlock Removal Cancel Request" HorizontalAlignment="Left" VerticalAlignment="Center" Click="P23_Click"/>
+            <Label x:Name="label10" Content="SourceLayer" Canvas.Left="10" Canvas.Top="310" ToolTip="P83" VerticalContentAlignment="Center" Width="84" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="SourceLayer" TextWrapping="Wrap" Text="01" Width="37" Height="25" Canvas.Left="117" Canvas.Top="310" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="label11" Content="DestinationLayer" Canvas.Left="10" Canvas.Top="340" ToolTip="P83" VerticalContentAlignment="Center" Width="106" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBox x:Name="DestinationLayer" TextWrapping="Wrap" Text="02" Width="37" Height="25" Canvas.Left="117" Canvas.Top="340" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="label12" Content="LifterID" Canvas.Left="10" Canvas.Top="370" ToolTip="P91" VerticalContentAlignment="Center" Width="106" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBox x:Name="LifterID" TextWrapping="Wrap" Text="01" Width="37" Height="25" Canvas.Left="117" Canvas.Top="370" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="label13" Content="LifterLocation" Canvas.Left="10" Canvas.Top="400" ToolTip="P91" VerticalContentAlignment="Center" Width="106" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBox x:Name="LifterLocation" TextWrapping="Wrap" Text="01" Width="37" Height="25" Canvas.Left="117" Canvas.Top="400" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="label14" Content="RepairDoorName" Canvas.Left="159" Canvas.Top="310" ToolTip="P21, P27, P23" VerticalContentAlignment="Center" Width="109" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="RepairDoorName" TextWrapping="Wrap" Text="01" Width="36" Height="25" Canvas.Left="268" Canvas.Top="310" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label x:Name="label15" Content="DoorStatusCode" Canvas.Left="159" Canvas.Top="340" ToolTip="P29" VerticalContentAlignment="Center" Width="109" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBox x:Name="DoorStatusCode" TextWrapping="Wrap" Text="0000" Width="36" Height="25" Canvas.Left="268" Canvas.Top="340" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBox x:Name="Log" TextWrapping="Wrap" Text="" Width="420" Height="415" Canvas.Left="320" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" IsReadOnly="True"/>
+        </Canvas>
+    </Grid>
+</Window>

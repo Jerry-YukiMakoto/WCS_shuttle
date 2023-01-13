@@ -199,6 +199,11 @@ namespace Mirle.Def
             CMDSNO,
 
             /// <summary>
+            /// 任務序號
+            /// </summary>
+            TaskNO,
+
+            /// <summary>
             /// 盤點單號
             /// </summary>
             CYCLENO,

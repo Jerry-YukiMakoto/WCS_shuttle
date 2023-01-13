@@ -101,7 +101,8 @@ namespace Mirle.ASRS.WCS.Library
 
         private static void FunStnNoConfig(ASRSINI lcsini)
         {
-            ASRS_Setting.STNNO_1F = lcsini.StnNo.STN;
+            ASRS_Setting.STNNO_1F_left = lcsini.StnNo.STNL;
+            ASRS_Setting.STNNO_1F_right = lcsini.StnNo.STNR;
         }
 
        

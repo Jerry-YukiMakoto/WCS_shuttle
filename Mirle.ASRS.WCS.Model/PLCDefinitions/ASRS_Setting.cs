@@ -2,7 +2,9 @@
 {
     public struct ASRS_Setting
     {
-        public static string STNNO_1F { get; set; }
+        public static string STNNO_1F_left { get; set; }
+
+        public static string STNNO_1F_right { get; set; }
         public static string BCR_IP_1 { get; set; }
 
         public static string BCR_IP_2 { get; set; }

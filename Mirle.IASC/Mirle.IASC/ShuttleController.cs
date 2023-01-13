@@ -51,7 +51,12 @@ namespace Mirle.IASC
             _psWrapperXClass.OnDisconnected += PSWrapperXClass_OnDisconnected;
             _psWrapperXClass.OnTransactionError += PSWrapperXClass_OnTransactionError;
 
-            Open();
+            //if(!Open())
+            //{
+            //        //MessageBox.Show("SHC連線異常", "Communication System", MessageBoxButtons.OK);
+            //        //Environment.Exit(0);
+            //} 
+                
         }
 
         private void PSWrapperXClass_OnTransactionError(string errorString, ref PSMessageXClass msg)
@@ -1085,9 +1090,9 @@ namespace Mirle.IASC
             }
         }
 
-        public void Open()
+        public bool Open()
         {
-            _psWrapperXClass.Open();
+            return _psWrapperXClass.Open();
         }
 
         public void Close()
