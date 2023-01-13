@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Linq;
 using HslCommunicationPLC.Siemens;
+using Mirle.IASC;
 
 namespace Mirle.ASRS.View
 {
@@ -12,12 +13,13 @@ namespace Mirle.ASRS.View
         private readonly clsBufferData Plc1;
         private static int BufferCount = 4;
         private static int Lifterlevel = 11;
+        private ShuttleController _shuttleController;
 
-
-        public MainView(clsBufferData _Plc1)
+        public MainView(clsBufferData _Plc1,ShuttleController shuttleController)
         {
             InitializeComponent();
             Plc1= _Plc1;
+            _shuttleController = shuttleController;
         }
         private void MainView_Load(object sender, EventArgs e)
         {
@@ -34,8 +36,9 @@ namespace Mirle.ASRS.View
             {
                 //Check PLC
                 lblPLCConnSts.BackColor = Plc1.bConnectPLC ? Color.Lime : Color.Red;
+                label5.BackColor= _shuttleController.IsConnected ? Color.Lime : Color.Red;
 
-               if(!Plc1.bConnectPLC)
+                if (!Plc1.bConnectPLC)
                {
                     for (int index = 1; index <= BufferCount; index++)
                     {

@@ -32,6 +32,8 @@ namespace Mirle.ASRS.WCS.View
         private ShuttleController _shuttleController;
         private readonly MainView _mainView;
         public SocketListen SocketListen;
+        private DB.ClearCmd.Proc.clsHost clearCmd;
+        private ShuttleCommand _shuttleCommand;
 
         public MainForm()
         {
@@ -139,6 +141,7 @@ namespace Mirle.ASRS.WCS.View
                 SubShowCmdtoGrid(ref GridCmd);
                 Plc1.FunProcess();
                 _wcsManager = new WCSManager();
+                _wcsManager.getshuttle(_shuttleController);
                 _wcsManager.WCSManagerControl(Plc1);
                
                 
@@ -186,22 +189,34 @@ namespace Mirle.ASRS.WCS.View
             ControllerReader.FunGetController(clInitSys.CV_Config);
             _shuttleController = new ShuttleController(clInitSys.SHC_IP, clInitSys.SHC_port);
             _shuttleController.ChangeLayer += _shuttleController_OnLayerChange;
+            _shuttleController.OnCommandReceive += _shuttleController_CommandReceive;
             _shuttleController.Open();
+            //if(!_shuttleController.IsConnected)
+            //{   MessageBox.Show("SHC連線異常", "Communication System", MessageBoxButtons.OK);
+            //    Environment.Exit(0);
+            //}
+            //_shuttleCommand = new ShuttleCommand("123", "A", 1, ASRS_Setting.STNNO_1F, "123", "123", "0000");//入庫待修改參數 儲位由WMS給 箱子號為掃bCR得到，vehicle固定0000
+            //_shuttleController?.CreateShuttleCommand(_shuttleCommand);
             SocketListen = new SocketListen(Convert.ToInt32(ASRS_Setting.BCR_port));
             SocketListen.OnDataReceive += SocketListen_OnDataReceive;
             SocketListen.Listen();
             Plc1 = ControllerReader.GetCVControllerr().GetPLC1();
-            
 
+            clearCmd = new DB.ClearCmd.Proc.clsHost();//移動完成命令致歷史資料表以及定期清理歷史命令
             //_unityContainer = new UnityContainer();
             //_unityContainer.RegisterInstance(new WCSController());
             //_webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
-            ChangeSubForm(new MainView(Plc1));
+            ChangeSubForm(new MainView(Plc1,_shuttleController));
         }
 
         private void _shuttleController_OnLayerChange(object sender, ChangeLayerEventArgsLayer e)
         {
             _wcsManager.WCSManageControlSHC_Call(e);
+        }
+
+        private void _shuttleController_CommandReceive(object sender, CommandReceiveEventArgs e)
+        {
+            _wcsManager.WCSManageControlSHC_CallComandstatus(e);
         }
 
         private void SocketListen_OnDataReceive(object sender, SocketDataReceiveEventArgs arg)

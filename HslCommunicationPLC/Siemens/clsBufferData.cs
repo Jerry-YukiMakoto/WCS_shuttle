@@ -86,9 +86,9 @@ namespace HslCommunicationPLC.Siemens
         {
             if(bConnectPLC == true)
             {
-                FunWriPLC_Bit("DB1.27.2", true);
-                FunWriPLC_Word("DB1.20", "1234");
-                FunWriPLC_Word("DB2.0.0", "123");
+                //FunWriPLC_Bit("DB1.27.2", true);
+                //FunWriPLC_Word("DB1.20", "1234");
+                //FunWriPLC_Word("DB2.0.0", "123");
                 ReadPlc();
                 ReadPlc_1();
 
@@ -150,14 +150,14 @@ namespace HslCommunicationPLC.Siemens
             try
             {
                 var dt = DateTime.Now;
-                string BCDyear = dt.Year.ConvertBase10ToBCD().ToString();
-                string BCDmonth = dt.Month.ConvertBase10ToBCD().ToString();
+                string BCDyear = Convert.ToInt32(dt.Year.ToString().Substring(2,2)).ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
+                string BCDmonth = dt.Month.ConvertBase10ToBCD().ToString().PadLeft(2, '0');
                 string YM = BCDyear + BCDmonth;
-                string BCDday = dt.Day.ConvertBase10ToBCD().ToString();
-                string BCDhour = dt.Hour.ConvertBase10ToBCD().ToString();
+                string BCDday = dt.Day.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
+                string BCDhour = dt.Hour.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
                 string DH= BCDday+ BCDhour;
-                string BCDminute = dt.Minute.ConvertBase10ToBCD().ToString();
-                string BCDsecond = dt.Second.ConvertBase10ToBCD().ToString();
+                string BCDminute = dt.Minute.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
+                string BCDsecond = dt.Second.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
                 string ms=BCDminute+ BCDsecond;
                 //FunWriPLC_Bit("DB1.2.0",true);
                 FunWriPLC_Word("DB1.4", YM);
@@ -186,26 +186,26 @@ namespace HslCommunicationPLC.Siemens
                 for(int i = 1; i <= buffer_count; i++)
                 {
                     #region BUFFER_PC->PLC清值
-                    if (oPLC.PLC[i].CV.Sno != "" && oPLC.PLC[i].CV.Sno == oPLC.PC[i].CV.Sno)
+                    if (oPLC.PLC[i].CV.Sno != "0" && oPLC.PLC[i].CV.Sno == oPLC.PC[i].CV.Sno)
                     {
-                        FunWriPLC_Word("DB" + i + 1 + ".00", "");
+                        FunWriPLC_Word("DB" + (i + 1) + ".00", "0");
 
                         //oPLC.PC[i].CV.Sno = "";
                     }
                     if (oPLC.PLC[i].CV.Mode != 0 && oPLC.PLC[i].CV.Mode == oPLC.PC[i].CV.Mode)
                     {
-                        FunWriPLC_Word("DB" + i + 1 + ".20", "");
+                        FunWriPLC_Word("DB" +(i + 1) + ".2", "0");
                         //oPLC.PC[i].CV.Mode = 0;
                     }
                     if (oPLC.PLC[i].CV.WriteCommandComplete == true && oPLC.PC[i].CV.WriteCommandComplete == true)
                     {
-                        FunWriPLC_Bit("DB" + i + 1 + ".6.1", false);
+                        FunWriPLC_Bit("DB" + (i + 1) + ".6.1", false);
                     }
 
-                    if (oPLC.PLC[i].CV.ReadBCR == false && oPLC.PC[i].CV.ReadComplete == true)
-                    {
-                        FunWriPLC_Bit("DB" + i + 1 + ".6.2", false);
-                    }
+                    //if (oPLC.PLC[i].CV.ReadBCR == false && oPLC.PC[i].CV.ReadComplete == true)
+                    //{
+                    //    FunWriPLC_Bit("DB" + i + 1 + ".6.2", false);
+                    //}
                     #endregion buffer_PC->PLC清值
                 }
 
@@ -334,9 +334,11 @@ namespace HslCommunicationPLC.Siemens
 
             try
             {
-                if (_plcHost.ReadBlock("DB1.10", ref iRetData_Plc))
+                bool content = false;
+
+                if (_plcHost.ReadPLCbit("DB1.10.0", ref content))
                 {
-                    oPLC.PLC[0].SYSTEM_PLC.HandShake = GetPlcBit(iRetData_Plc[0], 0);
+                    oPLC.PLC[0].SYSTEM_PLC.HandShake = content;
                 
                 }
                 else
@@ -346,9 +348,18 @@ namespace HslCommunicationPLC.Siemens
 
                 iRetData_Plc = new short[lifterIdx[0]];
 
-                bool content=false;
+               
 
-                if(_plcHost.ReadPLCbit("DB1.36.0",ref content))
+                if (_plcHost.ReadPLCbit("DB1.26.0", ref content))
+                {
+                    oPLC.PLC[0].SYSTEM_PLC.PLCmode = content;
+                }
+                else
+                {
+                    bConnectPLC = false;
+                }
+
+                if (_plcHost.ReadPLCbit("DB1.36.0",ref content))
                 {
                     oPLC.PLC[0].Lifter.AllowWriteCommand = content;
                 }
@@ -708,23 +719,23 @@ namespace HslCommunicationPLC.Siemens
                         {
                             oPLC.PLC[i].CV.StoreInInfo = content;
                         }
-                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.6", ref content))
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".18.0", ref content))
                         {
                             oPLC.PLC[i].CV.AutoManual = content;
                         }
-                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.7", ref content))
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".18.1", ref content))
                         {
                             oPLC.PLC[i].CV.Run = content;
                         }
-                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".17.0", ref content))
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".18.2", ref content))
                         {
                             oPLC.PLC[i].CV.Down = content;
                         }
-                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".17.1", ref content))
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".18.3", ref content))
                         {
                             oPLC.PLC[i].CV.idle = content;
                         }
-                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".17.2", ref content))
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".18.4", ref content))
                         {
                             oPLC.PLC[i].CV.Spare = content;
                         }
@@ -757,14 +768,14 @@ namespace HslCommunicationPLC.Siemens
             short[] iRetData_Pc = new short[iPcIdx[0]];
             try
             {
-                if(_plcHost.ReadBlock("DB1.0", ref iRetData_Pc))
+                bool content = false;
+                if (_plcHost.ReadPLCbit("DB1.0.0", ref content))
                 {
-                    oPLC.PC[0].SYSTEM_PC.HandShake=GetPlcBit(iRetData_Pc[0], 0);
+                    oPLC.PC[0].SYSTEM_PC.HandShake = content;
 
                 }
                 else
                 {
-                    //objPLC.Close();
                     bConnectPLC = false;
                 }
 
@@ -777,7 +788,7 @@ namespace HslCommunicationPLC.Siemens
                     oPLC.PC[0].Lifter.CMDno = iRetData_Pc[1].ToString();
                     oPLC.PC[0].Lifter.Taskno = iRetData_Pc[2].ToString();
 
-                    bool content =false;
+                    
                     if (_plcHost.ReadPLCbit("DB1.26.1", ref content))
                     {
                         oPLC.PC[0].Lifter.WriteCommandComplete = content;
@@ -981,7 +992,7 @@ namespace HslCommunicationPLC.Siemens
 
                         oPLC.PC[i].CV.Sno = iRetData_Pc[0].ToString();
                         oPLC.PC[i].CV.Mode = iRetData_Pc[1];
-                        bool content = false;
+              
                         if (_plcHost.ReadPLCbit("DB"+(i+1)+".6.1", ref content))
                         {
                             oPLC.PC[i].CV.WriteCommandComplete = content;
@@ -1062,7 +1073,7 @@ namespace HslCommunicationPLC.Siemens
         public bool WriPlcPC_HandShaking(bool sValue)
         {
             bool bRet;
-            string sAddr = "DB1.10.0";
+            string sAddr = "DB1.0.0";
             bRet = FunWriPLC_Bit(sAddr, sValue);
             return bRet;
         }

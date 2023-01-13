@@ -101,6 +101,8 @@ namespace Mirle.DB.Fun
 
                 switch (objType)
                 {
+                    case clsEnum.enuSnoType.TaskNO:
+                        return lngSeq1.ToString().PadLeft(intSnoLen, '0');
                     case clsEnum.enuSnoType.CMDSNO:
                     case clsEnum.enuSnoType.CMDSUO:
                         string sCmdSno = lngSeq1.ToString().PadLeft(intSnoLen, '0');

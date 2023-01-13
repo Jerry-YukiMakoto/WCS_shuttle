@@ -185,6 +185,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -217,7 +218,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLCTool.csproj">
+    <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLC.csproj">
       <Project>{30f65faa-8471-4ec4-8ea3-5a4e7b78aae2}</Project>
       <Name>HslCommunicationPLCTool</Name>
     </ProjectReference>

@@ -91,7 +91,8 @@ namespace Mirle.Def.T26YGAP0
 
     public interface StnNoConfig
     {
-        string STN { get; }
+        string STNL { get; }
+        string STNR { get; }
     }
 
     

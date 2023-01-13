@@ -51,7 +51,12 @@ namespace Mirle.IASC
             _psWrapperXClass.OnDisconnected += PSWrapperXClass_OnDisconnected;
             _psWrapperXClass.OnTransactionError += PSWrapperXClass_OnTransactionError;
 
-            Open();
+            //if(!Open())
+            //{
+            //        //MessageBox.Show("SHC連線異常", "Communication System", MessageBoxButtons.OK);
+            //        //Environment.Exit(0);
+            //} 
+                
         }
 
         private void PSWrapperXClass_OnTransactionError(string errorString, ref PSMessageXClass msg)
@@ -947,6 +952,23 @@ namespace Mirle.IASC
             }
         }
 
+        public void S84(string Acknowledge, string ReasonCode)
+        {
+            try
+            {
+                PSTransactionXClass msg_send = new();
+                msg_send.PSPrimaryMessage.Type = "S";
+                msg_send.PSPrimaryMessage.Number = "84";
+                msg_send.PSPrimaryMessage.PSMessage = Acknowledge.PadLeft(1, '0') + ReasonCode.PadLeft(4, '0');
+                _psWrapperXClass.PrimarySent(ref msg_send);
+                PrimaryMessageLog(msg_send);
+            }
+            catch (Exception ex)
+            {
+                Exception(ex);
+            }
+        }
+
         public void P89(string CommandID, string VehicleID)
         {
             try
@@ -1068,9 +1090,9 @@ namespace Mirle.IASC
             }
         }
 
-        public void Open()
+        public bool Open()
         {
-            _psWrapperXClass.Open();
+            return _psWrapperXClass.Open();
         }
 
         public void Close()

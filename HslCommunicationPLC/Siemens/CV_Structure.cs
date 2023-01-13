@@ -35,6 +35,7 @@ namespace HslCommunicationPLC.Siemens
         {
 
             public bool HandShake = false;
+            public bool PLCmode = true;
 
         }
 

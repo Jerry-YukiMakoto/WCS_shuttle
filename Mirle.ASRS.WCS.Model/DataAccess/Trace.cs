@@ -6,6 +6,26 @@
         /// <summary>
         /// 讀取BCR寫入命令到Buffer
         /// </summary>
+        public const string StoreInWriteCmdToCV1 = "A";
+        /// <summary>
+        /// 讀取BCR寫入命令到Buffer
+        /// </summary>
+        public const string StoreInWriteCmdToCV2 = "B";
+
+        /// <summary>
+        /// WCS_commandreportSHCCMD
+        /// </summary>
+        public const string StoreInWCScommandReportSHC = "A1";
+
+        /// <summary>
+        /// SHCcommandreportStatus
+        /// </summary>
+        public const string StoreInSHCcommandReport = "A2";
+
+
+        /// <summary>
+        /// 讀取BCR寫入命令到Buffer
+        /// </summary>
         public const string StoreInWriteCmdToCV = "21";
         /// <summary>
         /// 料盒於裝卸點，CV符合入庫狀態，呼叫SHC移動車子
@@ -41,6 +61,10 @@
         /// 拿到撿料命令，Call_SHC移動車子
         /// </summary>
         public const string PickUpStart = "31";
+        /// <summary>
+        /// 拿到撿料命令，SHC回報
+        /// </summary>
+        public const string PickUpStartSHCreport = "31A";
         /// <summary>
         /// 收到SHC換Lifter到車輛層通知，寫入PLC觸發(SHC_CALL)
         /// </summary>

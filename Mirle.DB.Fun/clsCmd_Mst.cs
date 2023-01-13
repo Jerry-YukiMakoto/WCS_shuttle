@@ -18,7 +18,7 @@ namespace Mirle.DB.Fun
         {
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
-            sql += $"AND trace Not IN =('{Trace.StoreInWriteCmdToCV}','0') ";//入庫待機以及尚未執行的命令排除
+            sql += $"AND trace Not IN ('{Trace.StoreInWriteCmdToCV}','0','A','B','A1') ";//入庫待機以及尚未執行的命令排除
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -35,7 +35,7 @@ namespace Mirle.DB.Fun
         {
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
-            sql += $"AND trace Not IN =('{Trace.StoreInWriteCmdToCV}','0') ";//入庫待機以及尚未執行的命令排除
+            sql += $"AND trace Not IN ('{Trace.StoreInWriteCmdToCV}','0','A','B') ";//入庫待機以及尚未執行的命令排除
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -59,12 +59,42 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
+        public GetDataResult GetCmdMstByStoreInBCRdataStart(out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockIn}') ";
+            sql += $"AND Cmd_Sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"AND Trace IN ('{Trace.StoreInWriteCmdToCV1}','{Trace.StoreInWriteCmdToCV2}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByCycleBCRDATAINstart( out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND Cmd_Sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"AND Trace IN ('{Trace.StoreInWriteCmdToCV1}','{Trace.StoreInWriteCmdToCV2}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
         public GetDataResult GetCmdMstByCycleIN(string Loc_ID, out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND Cmd_Sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
             sql += $"AND Loc_ID='{Loc_ID}' ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+        public GetDataResult GetCmdMstByStoreInLifterStartSHCcheck(string Sno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockIn}','{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND Cmd_Sno='{Sno}' ";
+            sql += $"AND trace IN ('{Trace.StoreInWCScommandReportSHC}') ";
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -75,6 +105,18 @@ namespace Mirle.DB.Fun
             sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockIn}','{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
             sql += $"AND Cmd_Sno='{Sno}' ";
+            sql += $"AND trace IN ('{Trace.StoreInWriteCmdToCV}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByStoreOutLifterStart(string Sno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockIn}','{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND Cmd_Sno='{Sno}' ";
+            sql += $"AND trace IN ('{Trace.PickUpStart}') ";
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -195,7 +237,17 @@ namespace Mirle.DB.Fun
             sql += $"Remark='', ";
             sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
             sql += $"WHERE Cmd_Sno='{cmdSno}' ";
-            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTransferring10sec(string Sno,string trace, SqlServer db)
+        {
+            DateTime dt= DateTime.Now.AddSeconds(-10);
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET TRACE='{trace}'  ";
+            sql += $"WHERE Exp_Date<='{dt:yyyy-MM-dd HH:mm:ss}'";
+            sql += $"AND Cmd_SNO='{Sno}' ";
             return db.ExecuteSQL2(sql);
         }
 
@@ -205,6 +257,14 @@ namespace Mirle.DB.Fun
             sql += $"SET End_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ,";
             sql += $"Cmd_Sts='{cmdSts}' ,";
             sql += $"REMARK='{REMARK}' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTaskNo(string cmdSno, string TaskNo, SqlServer db)
+        {
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET TaskNo='{TaskNo}' ,";
             sql += $"WHERE Cmd_Sno='{cmdSno}' ";
             return db.ExecuteSQL2(sql);
         }
@@ -271,8 +331,8 @@ namespace Mirle.DB.Fun
             try
             {
                 string strDelDay = DateTime.Today.Date.AddDays(1 * (-1)).ToString("yyyy-MM-dd");
-                string strSql = $"select * from CMDMST where CmdSts in ('{clsConstValue.CmdSts.strCmd_Cancel}', '{clsConstValue.CmdSts.strCmd_Finished}')";
-                strSql += $"And CrtDate <=  '" + strDelDay + "'";
+                string strSql = $"select * from CMD_MST where Cmd_Sts in ('{clsConstValue.CmdSts.strCmd_Cancel}', '{clsConstValue.CmdSts.strCmd_Finished}')";
+                strSql += $"And Crt_Date <=  '" + strDelDay + "'";
                 string strEM = "";
                 int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
                 if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
@@ -374,7 +434,7 @@ namespace Mirle.DB.Fun
             try
             {
                 string SQL = "INSERT INTO CMD_MST_His ";
-                SQL += $" SELECT '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}', * FROM CMD_MST ";
+                SQL += $" SELECT '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}', * FROM CMD_MST ";
                 SQL += $" WHERE Cmd_Sno='{sCmdSno}'";
 
                 int iRet = db.ExecuteSQL(SQL);
@@ -397,7 +457,7 @@ namespace Mirle.DB.Fun
             try
             {
                 string strDelDay = DateTime.Today.Date.AddDays(dblDay * (-1)).ToString("yyyy-MM-dd");
-                string strSql = "delete from CMD_MST_His where HisDT <= '" + strDelDay + "' ";
+                string strSql = "delete from CMD_MST_His where CRT_DATE <= '" + strDelDay + "' ";
 
                 int iRet = db.ExecuteSQL(strSql);
                 if (iRet == DBResult.Success)
