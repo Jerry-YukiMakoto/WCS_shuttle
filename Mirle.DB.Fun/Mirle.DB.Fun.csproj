@@ -52,6 +52,7 @@
     <Compile Include="clsCmd_Mst.cs" />
     <Compile Include="clsCmd_Mst_His.cs" />
     <Compile Include="clsEQ_Alarm.cs" />
+    <Compile Include="clsTaskNo.cs" />
     <Compile Include="clsLocMst.cs" />
     <Compile Include="clsProc.cs" />
     <Compile Include="clsSno.cs" />

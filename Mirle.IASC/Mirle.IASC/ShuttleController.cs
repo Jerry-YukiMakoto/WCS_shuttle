@@ -111,9 +111,12 @@ namespace Mirle.IASC
                         break;
 
                     case "P83":
-                        S84(transaction);
+                        P83(transaction);
                         break;
 
+                    case "S86":
+                        S86(transaction);
+                        break;
                     //case "P85":
                     //    S86(transaction);
                     //    break;
@@ -187,13 +190,13 @@ namespace Mirle.IASC
                         S74(transaction);
                         break;
 
-                    case "S86":
-                        S86(transaction);
-                        break;
+                    //case "S86":
+                    //    S86(transaction);
+                    //    break;
 
-                    case "P83":
-                        P83(transaction);
-                        break;
+                    //case "P83":
+                    //    P83(transaction);
+                    //    break;
 
 
 
@@ -458,7 +461,7 @@ namespace Mirle.IASC
                 Exception(ex);
             }
         }
-        private void S62(PSTransactionXClass transaction)
+        private void S62(PSTransactionXClass transaction)//帶修改成實際文件中的event，根據命令去做回傳
         {
             try
             {
@@ -581,7 +584,7 @@ namespace Mirle.IASC
                 transaction.PSSecondaryMessage.PSMessage = "0";  // 0: ok  1: NG
                 _psWrapperXClass.SecondarySent(ref transaction);
                 SecondaryMessageLog(transaction);
-
+                //追加觸發event
                 string LifterId = transaction.PSPrimaryMessage.PSMessage.Substring(0, 2);
                 string Acknowledge = transaction.PSPrimaryMessage.PSMessage.Substring(2, 1);
             }
@@ -942,7 +945,7 @@ namespace Mirle.IASC
                 PSTransactionXClass msg_send = new();
                 msg_send.PSPrimaryMessage.Type = "P";
                 msg_send.PSPrimaryMessage.Number = "85";
-                msg_send.PSPrimaryMessage.PSMessage = LifterID.PadLeft(2, '0') + ChanegeLayer_Status.PadLeft(3, '0')+ResultCode.PadLeft(4,'0');
+                msg_send.PSPrimaryMessage.PSMessage = LifterID.PadLeft(2, '0') + ChanegeLayer_Status.PadLeft(1, '0')+ResultCode.PadLeft(4,'0');
                 _psWrapperXClass.PrimarySent(ref msg_send);
                 PrimaryMessageLog(msg_send);
             }

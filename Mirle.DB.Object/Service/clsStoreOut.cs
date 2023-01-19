@@ -28,12 +28,16 @@ namespace Mirle.DB.Object.Service
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
         }
-        public static void StoreOut_WriteCVStartTriggerShuttle(clsBufferData Plc1)
+        public static void FunPickUpCmdWritePLC(clsBufferData Plc1)
         {
             try
             {
-                //clsDB_Proc.GetDB_Object().GetProcess().FunPickUpShuttleChangeLayer(Plc1);
+                int bufferIndex = 2;
 
+                for (bufferIndex = 2; bufferIndex <= 4; bufferIndex += 2)
+                {
+                    clsDB_Proc.GetDB_Object().GetProcess().FunPickUpCmdWritePLC(Plc1, bufferIndex);
+                }
             }
             catch (Exception ex)
             {

@@ -86,8 +86,19 @@ namespace HslCommunicationPLC.Siemens
         {
             if(bConnectPLC == true)
             {
-                //FunWriPLC_Bit("DB1.27.2", true);
-                //FunWriPLC_Word("DB1.20", "1234");
+               // FunWriPLC_Bit("DB1.27.2", true);
+               // FunWriPLC_Bit("DB1.27.4", false);
+               // //FunWriPLC_Bit("DB1.26.4", true);
+               // FunWriPLC_Bit("DB1.26.1", true);
+               // short[] iRetData_Pc = new short[1];
+               // _plcHost.ReadBlock("DB1.27", ref iRetData_Pc);
+
+                
+               // _plcHost.ReadBlock("DB1.25", ref iRetData_Pc);
+               // bool content=false;
+               // bool test = GetPlcBit(iRetData_Pc[0], 1);
+               // _plcHost.ReadPLCbit("DB1.26.21", ref content);
+               //test =GetPlcBit(iRetData_Pc[0],2);
                 //FunWriPLC_Word("DB2.0.0", "123");
                 ReadPlc();
                 ReadPlc_1();
