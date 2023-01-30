@@ -17,7 +17,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Mirle" Version="2.0.0" />
+	  <PackageReference Include="Mirle" Version="2.1.6" />
 	</ItemGroup>
 	
 	<ItemGroup>

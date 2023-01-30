@@ -1056,24 +1056,28 @@ namespace HslCommunicationPLC.Siemens
             {
                 if (ByPing(sIP) == true)
                 {
-                    if (_plcHost.Connect()==true)
+                    string strEM = "";
+                    if (_plcHost.Connect(ref strEM)==true)
                     {
                         bConnectPLC = true;
                     }
                     else
                     {
                         bConnectPLC = false;
+                        clsWriLog.Log.FunWriTraceLog_CV($"NG: PLC Connect Fail => {strEM}");
                     }
                 }
                 else
                 {
                     bConnectPLC = false;
+                    clsWriLog.Log.FunWriTraceLog_CV($"NG: Ping PLC IP失敗 => {sIP}");
                 }
             }
             catch (Exception ex)
             {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-               
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
             finally
             {

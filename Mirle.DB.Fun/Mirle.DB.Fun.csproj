@@ -54,7 +54,6 @@
     <Compile Include="clsEQ_Alarm.cs" />
     <Compile Include="clsTaskNo.cs" />
     <Compile Include="clsLocMst.cs" />
-    <Compile Include="clsProc.cs" />
     <Compile Include="clsSno.cs" />
     <Compile Include="clsTool.cs" />
     <Compile Include="clsUnitModeDef.cs" />
@@ -67,10 +66,6 @@
     <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
       <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
       <Name>Mirle.ASRS.WCS.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.DB.WMS.Proc\Mirle.DB.WMS.Proc.csproj">
-      <Project>{553bd8cf-f4c1-4b39-97ab-42cc2f7c8187}</Project>
-      <Name>Mirle.DB.WMS.Proc</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.Def.T26YGAP0\Mirle.Def.T26YGAP0.csproj">
       <Project>{e6f732fe-3905-49a7-b2cf-b4fa79c2dc5d}</Project>
