@@ -7,7 +7,6 @@ using Mirle.DataBase;
 using Mirle.Def.T26YGAP0;
 using Mirle.Grid.T26YGAP0;
 using Mirle.Structure;
-using WCS_API_Client.ReportInfo;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using Mirle.CENS.T26YGAP0;
