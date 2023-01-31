@@ -34,6 +34,9 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mirle">
+      <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
+    </Reference>
     <Reference Include="Mirle.WriLog, Version=1.0.2101.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
@@ -76,6 +79,14 @@
     <ProjectReference Include="..\Mirle.DB.Fun\Mirle.DB.Fun.csproj">
       <Project>{c40166b0-0f5d-4535-94a7-699764a59a83}</Project>
       <Name>Mirle.DB.Fun</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle.DB.Proc\Mirle.DB.Proc.csproj">
+      <Project>{60c72719-d780-4bc8-9198-fc21c9754918}</Project>
+      <Name>Mirle.DB.Proc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
+      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
+      <Name>Mirle.Def</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.Grid.T26YGAP0\Mirle.Grid.T26YGAP0.csproj">
       <Project>{39a4c47b-c53b-4057-9dc5-93b8907639e8}</Project>
