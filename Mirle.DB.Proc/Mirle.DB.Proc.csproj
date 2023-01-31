@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net472\Mirle.dll</HintPath>
+      <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
     </Reference>
     <Reference Include="Mirle.WriLog, Version=1.0.2101.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

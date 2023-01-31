@@ -41,7 +41,11 @@
       <HintPath>packages\Microsoft.Win32.Registry.5.0.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
     </Reference>
     <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net472\Mirle.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirle.WriLog">
+      <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -89,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsTool.cs" />
+    <Compile Include="clsWriLog.cs" />
     <Compile Include="Siemens\clsBufferData.cs" />
     <Compile Include="Siemens\clsHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

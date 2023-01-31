@@ -46,7 +46,8 @@
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net48\Mirle.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
     </Reference>
     <Reference Include="Mirle.ASRS.Close.Program">
       <HintPath>..\DLL\Mirle.ASRS.Close.Program.exe</HintPath>
