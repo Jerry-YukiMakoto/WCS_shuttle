@@ -73,11 +73,5 @@
     <Compile Include="UnitAlarmInfo.cs" />
     <Compile Include="VIDEnums.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
-      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
-      <Name>Mirle.Def</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

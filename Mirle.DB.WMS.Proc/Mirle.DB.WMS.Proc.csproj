@@ -71,10 +71,6 @@
       <Project>{ad4818ff-fefa-48f2-a7fe-f1007d3cfbbc}</Project>
       <Name>Mirle.DB.WMS.Fun</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
-      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
-      <Name>Mirle.Def</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -118,18 +118,6 @@
       <Project>{30f65faa-8471-4ec4-8ea3-5a4e7b78aae2}</Project>
       <Name>HslCommunicationPLCTool</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
-      <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
-      <Name>Mirle.ASRS.WCS.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Def.T26YGAP0\Mirle.Def.T26YGAP0.csproj">
-      <Project>{e6f732fe-3905-49a7-b2cf-b4fa79c2dc5d}</Project>
-      <Name>Mirle.Def.T26YGAP0</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
-      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
-      <Name>Mirle.Def</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj">
       <Project>{10da0e99-fd46-4c3f-a87a-c5b66fcb4a87}</Project>
       <Name>Mirle.MPLC.MCProtocol</Name>
