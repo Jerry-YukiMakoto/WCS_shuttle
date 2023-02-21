@@ -35,13 +35,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HslCommunication, Version=11.1.0.0, Culture=neutral, PublicKeyToken=3d72ad3b6b5ec0e3, processorArchitecture=MSIL">
-      <HintPath>packages\HslCommunication.11.1.0\lib\net451\HslCommunication.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\HslCommunication.7.0.1\lib\net451\HslCommunication.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Win32.Registry.5.0.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
     </Reference>
     <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net472\Mirle.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirle.WriLog">
+      <HintPath>..\DLL\Mirle.WriLog.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -89,10 +94,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsTool.cs" />
-    <Compile Include="Siemens\clsBufferData.cs" />
+    <Compile Include="clsWriLog.cs" />
     <Compile Include="Siemens\clsHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Siemens\CV_Structure.cs" />
     <Compile Include="Siemens\PlcConfig.cs" />
   </ItemGroup>
   <ItemGroup>

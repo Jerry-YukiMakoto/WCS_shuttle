@@ -18,6 +18,7 @@ using Mirle.ASRS.View;
 using Mirle.BarcodeReader;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
 using Mirle.Grid.T26YGAP0;
+using PLCConfigSetting.PLCsetting;
 
 namespace Mirle.ASRS.WCS.View
 {
@@ -39,7 +40,7 @@ namespace Mirle.ASRS.WCS.View
         {
             InitializeComponent();
             timRead.Elapsed += new System.Timers.ElapsedEventHandler(timRead_Elapsed);
-            timRead.Enabled = false; timRead.Interval = 500;
+            timRead.Enabled = false; timRead.Interval = 1000;
         }
 
         #region Event
@@ -65,12 +66,13 @@ namespace Mirle.ASRS.WCS.View
                 e.Cancel = true;
 
                 objCloseProgram = new frmCloseProgram();
-
+                
                 if (objCloseProgram.ShowDialog() == DialogResult.OK)
                 {
                     chkOnline.Checked = false;
                     SpinWait.SpinUntil(() => false, 1000);
                     Library.clsWriLog.Log.FunWriTraceLog_CV("WCS程式已關閉！");
+                    _shuttleController.Dispose();
                     throw new Exception();
                 }
             }
@@ -98,13 +100,10 @@ namespace Mirle.ASRS.WCS.View
 
         #region 側邊欄buttons
 
-       
-
-   
-
-
 
         private frmCmdMaintance cmdMaintance;
+
+        private frmTaskMaintance TaskMaintance;
         private void btnCmdMaintain_Click(object sender, EventArgs e)
         {
             if (cmdMaintance == null)
@@ -128,6 +127,28 @@ namespace Mirle.ASRS.WCS.View
                 cmdMaintance = null;
         }
 
+        private void btnTaskMaintain_Click(object sender, EventArgs e)
+        {
+            if (TaskMaintance == null)
+            {
+                TaskMaintance = new frmTaskMaintance();
+                TaskMaintance.TopMost = true;
+                TaskMaintance.FormClosed += new FormClosedEventHandler(funTaskMaintain_FormClosed);
+                TaskMaintance.Show();
+            }
+            else
+            {
+                TaskMaintance.BringToFront();
+            }
+        }
+
+
+
+        private void funTaskMaintain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (TaskMaintance != null)
+                TaskMaintance = null;
+        }
 
         #endregion 側邊欄buttons
 
@@ -139,12 +160,16 @@ namespace Mirle.ASRS.WCS.View
             try
             {
                 SubShowCmdtoGrid(ref GridCmd);
-                Plc1.FunProcess();
+                Plc1.FunProcessReadOnly();
                 _wcsManager = new WCSManager();
                 _wcsManager.getshuttle(_shuttleController);
                 _wcsManager.WCSManagerControl(Plc1);
+                Plc1.FunProcessReadandClear();
+                if(_shuttleController.IsConnected)
+                {
+                    _shuttleController.P00();
+                }
                
-                
             }
             catch (Exception ex)
             {
@@ -190,22 +215,14 @@ namespace Mirle.ASRS.WCS.View
             _shuttleController = new ShuttleController(clInitSys.SHC_IP, clInitSys.SHC_port);
             _shuttleController.ChangeLayer += _shuttleController_OnLayerChange;
             _shuttleController.OnCommandReceive += _shuttleController_CommandReceive;
+            _shuttleController.OnCommandStatusChange += _shuttleController_CommandStatusChange;
             _shuttleController.Open();
-            //if(!_shuttleController.IsConnected)
-            //{   MessageBox.Show("SHC連線異常", "Communication System", MessageBoxButtons.OK);
-            //    Environment.Exit(0);
-            //}
-            //_shuttleCommand = new ShuttleCommand("123", "A", 1, ASRS_Setting.STNNO_1F, "123", "123", "0000");//入庫待修改參數 儲位由WMS給 箱子號為掃bCR得到，vehicle固定0000
-            //_shuttleController?.CreateShuttleCommand(_shuttleCommand);
             SocketListen = new SocketListen(Convert.ToInt32(ASRS_Setting.BCR_port));
             SocketListen.OnDataReceive += SocketListen_OnDataReceive;
             SocketListen.Listen();
             Plc1 = ControllerReader.GetCVControllerr().GetPLC1();
 
-            clearCmd = new DB.ClearCmd.Proc.clsHost();//移動完成命令致歷史資料表以及定期清理歷史命令
-            //_unityContainer = new UnityContainer();
-            //_unityContainer.RegisterInstance(new WCSController());
-            //_webApiHost = new WebApiHost(new Startup(_unityContainer), clInitSys.WcsApi_Config.IP);
+            //clearCmd = new DB.ClearCmd.Proc.clsHost();//移動完成命令致歷史資料表以及定期清理歷史命令
             ChangeSubForm(new MainView(Plc1,_shuttleController));
         }
 
@@ -217,6 +234,11 @@ namespace Mirle.ASRS.WCS.View
         private void _shuttleController_CommandReceive(object sender, CommandReceiveEventArgs e)
         {
             _wcsManager.WCSManageControlSHC_CallComandstatus(e);
+        }
+
+        private void _shuttleController_CommandStatusChange(object sender, CommandStatusEventArgs e)
+        {
+            _wcsManager.WCSManageControlSHC_ChangeComandstatus(e);
         }
 
         private void SocketListen_OnDataReceive(object sender, SocketDataReceiveEventArgs arg)

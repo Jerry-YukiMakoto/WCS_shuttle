@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Linq;
 using HslCommunicationPLC.Siemens;
 using Mirle.IASC;
+using PLCConfigSetting.PLCsetting;
 
 namespace Mirle.ASRS.View
 {

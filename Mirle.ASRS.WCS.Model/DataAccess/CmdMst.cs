@@ -12,6 +12,9 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
     public sealed class CmdMst : ValueObject
     {
         public string CmdSno { get; private set; }
+
+        public string vehicle_ID { get; private set; }
+        public string ShuttleStn { get; private set; }
         public string TaskNo { get; private set; }
         public string CmdMode { get; private set; }
         public string StnNo { get; private set; }
@@ -21,12 +24,25 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string Trace { get; private set; }
         public string IOType { get; private set; }
         public string COUNT { get; internal set; }
+        public string GoLevel { get; internal set; }
 
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
             if (row.Table.Columns.Contains("CMD_SNO"))
             {
                 CmdSno = Convert.ToString(row["CMD_SNO"]);
+            }
+            if (row.Table.Columns.Contains("vehicle_ID"))
+            {
+                vehicle_ID = Convert.ToString(row["vehicle_ID"]);
+            }
+            if (row.Table.Columns.Contains("ShuttleStn"))
+            {
+                ShuttleStn = Convert.ToString(row["ShuttleStn"]);
+            }
+            if (row.Table.Columns.Contains("GoLevel"))
+            {
+                GoLevel = Convert.ToString(row["GoLevel"]);
             }
             if (row.Table.Columns.Contains("TaskNo"))
             {

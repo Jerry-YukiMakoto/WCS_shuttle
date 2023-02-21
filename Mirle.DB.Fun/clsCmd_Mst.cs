@@ -6,6 +6,8 @@ using Mirle.DataBase;
 using Mirle.ASRS.WCS.Model.DataAccess;
 using System.Collections.Generic;
 using System.Linq;
+using Mirle.ASRS.WCS.Model.PLCDefinitions;
+using static Mirle.Def.clsConstValue;
 
 namespace Mirle.DB.Fun
 {
@@ -18,15 +20,36 @@ namespace Mirle.DB.Fun
         {
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
-            sql += $"AND trace Not IN ('{Trace.StoreInWriteCmdToCV}','0','A','B','A1') ";//入庫待機以及尚未執行的命令排除
+            sql += $"AND trace Not IN ('{Trace.StoreInWriteCmdToCV}','0','{Trace.StoreInWriteCmdToCV1}','{Trace.StoreInWriteCmdToCV2}','{Trace.StoreInWCScommandReportSHC}') ";//入庫待機以及尚未執行的命令排除
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult CheckCMDMovePLCwrite(out DataObject<CmdMst> dataObject, SqlServer db)
+        { 
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"AND trace Not IN ('{Trace.StoreInWriteCmdToCV}','0','{Trace.StoreInWriteCmdToCV1}','{Trace.StoreInWriteCmdToCV2}','{Trace.StoreInWCScommandReportSHC}') ";//入庫待機以及尚未執行的命令排除
+            sql += $"AND CarmoveComplete ='True' ";
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
 
         public GetDataResult CheckCMDLifterOnlyONECMDAtime(out DataObject<CmdMst> dataObject, SqlServer db)//在做有動到電梯的流程，要等整個流程結束才能執行下一個動電梯的命令流程，所以要先檢查
         {
+            //string sStnNO = bufferIndex == 2 ? ASRS_Setting.STNNO_1F_L : ASRS_Setting.STNNO_1F_R;
+            string sql = "SELECT * FROM CMD_MST ";
+            //sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') and STN_NO = '{sStnNO}' ";
+            sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult CheckCMDLifterOnlyONECMDAtime_StoreOut(out DataObject<CmdMst> dataObject, SqlServer db)//在做有動到電梯的流程，要等整個流程結束才能執行下一個動電梯的命令流程，所以要先檢查
+        {
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"AND trace Not IN ('{Trace.PickUpStart}','{Trace.PickUpStartCallSHC}') ";
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -35,7 +58,7 @@ namespace Mirle.DB.Fun
         {
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
-            sql += $"AND trace Not IN ('{Trace.StoreInWriteCmdToCV}','0','A','B') ";//入庫待機以及尚未執行的命令排除
+            sql += $"AND trace Not IN ('{Trace.StoreInWriteCmdToCV}','0',' {Trace.StoreInWriteCmdToCV1} ',' {Trace.StoreInWriteCmdToCV2} ',' {Trace.StoreInWCScommandReportSHC} ') ";//入庫待機以及尚未執行的命令排除
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -49,6 +72,15 @@ namespace Mirle.DB.Fun
             return db.GetData(sql, out dataObject);
         }
 
+        public GetDataResult GetCMDBYtrace(string trace,out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE Cmd_sts IN ('{clsConstValue.CmdSts.strCmd_Running}') ";
+            sql += $"AND  Trace IN ('{Trace.PickUpStartSHCreport}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
         public GetDataResult GetCmdMstByStoreInStart(string Loc_ID,out DataObject<CmdMst> dataObject, SqlServer db)
         {
             string sql = "SELECT * FROM CMD_MST ";
@@ -58,6 +90,8 @@ namespace Mirle.DB.Fun
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
+
+
 
         public GetDataResult GetCmdMstByStoreInBCRdataStart(out DataObject<CmdMst> dataObject, SqlServer db)
         {
@@ -93,8 +127,38 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockIn}','{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
-            sql += $"AND Cmd_Sno='{Sno}' ";
+            sql += $"AND TaskNo='{Sno}' ";
             sql += $"AND trace IN ('{Trace.StoreInWCScommandReportSHC}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByLoctoLoc(string Sno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.L2L}') ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND TaskNo='{Sno}' ";
+            sql += $"AND trace IN ('{Trace.LocToLocStart}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstByDouble(string Sno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND TaskNo='{Sno}' ";
+            sql += $"AND trace IN ('{Trace.DoubleStorageSHCcall}') ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstBySno(string Sno, out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE TaskNo='{Sno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -115,20 +179,12 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockIn}','{clsConstValue.CmdMode.Cycle}') ";
             sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
-            sql += $"AND Cmd_Sno='{Sno}' ";
-            sql += $"AND trace IN ('{Trace.PickUpStart}') ";
+            sql += $"AND TaskNo='{Sno}' ";
+            sql += $"AND trace IN ('{Trace.PickUpStartCallSHC}') ";
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
 
-        //public GetDataResult GetCmdMstByStoreInLifterToCarFloor(int floor, out DataObject<CmdMst> dataObject, SqlServer db)
-        //{
-        //    string sql = "SELECT * FROM CMD_MST ";
-        //    sql += $"WHERE FLOOR IN {floor} ";
-        //    sql += $"AND CmdSts='{clsConstValue.CmdSts.strCmd_Running}' ";
-        //    sql += $"order by prt , crtdate , cmdsno";
-        //    return db.GetData(sql, out dataObject);
-        //}
 
         public GetDataResult GetCmdMstLifterCmd(out DataObject<CmdMst> dataObject, SqlServer db)
         {
@@ -148,9 +204,29 @@ namespace Mirle.DB.Fun
 
         public GetDataResult GetCmdMstByPickUpStart(out DataObject<CmdMst> dataObject, SqlServer db)
         {
+            //string sStnNO = bufferIndex == 2 ? ASRS_Setting.STNNO_1F_L : ASRS_Setting.STNNO_1F_R;
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
-            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Initial}'";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetCmdMstPickUpStart(out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.StockOut}', '{clsConstValue.CmdMode.Cycle}') ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            sql += $"AND trace='{Trace.PickUpStart}' ";
+            sql += $"order by prty , crt_date , cmd_sno";
+            return db.GetData(sql, out dataObject);
+        }
+
+        public GetDataResult GetDouble_StorageCMD(out DataObject<CmdMst> dataObject, SqlServer db)
+        {
+            string sql = "SELECT * FROM CMD_MST ";
+            sql += $"WHERE Trace IN ('{Trace.DoubleStorageStart}') ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
             sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
@@ -200,6 +276,8 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM CMD_MST ";
             sql += $"WHERE CMD_MODE IN ('{clsConstValue.CmdMode.L2L}') ";
             sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            sql += $"AND trace='0' ";
+            sql += $"order by prty , crt_date , cmd_sno";
             return db.GetData(sql, out dataObject);
         }
 
@@ -229,6 +307,90 @@ namespace Mirle.DB.Fun
             return db.ExecuteSQL2(sql);
         }
 
+        public ExecuteSQLResult UpdateCmdFortesting(SqlServer db)
+        {
+            string sql = "UPDATE Cmd_Mst ";
+            sql += $"SET TRACE='0', ";
+            sql += $"Cmd_Sts='0', ";
+            sql += $"CarmoveComplete='0', ";
+            sql += $"TaskNo='0' ";
+            sql += $"WHERE Cmd_Sts='9' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdLOCFortesting(SqlServer db)
+        {
+            string sql = "UPDATE Loc_Mst ";
+            sql += $"SET Loc_STS='I' ";
+            sql += $"WHERE Loc='004002001' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMststsfor_DoubleStorage(string cmdSno,string newLoc,string trace,string TaskNo,int cmdmode, SqlServer db)
+        {
+            
+
+            string sql = "UPDATE Cmd_Mst ";
+            if (cmdmode != 5)
+            {
+                sql += $"SET Loc='{newLoc}', ";
+            }
+            else
+            {
+                sql += $"SET newloc='{newLoc}', ";
+            }
+            sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
+            sql += $"trace='{trace}', ";
+            sql += $"TaskNo='{TaskNo}', ";
+            sql += $"CarmoveComplete='0' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMststsEnd(string cmdSno, bool StoreIn, SqlServer db)
+        {
+            string cmdSts = "";
+            if(StoreIn)
+            {
+                cmdSts = "7";
+            }
+            else
+            {
+                cmdSts = "1";
+            }
+
+            string sql = "UPDATE Cmd_Mst ";
+            sql += $"SET Cmd_Sts='{cmdSts}', ";
+            sql += $"End_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
+            sql += $"CarmoveComplete='0' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMststsEndforabnormal(string cmdSno, bool StoreIn, SqlServer db)
+        {
+            string cmdSts = "";
+            if (StoreIn)
+            {
+                cmdSts = "7";
+            }
+            else
+            {
+                cmdSts = "1";
+            }
+
+            string sql = "UPDATE Cmd_Mst ";
+            sql += $"SET Cmd_Sts='{cmdSts}', ";
+            sql += $"End_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}', ";
+            sql += $"Remark='空出庫異常', ";
+            sql += $"CarmoveComplete='0' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
         public ExecuteSQLResult UpdateCmdMstTransferring(string cmdSno, string trace, SqlServer db)
         {
             string sql = "UPDATE CMD_MST ";
@@ -241,6 +403,55 @@ namespace Mirle.DB.Fun
             return db.ExecuteSQL2(sql);
         }
 
+        public ExecuteSQLResult UpdateCmdMstTransferringLocstart(string cmdSno, string trace, SqlServer db)
+        {
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}', ";
+            sql += $"TRACE='{trace}', ";
+            sql += $"Remark='', ";
+            sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTransferringFormoveComplete(string cmdSno, string trace, SqlServer db)
+        {
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}', ";
+            sql += $"TRACE='{trace}', ";
+            sql += $"Remark='', ";
+            sql += $"CarmoveComplete='False', ";
+            sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstSHCmovelevel(string cmdSno, string CarmoverComplete, SqlServer db)
+        {
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}', ";
+            sql += $"CarmoveComplete='{CarmoverComplete}', ";
+            sql += $"Remark='', ";
+            sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTransferringstart(string cmdSno, string trace, SqlServer db)
+        {
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}', ";
+            sql += $"TRACE='{trace}', ";
+            sql += $"Remark='', ";
+            sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
+            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
+            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Initial}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
         public ExecuteSQLResult UpdateCmdMstTransferring10sec(string Sno,string trace, SqlServer db)
         {
             DateTime dt= DateTime.Now.AddSeconds(-10);
@@ -248,9 +459,45 @@ namespace Mirle.DB.Fun
             sql += $"SET TRACE='{trace}'  ";
             sql += $"WHERE Exp_Date<='{dt:yyyy-MM-dd HH:mm:ss}'";
             sql += $"AND Cmd_SNO='{Sno}' ";
+            sql += $"AND trace in ('{Trace.StoreInWCScommandReportSHC}') ";
             return db.ExecuteSQL2(sql);
         }
 
+        public ExecuteSQLResult UpdateCmdMstTransferringforStoreOut10sec( string trace, SqlServer db)
+        {
+            DateTime dt = DateTime.Now.AddSeconds(-10);
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET TRACE='{trace}'  ";
+            sql += $"WHERE Exp_Date<='{dt:yyyy-MM-dd HH:mm:ss}'";
+            sql += $"AND Cmd_mode='3' ";
+            sql += $"AND TRACE='{Trace.PickUpStartCallSHC}' ";
+            //sql += $"order by prty , crt_date , cmd_sno";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTransferringforDouble10sec(string trace, SqlServer db)
+        {
+            DateTime dt = DateTime.Now.AddSeconds(-10);
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET TRACE='{trace}'  ";
+            sql += $"WHERE Exp_Date<='{dt:yyyy-MM-dd HH:mm:ss}'";
+            sql += $"AND TRACE='{Trace.DoubleStorageSHCcall}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdMstTransferringforL2L10sec(string trace, SqlServer db)
+        {
+            DateTime dt = DateTime.Now.AddSeconds(-10);
+            string sql = "UPDATE CMD_MST ";
+            sql += $"SET TRACE='{trace}' , ";
+            sql += $"Cmd_sts='{clsConstValue.CmdSts.strCmd_Initial}'  ";
+            sql += $"WHERE Exp_Date<='{dt:yyyy-MM-dd HH:mm:ss}'";
+            sql += $"AND Cmd_mode='5' ";
+            sql += $"AND TRACE='{Trace.LocToLocStart}' ";
+            sql += $"AND Cmd_sts='{clsConstValue.CmdSts.strCmd_Running}' ";
+            //sql += $"order by prty , crt_date , cmd_sno";
+            return db.ExecuteSQL2(sql);
+        }
         public ExecuteSQLResult UpdateCmdMstRemark(string cmdSno, string cmdSts, string REMARK, SqlServer db)
         {
             string sql = "UPDATE CMD_MST ";
@@ -264,7 +511,7 @@ namespace Mirle.DB.Fun
         public ExecuteSQLResult UpdateCmdMstTaskNo(string cmdSno, string TaskNo, SqlServer db)
         {
             string sql = "UPDATE CMD_MST ";
-            sql += $"SET TaskNo='{TaskNo}' ,";
+            sql += $"SET TaskNo='{TaskNo}' ";
             sql += $"WHERE Cmd_Sno='{cmdSno}' ";
             return db.ExecuteSQL2(sql);
         }
@@ -287,16 +534,19 @@ namespace Mirle.DB.Fun
         public ExecuteSQLResult FunInsCmdMst(CmdMstInfo stuCmdMst, SqlServer db)
         {
             string sSQL = "";
-                sSQL = "INSERT INTO CMD_MST (Cmd_Sno, Cmd_Sts, Cmd_Abnormal, Trace,prty ,Cmd_Mode, Io_type, Loc, New_Loc,";
-                sSQL += "Crt_Date, Exp_Date, End_Date, Remark, Trn_User, Equ_No) values(";
+                sSQL = "INSERT INTO CMD_MST (Cmd_Sno,TaskNo,STN_NO, Cmd_Sts, Cmd_Abnormal, Trace,prty ,Cmd_Mode, Io_type, Loc, New_Loc,Loc_ID,";
+                sSQL += "Crt_Date, Exp_Date, End_Date,Equ_No, Remark, Trn_User) values(";
                 sSQL += "'" + stuCmdMst.CmdSno + "', ";
+                sSQL += "'" + stuCmdMst.TaskNo + "', ";
+                sSQL += "'" + stuCmdMst.StnNo + "', ";
                 sSQL += "'" + clsConstValue.CmdSts.strCmd_Initial + "', 'NA', '0', ";
                 sSQL += "'" + stuCmdMst.Prt + "', ";
                 sSQL += "'" + stuCmdMst.CmdMode + "', ";
                 sSQL += "'" + stuCmdMst.IoType + "', ";
                 sSQL += "'" + stuCmdMst.Loc + "', ";
                 sSQL += "'" + stuCmdMst.NewLoc + "', ";
-                sSQL += "'" + stuCmdMst.CrtDate + "', '', '', ";
+                sSQL += "'" + stuCmdMst.Loc_ID + "', ";
+                sSQL += "'" + stuCmdMst.CrtDate + "', '', '','0' ,";
                 sSQL += "'WCS下命令', ";
                 sSQL += "'" + stuCmdMst.TrnUser + "')";
                 return db.ExecuteSQL2(sSQL);
@@ -304,10 +554,11 @@ namespace Mirle.DB.Fun
 
         public ExecuteSQLResult FunInsCmdDtl(struCmdDtl stuCmdDtl, SqlServer db)
         {
-            string sSQL = "INSERT INTO Cmd_Dtl (Cmd_Txno, Cmd_Sno, Plt_Qty, Trn_Qty , In_Date, Item_No, Lot_No, LOC_Txno , TRN_Date ,CYCLE_Date, Tkt_NO, Store_CODE , BANK_CODE,";
+            string sSQL = "INSERT INTO Cmd_Dtl (Cmd_Txno, Cmd_Sno,Cyc_no, Plt_Qty, Alo_Qty , In_Date, Item_No, Lot_No, LOC_Txno , TRN_Date ,CYCLE_Date, Tkt_NO, Store_CODE , BANK_CODE,";
             sSQL += "QC_CODE,Item_TYPE,expire_date ) values(";
             sSQL += "'" + stuCmdDtl.Cmd_Txno + "', ";
             sSQL += "'" + stuCmdDtl.Cmd_Sno + "', ";
+            sSQL += "'00000', ";
             sSQL += "'" + stuCmdDtl.Plt_Qty + "', ";
             sSQL += "'" + stuCmdDtl.ALO_Qty + "', ";
             sSQL += "'" + stuCmdDtl.In_Date + "', ";
@@ -389,6 +640,30 @@ namespace Mirle.DB.Fun
                 string strSql = $"select * from CMD_MST" +
                     $" where Cmd_Sts < '{clsConstValue.CmdSts.strCmd_Finished}' ";
                 strSql += " ORDER BY Crt_Date, Cmd_Sno";
+                int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
+                if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
+                {
+                    clsWriLog.Log.FunWriTraceLog_CV($"{strSql} => {strEM}");
+                }
+
+                return iRet;
+            }
+            catch (Exception ex)
+            {
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, ex.Message);
+                return DBResult.Exception;
+            }
+        }
+
+        public int FunGetTask_Grid(ref DataTable dtTmp, SqlServer db)
+        {
+            try
+            {
+                string strEM = "";
+                string strSql = $"select * from Task" +
+                    $" where Cmdstate < '9' ";
+                strSql += " ORDER BY InitialDT,TaskNo";
                 int iRet = db.GetDataTable(strSql, ref dtTmp, ref strEM);
                 if (iRet != DBResult.Success && iRet != DBResult.NoDataSelect)
                 {

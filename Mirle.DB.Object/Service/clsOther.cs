@@ -11,7 +11,7 @@ namespace Mirle.DB.Object.Service
     public class clsOther
     {
 
-        public static void Fun_L2L(clsBufferData Plc1)//對lifter寫入命令
+        public static void Fun_L2L(PLCConfigSetting.PLCsetting.clsBufferData Plc1)//對lifter寫入命令
         {
             try
             {

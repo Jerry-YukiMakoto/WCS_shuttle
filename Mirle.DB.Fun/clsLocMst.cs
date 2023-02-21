@@ -23,7 +23,7 @@ namespace Mirle.DB.Fun
             string sql = "SELECT * FROM Loc_Mst ";
             sql += $"WHERE Lvl_Z IN ('{Lvl_Z}') ";
             sql += $"AND Loc_Sts='N' ";
-            sql += $"ORDER BY LVL_Z,BAY_Y,ROW_X desc";
+            sql += $"ORDER BY LVL_Z,ROW_X desc,BAY_Y asc";
             return db.GetData(sql, out dataObject);
         }
 
@@ -50,6 +50,17 @@ namespace Mirle.DB.Fun
             sql += $" WHERE LOC='{Loc}' ";
             return db.ExecuteSQL2(sql);
         }
+
+        public ExecuteSQLResult UpdateStoreINLocMst(string Loc, SqlServer db)
+        {
+            string sql = "UPDATE Loc_Mst ";
+            sql += $"SET Loc_sts='I', ";
+            sql += $"TRN_DATE='{DateTime.Now:yyyy-MM-dd HH:mm:ss}',";
+            sql += $"TRN_USER='WCS'";
+            sql += $" WHERE LOC='{Loc}' ";
+            return db.ExecuteSQL2(sql);
+        }
+
         public ExecuteSQLResult UpdateStoreInLocMst(string Loc, SqlServer db)
         {
             string sql = "UPDATE Loc_Mst ";

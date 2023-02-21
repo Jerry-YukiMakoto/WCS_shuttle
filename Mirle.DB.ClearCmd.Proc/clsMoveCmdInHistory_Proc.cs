@@ -26,7 +26,7 @@ namespace Mirle.DB.ClearCmd.Proc
             {
                 if (DB.Proc.clsHost.IsConn)
                 {
-                    clsDB_Proc.GetDB_Object().GetCmd_Mst().FunMoveFinishCmdToHistory_Proc();
+                    //clsDB_Proc.GetDB_Object().GetCmd_Mst().FunMoveFinishCmdToHistory_Proc();
                 }
             }
             catch (Exception ex)

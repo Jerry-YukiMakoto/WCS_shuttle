@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HslCommunicationPLC.Siemens;
 using Mirle.MPLC.DataType;
+using PLCConfigSetting.PLCsetting;
 
 namespace Mirle.ASRS.View
 {

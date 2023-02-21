@@ -13,7 +13,7 @@ using HslCommunicationPLC;
 using HslCommunicationPLC.Siemens;
 using Mirle.IASC;
 using Mirle.BarcodeReader;
-using static HslCommunicationPLC.Siemens.CV_Structure;
+using PLCConfigSetting.PLCsetting;
 
 namespace Mirle.ASRS.WCS
 {
@@ -38,6 +38,12 @@ namespace Mirle.ASRS.WCS
             {
                 //clsStoreIn.StoreIn_WriteCV(Plc1);//一樓入庫PLC1寫入命令(改成BCR觸發
 
+                clsStoreOut.StoreOut_WriteCV(Plc1);
+
+                clsStoreOut.FunPickUpCmdtoSHC(Plc1);
+
+                clsStoreOut.FunDoubletoSHC(Plc1);
+
                 clsStoreIn.StoreIn_StartWriteCV(Plc1);
 
                 clsStoreIn.FunSHC_ChangeLayerReqtest(Plc1);
@@ -46,7 +52,8 @@ namespace Mirle.ASRS.WCS
 
                 clsStoreIn.StoreIn_CarInLifter_WriteCmdInLifter(Plc1);
 
-                clsStoreOut.StoreOut_WriteCV(Plc1);
+                clsStoreIn.Funtriggerlevel(Plc1);
+                //clsStoreOut.FunPickUpCmdWritePLC(Plc1);
 
                 clsOther.Fun_L2L(Plc1);
 
@@ -70,6 +77,16 @@ namespace Mirle.ASRS.WCS
             if (IsConnected )
             {
                 clsStoreIn.StoreIn_CALL_LifterAndSHCCheckSHCreport(Plc, e);
+            }
+
+        }
+
+        public void WCSManageControlSHC_ChangeComandstatus(CommandStatusEventArgs e)//SHC觸發
+        {
+            IsConnected = Plc.bConnectPLC;
+            if (IsConnected)
+            {
+                clsStoreIn.StoreIn_CALL_CHangeCommandStatus(Plc, e);
             }
 
         }

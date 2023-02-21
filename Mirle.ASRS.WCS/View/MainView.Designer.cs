@@ -31,14 +31,20 @@
             this.components = new System.ComponentModel.Container();
             this.timerMainProc = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.PC_lifterView = new Mirle.ASRS.View.LifterView();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.PC_level_Signal = new Mirle.ASRS.View.Level_Signal();
-            this.PC_bufferView = new Mirle.ASRS.View.BufferView();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.level_Signal11 = new Mirle.ASRS.View.Level_Signal();
             this.label2 = new System.Windows.Forms.Label();
+            this.lbl_1F = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblPLCConnSts = new System.Windows.Forms.Label();
+            this.PC_lifterView = new Mirle.ASRS.View.LifterView();
+            this.PC_level_Signal = new Mirle.ASRS.View.Level_Signal();
+            this.PC_bufferView = new Mirle.ASRS.View.BufferView();
+            this.level_Signal11 = new Mirle.ASRS.View.Level_Signal();
             this.level_Signal10 = new Mirle.ASRS.View.Level_Signal();
             this.level_Signal9 = new Mirle.ASRS.View.Level_Signal();
             this.level_Signal8 = new Mirle.ASRS.View.Level_Signal();
@@ -50,16 +56,10 @@
             this.level_Signal2 = new Mirle.ASRS.View.Level_Signal();
             this.level_Signal1 = new Mirle.ASRS.View.Level_Signal();
             this.lifterView1 = new Mirle.ASRS.View.LifterView();
-            this.lbl_1F = new System.Windows.Forms.Label();
             this.A1 = new Mirle.ASRS.View.BufferView();
             this.A2 = new Mirle.ASRS.View.BufferView();
             this.A3 = new Mirle.ASRS.View.BufferView();
             this.A4 = new Mirle.ASRS.View.BufferView();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblPLCConnSts = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -116,15 +116,6 @@
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
-            // PC_lifterView
-            // 
-            this.PC_lifterView.Location = new System.Drawing.Point(600, 373);
-            this.PC_lifterView.MaximumSize = new System.Drawing.Size(80, 65);
-            this.PC_lifterView.MinimumSize = new System.Drawing.Size(80, 65);
-            this.PC_lifterView.Name = "PC_lifterView";
-            this.PC_lifterView.Size = new System.Drawing.Size(80, 65);
-            this.PC_lifterView.TabIndex = 26;
-            // 
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
@@ -144,29 +135,6 @@
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 20);
             this.comboBox2.TabIndex = 25;
-            // 
-            // PC_level_Signal
-            // 
-            this.PC_level_Signal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PC_level_Signal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PC_level_Signal.Location = new System.Drawing.Point(600, 246);
-            this.PC_level_Signal.MaximumSize = new System.Drawing.Size(80, 65);
-            this.PC_level_Signal.MinimumSize = new System.Drawing.Size(80, 65);
-            this.PC_level_Signal.Name = "PC_level_Signal";
-            this.PC_level_Signal.Size = new System.Drawing.Size(80, 65);
-            this.PC_level_Signal.TabIndex = 24;
-            // 
-            // PC_bufferView
-            // 
-            this.PC_bufferView.BufferIndex = 1;
-            this.PC_bufferView.Location = new System.Drawing.Point(600, 111);
-            this.PC_bufferView.MaximumSize = new System.Drawing.Size(80, 65);
-            this.PC_bufferView.MinimumSize = new System.Drawing.Size(80, 65);
-            this.PC_bufferView.Name = "PC_bufferView";
-            this.PC_bufferView.Size = new System.Drawing.Size(80, 65);
-            this.PC_bufferView.TabIndex = 23;
             // 
             // comboBox1
             // 
@@ -193,6 +161,142 @@
             this.label3.TabIndex = 21;
             this.label3.Text = "PC訊號";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label2.Location = new System.Drawing.Point(340, 39);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(100, 37);
+            this.label2.TabIndex = 19;
+            this.label2.Text = "Lifter";
+            // 
+            // lbl_1F
+            // 
+            this.lbl_1F.AutoSize = true;
+            this.lbl_1F.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_1F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.lbl_1F.Location = new System.Drawing.Point(4, 303);
+            this.lbl_1F.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lbl_1F.Name = "lbl_1F";
+            this.lbl_1F.Size = new System.Drawing.Size(54, 37);
+            this.lbl_1F.TabIndex = 7;
+            this.lbl_1F.Text = "1F";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblPLCConnSts, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.3336F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 21.21269F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.5251F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 21.28452F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 21.64409F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(137, 523);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // label5
+            // 
+            this.label5.BackColor = System.Drawing.Color.Red;
+            this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label5.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label5.ForeColor = System.Drawing.Color.Black;
+            this.label5.Location = new System.Drawing.Point(1, 409);
+            this.label5.Margin = new System.Windows.Forms.Padding(1);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(135, 113);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Connect Status";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label4.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label4.Location = new System.Drawing.Point(2, 297);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(133, 111);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "SHC Status";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label1.Location = new System.Drawing.Point(2, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(133, 80);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "PLC Status";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblPLCConnSts
+            // 
+            this.lblPLCConnSts.BackColor = System.Drawing.Color.Red;
+            this.lblPLCConnSts.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblPLCConnSts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblPLCConnSts.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.lblPLCConnSts.ForeColor = System.Drawing.Color.Black;
+            this.lblPLCConnSts.Location = new System.Drawing.Point(1, 81);
+            this.lblPLCConnSts.Margin = new System.Windows.Forms.Padding(1);
+            this.lblPLCConnSts.Name = "lblPLCConnSts";
+            this.lblPLCConnSts.Size = new System.Drawing.Size(135, 108);
+            this.lblPLCConnSts.TabIndex = 12;
+            this.lblPLCConnSts.Text = "Connect Status";
+            this.lblPLCConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // PC_lifterView
+            // 
+            this.PC_lifterView.Location = new System.Drawing.Point(600, 373);
+            this.PC_lifterView.MaximumSize = new System.Drawing.Size(80, 65);
+            this.PC_lifterView.MinimumSize = new System.Drawing.Size(80, 65);
+            this.PC_lifterView.Name = "PC_lifterView";
+            this.PC_lifterView.Size = new System.Drawing.Size(80, 65);
+            this.PC_lifterView.TabIndex = 26;
+            // 
+            // PC_level_Signal
+            // 
+            this.PC_level_Signal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PC_level_Signal.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PC_level_Signal.Location = new System.Drawing.Point(600, 246);
+            this.PC_level_Signal.MaximumSize = new System.Drawing.Size(80, 65);
+            this.PC_level_Signal.MinimumSize = new System.Drawing.Size(80, 65);
+            this.PC_level_Signal.Name = "PC_level_Signal";
+            this.PC_level_Signal.Size = new System.Drawing.Size(80, 65);
+            this.PC_level_Signal.TabIndex = 24;
+            // 
+            // PC_bufferView
+            // 
+            this.PC_bufferView.BufferIndex = 1;
+            this.PC_bufferView.Location = new System.Drawing.Point(600, 111);
+            this.PC_bufferView.MaximumSize = new System.Drawing.Size(80, 65);
+            this.PC_bufferView.MinimumSize = new System.Drawing.Size(80, 65);
+            this.PC_bufferView.Name = "PC_bufferView";
+            this.PC_bufferView.Size = new System.Drawing.Size(80, 65);
+            this.PC_bufferView.TabIndex = 23;
+            // 
             // level_Signal11
             // 
             this.level_Signal11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -205,18 +309,6 @@
             this.level_Signal11.Name = "level_Signal11";
             this.level_Signal11.Size = new System.Drawing.Size(80, 65);
             this.level_Signal11.TabIndex = 20;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label2.Location = new System.Drawing.Point(340, 39);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(100, 37);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "Lifter";
             // 
             // level_Signal10
             // 
@@ -357,18 +449,6 @@
             this.lifterView1.Size = new System.Drawing.Size(80, 65);
             this.lifterView1.TabIndex = 8;
             // 
-            // lbl_1F
-            // 
-            this.lbl_1F.AutoSize = true;
-            this.lbl_1F.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_1F.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lbl_1F.Location = new System.Drawing.Point(4, 303);
-            this.lbl_1F.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lbl_1F.Name = "lbl_1F";
-            this.lbl_1F.Size = new System.Drawing.Size(54, 37);
-            this.lbl_1F.TabIndex = 7;
-            this.lbl_1F.Text = "1F";
-            // 
             // A1
             // 
             this.A1.BufferIndex = 1;
@@ -408,86 +488,6 @@
             this.A4.Name = "A4";
             this.A4.Size = new System.Drawing.Size(80, 65);
             this.A4.TabIndex = 0;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblPLCConnSts, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 5;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6.382979F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.76596F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 6.382979F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 74.46809F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(137, 523);
-            this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(2, 0);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(133, 32);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "PLC Status";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblPLCConnSts
-            // 
-            this.lblPLCConnSts.BackColor = System.Drawing.Color.Red;
-            this.lblPLCConnSts.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblPLCConnSts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblPLCConnSts.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.lblPLCConnSts.ForeColor = System.Drawing.Color.Black;
-            this.lblPLCConnSts.Location = new System.Drawing.Point(1, 33);
-            this.lblPLCConnSts.Margin = new System.Windows.Forms.Padding(1);
-            this.lblPLCConnSts.Name = "lblPLCConnSts";
-            this.lblPLCConnSts.Size = new System.Drawing.Size(135, 60);
-            this.lblPLCConnSts.TabIndex = 12;
-            this.lblPLCConnSts.Text = "Connect Status";
-            this.lblPLCConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label4.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label4.Location = new System.Drawing.Point(2, 245);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(133, 32);
-            this.label4.TabIndex = 14;
-            this.label4.Text = "SHC Status";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label5
-            // 
-            this.label5.BackColor = System.Drawing.Color.Red;
-            this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label5.Font = new System.Drawing.Font("微軟正黑體", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.label5.ForeColor = System.Drawing.Color.Black;
-            this.label5.Location = new System.Drawing.Point(1, 231);
-            this.label5.Margin = new System.Windows.Forms.Padding(1);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(135, 60);
-            this.label5.TabIndex = 15;
-            this.label5.Text = "Connect Status";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainView
             // 

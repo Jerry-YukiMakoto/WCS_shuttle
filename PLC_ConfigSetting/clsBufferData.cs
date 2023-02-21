@@ -3,16 +3,14 @@
 #endregion Header
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Data;
 using System.Threading;
 using Mirle.MPLC.DataType;
+using HslCommunicationPLC.Siemens;
+using System.Web;
 
-namespace HslCommunicationPLC.Siemens
+namespace PLCConfigSetting.PLCsetting
 {
     public class clsBufferData
     {
@@ -41,7 +39,7 @@ namespace HslCommunicationPLC.Siemens
             set { bCheckOnline = value; }
         }
 
-        public string[] PlcData = new string[2];      
+        public string[] PlcData = new string[2];
         private clsHost _plcHost;
 
         public clsBufferData()
@@ -49,18 +47,18 @@ namespace HslCommunicationPLC.Siemens
             oPLC = new CV_Structure();
         }
 
-        public void subStart(clsHost _plcHost,PlcConfig CVConfig)
+        public void subStart(clsHost _plcHost, PlcConfig CVConfig)
         {
             this._plcHost = _plcHost;
             sIP = CVConfig.IpAddress;
-            if(bThread_OpenPlc == false)
+            if (bThread_OpenPlc == false)
             {
                 bThread_OpenPlc = true;
 
                 Thread_ReConnect = new Thread(SubOpenPLC);
                 Thread_ReConnect.IsBackground = true;
                 Thread_ReConnect.Start();
-                
+
             }
 
             iPlcIdx[0] = 2;
@@ -80,19 +78,16 @@ namespace HslCommunicationPLC.Siemens
 
         }
 
-    
 
-        public void FunProcess()
+
+        public void FunProcessReadOnly()
         {
-            if(bConnectPLC == true)
+            if (bConnectPLC == true)
             {
-                //FunWriPLC_Bit("DB1.27.2", true);
-                //FunWriPLC_Word("DB1.20", "1234");
-                //FunWriPLC_Word("DB2.0.0", "123");
                 ReadPlc();
                 ReadPlc_1();
 
-                if(bConnectPLC == true)
+                if (bConnectPLC == true)
                 {
                     #region 與周邊PLC HandShake
                     if (oPLC.PLC[0].SYSTEM_PLC.HandShake == true &&
@@ -122,6 +117,34 @@ namespace HslCommunicationPLC.Siemens
 
                     FunSetTime();
                     #endregion 與周邊PLC HandShake
+                    //FunClearPlc();
+                }
+            }
+            else
+            {
+
+
+                if (bThread_OpenPlc == false)
+                {
+                    bThread_OpenPlc = true;
+                    Thread_ReConnect = new Thread(SubOpenPLC);
+                    Thread_ReConnect.IsBackground = true;
+                    Thread_ReConnect.Start();
+                }
+            }
+
+
+        }
+
+        public void FunProcessReadandClear()
+        {
+            if (bConnectPLC == true)
+            {
+                ReadPlc();
+                ReadPlc_1();
+
+                if (bConnectPLC == true)
+                {
                     FunClearPlc();
                 }
             }
@@ -129,7 +152,7 @@ namespace HslCommunicationPLC.Siemens
             {
 
 
-                if(bThread_OpenPlc == false)
+                if (bThread_OpenPlc == false)
                 {
                     bThread_OpenPlc = true;
 
@@ -138,8 +161,6 @@ namespace HslCommunicationPLC.Siemens
                     Thread_ReConnect.Start();
                 }
             }
-
-
         }
 
         /// <summary>
@@ -150,23 +171,23 @@ namespace HslCommunicationPLC.Siemens
             try
             {
                 var dt = DateTime.Now;
-                string BCDyear = Convert.ToInt32(dt.Year.ToString().Substring(2,2)).ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
+                string BCDyear = Convert.ToInt32(dt.Year.ToString().Substring(2, 2)).ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
                 string BCDmonth = dt.Month.ConvertBase10ToBCD().ToString().PadLeft(2, '0');
                 string YM = BCDyear + BCDmonth;
                 string BCDday = dt.Day.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
                 string BCDhour = dt.Hour.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
-                string DH= BCDday+ BCDhour;
+                string DH = BCDday + BCDhour;
                 string BCDminute = dt.Minute.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
                 string BCDsecond = dt.Second.ConvertBase10ToBCD().ToString().PadLeft(2, '0'); ;
-                string ms=BCDminute+ BCDsecond;
+                string ms = BCDminute + BCDsecond;
                 //FunWriPLC_Bit("DB1.2.0",true);
                 FunWriPLC_Word("DB1.4", YM);
                 FunWriPLC_Word("DB1.6", DH);
                 FunWriPLC_Word("DB1.8", ms);
-                
+
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
                 int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
@@ -183,23 +204,23 @@ namespace HslCommunicationPLC.Siemens
 
             try
             {
-                for(int i = 1; i <= buffer_count; i++)
+                for (int i = 1; i <= buffer_count; i++)
                 {
                     #region BUFFER_PC->PLC清值
                     if (oPLC.PLC[i].CV.Sno != "0" && oPLC.PLC[i].CV.Sno == oPLC.PC[i].CV.Sno)
                     {
                         FunWriPLC_Word("DB" + (i + 1) + ".00", "0");
-
+                        
                         //oPLC.PC[i].CV.Sno = "";
                     }
                     if (oPLC.PLC[i].CV.Mode != 0 && oPLC.PLC[i].CV.Mode == oPLC.PC[i].CV.Mode)
                     {
-                        FunWriPLC_Word("DB" +(i + 1) + ".2", "0");
+                        FunWriPLC_Word("DB" + (i + 1) + ".2", "0");
                         //oPLC.PC[i].CV.Mode = 0;
                     }
                     if (oPLC.PLC[i].CV.WriteCommandComplete == true && oPLC.PC[i].CV.WriteCommandComplete == true)
                     {
-                        FunWriPLC_Bit("DB" + (i + 1) + ".6.1", false);
+                        FunWriPLC_Bit("DB" + (i + 1) + ".6.1", false);//寫入命令完成
                     }
 
                     //if (oPLC.PLC[i].CV.ReadBCR == false && oPLC.PC[i].CV.ReadComplete == true)
@@ -210,18 +231,18 @@ namespace HslCommunicationPLC.Siemens
                 }
 
                 #region Lifter PC->PLC清值
-                if (oPLC.PLC[0].Lifter.Vehicle_ID != "" && oPLC.PLC[0].Lifter.Vehicle_ID == oPLC.PC[0].Lifter.Vehicle_ID)
+                if (oPLC.PLC[0].Lifter.Vehicle_ID != "0" && oPLC.PLC[0].Lifter.Vehicle_ID == oPLC.PC[0].Lifter.Vehicle_ID)
                 {
-                    FunWriPLC_Word("DB1.20.0", "");
+                    FunWriPLC_Word("DB1.20.0", "0");
                 }
-                if (oPLC.PLC[0].Lifter.CMDno != "" && oPLC.PLC[0].Lifter.CMDno == oPLC.PC[0].Lifter.CMDno)
+                if (oPLC.PLC[0].Lifter.CMDno != "0" && oPLC.PLC[0].Lifter.CMDno == oPLC.PC[0].Lifter.CMDno)
                 {
-                    FunWriPLC_Word("DB1.22.0", "");
+                    FunWriPLC_Word("DB1.22.0", "0");
                     FunWriPLC_Bit("DB1.26.1", false);//寫入命令完成點位
                 }
-                if (oPLC.PLC[0].Lifter.Taskno != "" && oPLC.PLC[0].Lifter.Taskno == oPLC.PC[0].Lifter.Taskno)
+                if (oPLC.PLC[0].Lifter.Taskno != "0" && oPLC.PLC[0].Lifter.Taskno == oPLC.PC[0].Lifter.Taskno)
                 {
-                    FunWriPLC_Word("DB1.24.0", "");
+                    FunWriPLC_Word("DB1.24.0", "0");
                 }
                 if (oPLC.PLC[0].Lifter.MoveToFloor1 == true && oPLC.PC[0].Lifter.CallToFloor1 == true)
                 {
@@ -267,47 +288,47 @@ namespace HslCommunicationPLC.Siemens
                 {
                     FunWriPLC_Bit("DB1.29.4", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor1_SafetyCheck == false && oPLC.PC[0].Lifter.Floor1_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor1_SafetyCheck == false && oPLC.PC[0].Lifter.Floor1_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno=="0" && oPLC.PC[0].Lifter.CMDno=="0"))
                 {
                     FunWriPLC_Bit("DB1.27.1", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor2_SafetyCheck == false && oPLC.PC[0].Lifter.Floor2_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor2_SafetyCheck == false && oPLC.PC[0].Lifter.Floor2_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.27.3", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor3_SafetyCheck == false && oPLC.PC[0].Lifter.Floor3_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor3_SafetyCheck == false && oPLC.PC[0].Lifter.Floor3_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.27.5", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor4_SafetyCheck == false && oPLC.PC[0].Lifter.Floor4_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor4_SafetyCheck == false && oPLC.PC[0].Lifter.Floor4_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.27.7", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor5_SafetyCheck == false && oPLC.PC[0].Lifter.Floor5_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor5_SafetyCheck == false && oPLC.PC[0].Lifter.Floor5_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.28.1", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor6_SafetyCheck == false && oPLC.PC[0].Lifter.Floor6_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor6_SafetyCheck == false && oPLC.PC[0].Lifter.Floor6_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.28.3", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor7_SafetyCheck == false && oPLC.PC[0].Lifter.Floor7_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor7_SafetyCheck == false && oPLC.PC[0].Lifter.Floor7_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.28.5", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor8_SafetyCheck == false && oPLC.PC[0].Lifter.Floor8_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor8_SafetyCheck == false && oPLC.PC[0].Lifter.Floor8_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.28.7", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor9_SafetyCheck == false && oPLC.PC[0].Lifter.Floor9_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor9_SafetyCheck == false && oPLC.PC[0].Lifter.Floor9_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.29.1", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor10_SafetyCheck == false && oPLC.PC[0].Lifter.Floor10_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor10_SafetyCheck == false && oPLC.PC[0].Lifter.Floor10_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.29.3", false);
                 }
-                if (oPLC.PLC[0].Lifter.Floor11_SafetyCheck == false && oPLC.PC[0].Lifter.Floor11_CarMoveComplete == true)
+                if (oPLC.PLC[0].Lifter.Floor11_SafetyCheck == false && oPLC.PC[0].Lifter.Floor11_CarMoveComplete == true || (oPLC.PLC[0].Lifter.CMDno == "0" && oPLC.PC[0].Lifter.CMDno == "0"))
                 {
                     FunWriPLC_Bit("DB1.29.5", false);
                 }
@@ -317,7 +338,7 @@ namespace HslCommunicationPLC.Siemens
             catch (Exception ex)
             {
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-               
+
             }
             finally
             {
@@ -339,7 +360,7 @@ namespace HslCommunicationPLC.Siemens
                 if (_plcHost.ReadPLCbit("DB1.10.0", ref content))
                 {
                     oPLC.PLC[0].SYSTEM_PLC.HandShake = content;
-                
+
                 }
                 else
                 {
@@ -348,7 +369,7 @@ namespace HslCommunicationPLC.Siemens
 
                 iRetData_Plc = new short[lifterIdx[0]];
 
-               
+
 
                 if (_plcHost.ReadPLCbit("DB1.26.0", ref content))
                 {
@@ -359,7 +380,7 @@ namespace HslCommunicationPLC.Siemens
                     bConnectPLC = false;
                 }
 
-                if (_plcHost.ReadPLCbit("DB1.36.0",ref content))
+                if (_plcHost.ReadPLCbit("DB1.36.0", ref content))
                 {
                     oPLC.PLC[0].Lifter.AllowWriteCommand = content;
                 }
@@ -693,15 +714,15 @@ namespace HslCommunicationPLC.Siemens
                 {
                     iRetData_Plc = new short[iPlcIdx[i]];
 
-                    if (_plcHost.ReadBlock("DB"+(i+1)+".10", ref iRetData_Plc))
+                    if (_plcHost.ReadBlock("DB" + (i + 1) + ".10", ref iRetData_Plc))
                     {
                         #region Conveyor PLC -> PC
                         oPLC.PLC[i].CV.Sno = iRetData_Plc[0].ToString();
-                        oPLC.PLC[i].CV.Mode= iRetData_Plc[1];
-                        oPLC.PLC[i].CV.CV_Status= iRetData_Plc[2];
+                        oPLC.PLC[i].CV.Mode = iRetData_Plc[1];
+                        oPLC.PLC[i].CV.CV_Status = iRetData_Plc[2];
                         if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.0", ref content))
                         {
-                            oPLC.PLC[i].CV.AllowWriteCommand = content;        
+                            oPLC.PLC[i].CV.AllowWriteCommand = content;
                         }
                         if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".16.2", ref content))
                         {
@@ -747,7 +768,36 @@ namespace HslCommunicationPLC.Siemens
                         bConnectPLC = false;
                     }
                 }
-             }
+
+                //紀錄PLC的值座回朔使用
+                string Lifter_PLChistory = "";
+
+                Lifter_PLChistory = oPLC.PLC[0].Lifter.Vehicle_ID + oPLC.PLC[0].Lifter.CMDno + oPLC.PLC[0].Lifter.Taskno + Boolchangeint(oPLC.PLC[0].Lifter.AllowWriteCommand) + Boolchangeint(oPLC.PLC[0].Lifter.WriteCommandComplete) +
+                    Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor1) + Boolchangeint(oPLC.PLC[0].Lifter.Floor1_SafetyCheck) + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor2) + Boolchangeint(oPLC.PLC[0].Lifter.Floor2_SafetyCheck)
+                    + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor3) + Boolchangeint(oPLC.PLC[0].Lifter.Floor3_SafetyCheck) + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor4) + Boolchangeint(oPLC.PLC[0].Lifter.Floor4_SafetyCheck)
+                    + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor5) + Boolchangeint(oPLC.PLC[0].Lifter.Floor5_SafetyCheck) + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor6) + Boolchangeint(oPLC.PLC[0].Lifter.Floor6_SafetyCheck)
+                    + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor7) + Boolchangeint(oPLC.PLC[0].Lifter.Floor7_SafetyCheck) + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor8) + Boolchangeint(oPLC.PLC[0].Lifter.Floor8_SafetyCheck)
+                    + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor9) + Boolchangeint(oPLC.PLC[0].Lifter.Floor9_SafetyCheck) + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor10) + Boolchangeint(oPLC.PLC[0].Lifter.Floor10_SafetyCheck)
+                    + Boolchangeint(oPLC.PLC[0].Lifter.MoveToFloor11) + Boolchangeint(oPLC.PLC[0].Lifter.Floor11_SafetyCheck) + Boolchangeint(oPLC.PLC[0].Lifter.LiftMode) + Boolchangeint(oPLC.PLC[0].Lifter.LiftRun) + Boolchangeint(oPLC.PLC[0].Lifter.LiftDown) + Boolchangeint(oPLC.PLC[0].Lifter.LiftIdle)
+                    + oPLC.PLC[0].Lifter.LiftPosition + Boolchangeint(oPLC.PLC[0].Lifter.presence_shuttle) + Boolchangeint(oPLC.PLC[0].Lifter.UnloadingLocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor1LocationCheck)
+                    + Boolchangeint(oPLC.PLC[0].Lifter.Floor2LocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor3LocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor4LocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor5LocationCheck)
+                    + Boolchangeint(oPLC.PLC[0].Lifter.Floor6LocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor7LocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor8LocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor9LocationCheck) + Boolchangeint(oPLC.PLC[0].Lifter.Floor10LocationCheck);
+
+
+
+                string CV_PLChistory = "";
+
+                CV_PLChistory = oPLC.PLC[1].CV.Sno + oPLC.PLC[1].CV.Mode + oPLC.PLC[1].CV.CV_Status + Boolchangeint(oPLC.PLC[1].CV.AllowWriteCommand) + Boolchangeint(oPLC.PLC[1].CV.Presence) +
+                    Boolchangeint(oPLC.PLC[1].CV.StoreInInfo) + Boolchangeint(oPLC.PLC[1].CV.AutoManual) + Boolchangeint(oPLC.PLC[1].CV.Run) + Boolchangeint(oPLC.PLC[1].CV.Down) + Boolchangeint(oPLC.PLC[1].CV.idle) + Boolchangeint(oPLC.PLC[1].CV.Spare)
+                    + oPLC.PLC[2].CV.Sno + oPLC.PLC[2].CV.Mode + oPLC.PLC[2].CV.CV_Status + Boolchangeint(oPLC.PLC[2].CV.AllowWriteCommand) + Boolchangeint(oPLC.PLC[2].CV.Presence) +
+                    Boolchangeint(oPLC.PLC[2].CV.StoreInInfo) + Boolchangeint(oPLC.PLC[2].CV.AutoManual) + Boolchangeint(oPLC.PLC[2].CV.Run) + Boolchangeint(oPLC.PLC[2].CV.Down) + Boolchangeint(oPLC.PLC[2].CV.idle) + Boolchangeint(oPLC.PLC[2].CV.Spare)
+                    + oPLC.PLC[3].CV.Sno + oPLC.PLC[3].CV.Mode + oPLC.PLC[3].CV.CV_Status + Boolchangeint(oPLC.PLC[3].CV.AllowWriteCommand) + Boolchangeint(oPLC.PLC[3].CV.Presence) +
+                    Boolchangeint(oPLC.PLC[3].CV.StoreInInfo) + Boolchangeint(oPLC.PLC[3].CV.AutoManual) + Boolchangeint(oPLC.PLC[3].CV.Run) + Boolchangeint(oPLC.PLC[3].CV.Down) + Boolchangeint(oPLC.PLC[3].CV.idle) + Boolchangeint(oPLC.PLC[3].CV.Spare)
+                    + oPLC.PLC[4].CV.Sno + oPLC.PLC[4].CV.Mode + oPLC.PLC[4].CV.CV_Status + Boolchangeint(oPLC.PLC[4].CV.AllowWriteCommand) + Boolchangeint(oPLC.PLC[4].CV.Presence) +
+                    Boolchangeint(oPLC.PLC[4].CV.StoreInInfo) + Boolchangeint(oPLC.PLC[4].CV.AutoManual) + Boolchangeint(oPLC.PLC[4].CV.Run) + Boolchangeint(oPLC.PLC[4].CV.Down) + Boolchangeint(oPLC.PLC[4].CV.idle) + Boolchangeint(oPLC.PLC[4].CV.Spare);
+
+                clsWriLog.PLCHistory(Lifter_PLChistory + CV_PLChistory);
+            }
             catch (Exception ex)
             {
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
@@ -758,12 +808,17 @@ namespace HslCommunicationPLC.Siemens
             }
         }
 
+        public int Boolchangeint(bool Result)
+            {
+            return Result? 1 : 0;
+            }
+
         /// <summary>
         /// PC -> PLC
         /// </summary>
         private void ReadPlc_1()
         {
-            if(bConnectPLC == false)
+            if (bConnectPLC == false)
                 return;
             short[] iRetData_Pc = new short[iPcIdx[0]];
             try
@@ -788,7 +843,14 @@ namespace HslCommunicationPLC.Siemens
                     oPLC.PC[0].Lifter.CMDno = iRetData_Pc[1].ToString();
                     oPLC.PC[0].Lifter.Taskno = iRetData_Pc[2].ToString();
 
-                    
+                    if (_plcHost.ReadPLCbit("DB1.29.6", ref content))
+                    {
+                        oPLC.PC[0].Lifter.LocToLocCleanLifter = content;
+                    }
+                    else
+                    {
+                        bConnectPLC = false;
+                    }
                     if (_plcHost.ReadPLCbit("DB1.26.1", ref content))
                     {
                         oPLC.PC[0].Lifter.WriteCommandComplete = content;
@@ -992,8 +1054,8 @@ namespace HslCommunicationPLC.Siemens
 
                         oPLC.PC[i].CV.Sno = iRetData_Pc[0].ToString();
                         oPLC.PC[i].CV.Mode = iRetData_Pc[1];
-              
-                        if (_plcHost.ReadPLCbit("DB"+(i+1)+".6.1", ref content))
+
+                        if (_plcHost.ReadPLCbit("DB" + (i + 1) + ".6.1", ref content))
                         {
                             oPLC.PC[i].CV.WriteCommandComplete = content;
                         }
@@ -1028,10 +1090,10 @@ namespace HslCommunicationPLC.Siemens
 
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-              
+
             }
             finally
             {
@@ -1045,24 +1107,28 @@ namespace HslCommunicationPLC.Siemens
             {
                 if (ByPing(sIP) == true)
                 {
-                    if (_plcHost.Connect()==true)
+                    string strEM = "";
+                    if (_plcHost.Connect(ref strEM) == true)
                     {
                         bConnectPLC = true;
                     }
                     else
                     {
                         bConnectPLC = false;
+                        clsWriLog.Log.FunWriTraceLog_CV($"NG: PLC Connect Fail => {strEM}");
                     }
                 }
                 else
                 {
                     bConnectPLC = false;
+                    clsWriLog.Log.FunWriTraceLog_CV($"NG: Ping PLC IP失敗 => {sIP}");
                 }
             }
             catch (Exception ex)
             {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
                 var cmet = System.Reflection.MethodBase.GetCurrentMethod();
-               
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
             finally
             {
@@ -1096,7 +1162,7 @@ namespace HslCommunicationPLC.Siemens
             try
             {
                 short shortSetData = short.Parse(sSetData);
-                bool bRet = _plcHost.Write(sAddr,shortSetData);
+                bool bRet = _plcHost.Write(sAddr, shortSetData);
                 return bRet;
             }
             catch
@@ -1117,7 +1183,7 @@ namespace HslCommunicationPLC.Siemens
             {
                 ping = new Ping();
                 PingReply pingresult = ping.Send(strIP);
-                if(pingresult.Status.ToString() == "Success")
+                if (pingresult.Status.ToString() == "Success")
                 {
                     return true;
                 }
@@ -1139,14 +1205,21 @@ namespace HslCommunicationPLC.Siemens
         public bool GetPlcBit(short iData, int iBit)
         {
             bool bFlag = false;
-            bFlag = (iData & ((short)(Math.Pow(2, iBit)))) == 0 ? false : true;
+            bFlag = (iData & (short)Math.Pow(2, iBit)) == 0 ? false : true;
+            return bFlag;
+        }
+
+        public static bool GetPlcBitTesting(short iData, int iBit)//根據西門子PLC的特殊性質，拿取BIT值為此新FUNCTION
+        {
+            iBit = iData % 2 == 0 ? 15 - iBit : 7 - iBit;
+            bool bFlag = (iData & (short)Math.Pow(2, iBit)) == 0 ? false : true;
             return bFlag;
         }
 
         private string GetAscii_LowByte(int iData)
         {
-            int iTmp = int.Parse(Convert.ToString((iData % 256), 10));
-            if(Convert.ToChar(iTmp) == '\0' || Convert.ToByte(Convert.ToChar(iTmp)) == 3)
+            int iTmp = int.Parse(Convert.ToString(iData % 256, 10));
+            if (Convert.ToChar(iTmp) == '\0' || Convert.ToByte(Convert.ToChar(iTmp)) == 3)
                 return "";
             else
             {
@@ -1156,8 +1229,8 @@ namespace HslCommunicationPLC.Siemens
 
         private string GetAscii_HiByte(int iData)
         {
-            int iTmp = int.Parse(Convert.ToString((iData / 256), 10));
-            if(Convert.ToChar(iTmp) == '\0' || Convert.ToByte(Convert.ToChar(iTmp)) == 3)
+            int iTmp = int.Parse(Convert.ToString(iData / 256, 10));
+            if (Convert.ToChar(iTmp) == '\0' || Convert.ToByte(Convert.ToChar(iTmp)) == 3)
                 return "";
             else
             {

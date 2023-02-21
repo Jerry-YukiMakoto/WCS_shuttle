@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Linq;
 
 using Mirle.Logger;
@@ -37,6 +38,10 @@ namespace Mirle.IASC
         public event LayerChangeHandler OnLayerChange;
         public event ChangeLayerHandler ChangeLayer;
 
+        public static PSTransactionXClass S62E;
+
+        public static PSTransactionXClass S84E;
+
         public bool IsConnected => _psWrapperXClass.IsConnected();
 
         public ShuttleController(string ipAddress, int tcpPort)
@@ -51,12 +56,12 @@ namespace Mirle.IASC
             _psWrapperXClass.OnDisconnected += PSWrapperXClass_OnDisconnected;
             _psWrapperXClass.OnTransactionError += PSWrapperXClass_OnTransactionError;
 
-            //if(!Open())
+            //if (!Open())
             //{
-            //        //MessageBox.Show("SHC連線異常", "Communication System", MessageBoxButtons.OK);
-            //        //Environment.Exit(0);
-            //} 
-                
+            //    //MessageBox.Show("SHC連線異常", "Communication System", MessageBoxButtons.OK);
+            //    //Environment.Exit(0);
+            //}
+
         }
 
         private void PSWrapperXClass_OnTransactionError(string errorString, ref PSMessageXClass msg)
@@ -111,9 +116,12 @@ namespace Mirle.IASC
                         break;
 
                     case "P83":
-                        S84(transaction);
+                        P83(transaction);
                         break;
 
+                    case "S86":
+                        S86(transaction);
+                        break;
                     //case "P85":
                     //    S86(transaction);
                     //    break;
@@ -187,13 +195,13 @@ namespace Mirle.IASC
                         S74(transaction);
                         break;
 
-                    case "S86":
-                        S86(transaction);
-                        break;
+                    //case "S86":
+                    //    S86(transaction);
+                    //    break;
 
-                    case "P83":
-                        P83(transaction);
-                        break;
+                    //case "P83":
+                    //    P83(transaction);
+                    //    break;
 
 
 
@@ -251,6 +259,24 @@ namespace Mirle.IASC
                 Exception(ex);
             }
         }
+
+        public void P00()
+        {
+            try
+            {
+                PSTransactionXClass msg_send = new();
+                msg_send.PSPrimaryMessage.Type = "P";
+                msg_send.PSPrimaryMessage.Number = "00";
+                msg_send.PSPrimaryMessage.PSMessage = "";
+                _psWrapperXClass.PrimarySent(ref msg_send);
+                PrimaryMessageLog(msg_send);
+            }
+            catch (Exception ex)
+            {
+                Exception(ex);
+            }
+        }
+
         private void S16(PSTransactionXClass transaction)
         {
             try
@@ -458,22 +484,21 @@ namespace Mirle.IASC
                 Exception(ex);
             }
         }
-        private void S62(PSTransactionXClass transaction)
+        private void S62(PSTransactionXClass transaction)//帶修改成實際文件中的event，根據命令去做回傳
         {
             try
             {
-                transaction.PSSecondaryMessage.Type = "S";
-                transaction.PSSecondaryMessage.Number = "62";
-                transaction.PSSecondaryMessage.PSMessage = "0";  // 0: ok  1: NG
-                _psWrapperXClass.SecondarySent(ref transaction);
-                SecondaryMessageLog(transaction);
-
                 string commandId = transaction.PSPrimaryMessage.PSMessage.Substring(0, 4);
                 string vehicleId = transaction.PSPrimaryMessage.PSMessage.Substring(4, 4);
                 string commandStatus = transaction.PSPrimaryMessage.PSMessage.Substring(8, 6);
                 string resultCode = transaction.PSPrimaryMessage.PSMessage.Substring(14, 4);
+                S62E = transaction;
+
 
                 OnCommandStatusChange?.Invoke(this, new CommandStatusEventArgs(commandId, vehicleId, commandStatus, resultCode));
+
+                
+
             }
             catch (Exception ex)
             {
@@ -484,6 +509,9 @@ namespace Mirle.IASC
                 Exception(ex);
             }
         }
+
+
+
         private void S64(PSTransactionXClass transaction)
         {
             try
@@ -581,7 +609,7 @@ namespace Mirle.IASC
                 transaction.PSSecondaryMessage.PSMessage = "0";  // 0: ok  1: NG
                 _psWrapperXClass.SecondarySent(ref transaction);
                 SecondaryMessageLog(transaction);
-
+                //追加觸發event
                 string LifterId = transaction.PSPrimaryMessage.PSMessage.Substring(0, 2);
                 string Acknowledge = transaction.PSPrimaryMessage.PSMessage.Substring(2, 1);
             }
@@ -914,21 +942,16 @@ namespace Mirle.IASC
         {
             try
             {
-                transaction.PSSecondaryMessage.Type = "P";
-                transaction.PSSecondaryMessage.Number = "83";
-                transaction.PSSecondaryMessage.PSMessage = "0";  // 0: ok  1: NG
-                _psWrapperXClass.SecondarySent(ref transaction);
-                SecondaryMessageLog(transaction);
-
                 string LifterId = transaction.PSPrimaryMessage.PSMessage.Substring(0, 2);
                 string Destination_Layer = transaction.PSPrimaryMessage.PSMessage.Substring(2, 2);
+                S84E = transaction;
 
                 ChangeLayer?.Invoke(this, new ChangeLayerEventArgsLayer(LifterId,Destination_Layer));
             }
             catch (Exception ex)
             {
-                transaction.PSSecondaryMessage.Type = "P";
-                transaction.PSSecondaryMessage.Number = "83";
+                transaction.PSSecondaryMessage.Type = "S";
+                transaction.PSSecondaryMessage.Number = "84";
                 transaction.PSSecondaryMessage.PSMessage = "1";  // 0: ok  1: NG
                 _psWrapperXClass.SecondarySent(ref transaction);
                 Exception(ex);
@@ -942,7 +965,7 @@ namespace Mirle.IASC
                 PSTransactionXClass msg_send = new();
                 msg_send.PSPrimaryMessage.Type = "P";
                 msg_send.PSPrimaryMessage.Number = "85";
-                msg_send.PSPrimaryMessage.PSMessage = LifterID.PadLeft(2, '0') + ChanegeLayer_Status.PadLeft(3, '0')+ResultCode.PadLeft(4,'0');
+                msg_send.PSPrimaryMessage.PSMessage = LifterID.PadLeft(2, '0') + ChanegeLayer_Status.PadLeft(1, '0')+ResultCode.PadLeft(4,'0');
                 _psWrapperXClass.PrimarySent(ref msg_send);
                 PrimaryMessageLog(msg_send);
             }
@@ -956,15 +979,37 @@ namespace Mirle.IASC
         {
             try
             {
-                PSTransactionXClass msg_send = new();
-                msg_send.PSPrimaryMessage.Type = "S";
-                msg_send.PSPrimaryMessage.Number = "84";
-                msg_send.PSPrimaryMessage.PSMessage = Acknowledge.PadLeft(1, '0') + ReasonCode.PadLeft(4, '0');
-                _psWrapperXClass.PrimarySent(ref msg_send);
-                PrimaryMessageLog(msg_send);
+                S84E.PSSecondaryMessage.Type = "S";
+                S84E.PSSecondaryMessage.Number = "84";
+                S84E.PSSecondaryMessage.PSMessage = Acknowledge.PadLeft(1, '0') + ReasonCode.PadLeft(4, '0');  // 0: ok  1: NG
+                _psWrapperXClass.SecondarySent(ref S84E);
+                SecondaryMessageLog(S84E);
             }
             catch (Exception ex)
             {
+                S84E.PSSecondaryMessage.Type = "S";
+                S84E.PSSecondaryMessage.Number = "84";
+                S84E.PSSecondaryMessage.PSMessage = "1";  // 0: ok  1: NG
+                _psWrapperXClass.SecondarySent(ref S84E);
+                Exception(ex);
+            }
+        }
+        public void S62(string Acknowledge, string TaskNo,string commandstatus)
+        {
+            try
+            {
+                S62E.PSSecondaryMessage.Type = "S";
+                S62E.PSSecondaryMessage.Number = "62";
+                S62E.PSSecondaryMessage.PSMessage = Acknowledge.PadLeft(1, '0') + TaskNo.PadLeft(4, '0')+commandstatus.PadLeft(5,'0');
+                _psWrapperXClass.SecondarySent(ref S62E);
+                SecondaryMessageLog(S62E);
+            }
+            catch (Exception ex)
+            {
+                S62E.PSSecondaryMessage.Type = "S";
+                S62E.PSSecondaryMessage.Number = "62";
+                S62E.PSSecondaryMessage.PSMessage = "1";  // 0: ok  1: NG
+                _psWrapperXClass.SecondarySent(ref S62E);
                 Exception(ex);
             }
         }
