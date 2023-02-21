@@ -24,6 +24,10 @@
         /// <summary>
         /// 料盒於裝卸點，CV符合入庫狀態，呼叫SHC移動車子，SHC回報成功
         /// </summary>
+        public const string StoreInWriteCmdToCV = "21";
+        /// <summary>
+        /// 料盒於裝卸點，CV符合入庫狀態，呼叫SHC移動車子
+        /// </summary>
         public const string StoreInCallSHCMoveCar = "22";
         /// <summary>
         /// 收到SHC換Lifter到車層通知，寫入PLC觸發(SHC_CALL)
@@ -62,6 +66,10 @@
         /// 拿到撿料命令，SHC回報
         /// </summary>
         public const string PickUpStartSHCreport = "30A";
+        /// <summary>
+        /// SHC回報完成，寫入PLC
+        /// </summary>
+        public const string PickUpStartSHCreportcmplete_WritePLC = "31B";
         /// <summary>
         /// 收到SHC換Lifter到車輛層通知，寫入PLC觸發(SHC_CALL)
         /// </summary>

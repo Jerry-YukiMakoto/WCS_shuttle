@@ -148,10 +148,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.DB.Fun\Mirle.DB.Fun.csproj">
-      <Project>{c40166b0-0f5d-4535-94a7-699764a59a83}</Project>
-      <Name>Mirle.DB.Fun</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.DB.Object\Mirle.DB.Object.csproj">
       <Project>{25dda85b-35be-429d-81b4-025731c0e826}</Project>
       <Name>Mirle.DB.Object</Name>

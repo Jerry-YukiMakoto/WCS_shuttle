@@ -428,30 +428,6 @@ namespace Mirle.DB.Fun
             return db.ExecuteSQL2(sql);
         }
 
-        public ExecuteSQLResult UpdateCmdMstSHCmovelevel(string cmdSno, string CarmoverComplete, SqlServer db)
-        {
-            string sql = "UPDATE CMD_MST ";
-            sql += $"SET Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}', ";
-            sql += $"CarmoveComplete='{CarmoverComplete}', ";
-            sql += $"Remark='', ";
-            sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
-            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
-            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}' ";
-            return db.ExecuteSQL2(sql);
-        }
-
-        public ExecuteSQLResult UpdateCmdMstTransferringstart(string cmdSno, string trace, SqlServer db)
-        {
-            string sql = "UPDATE CMD_MST ";
-            sql += $"SET Cmd_Sts='{clsConstValue.CmdSts.strCmd_Running}', ";
-            sql += $"TRACE='{trace}', ";
-            sql += $"Remark='', ";
-            sql += $"Exp_Date='{DateTime.Now:yyyy-MM-dd HH:mm:ss}' ";
-            sql += $"WHERE Cmd_Sno='{cmdSno}' ";
-            sql += $"AND Cmd_Sts='{clsConstValue.CmdSts.strCmd_Initial}' ";
-            return db.ExecuteSQL2(sql);
-        }
-
         public ExecuteSQLResult UpdateCmdMstTransferring10sec(string Sno,string trace, SqlServer db)
         {
             DateTime dt= DateTime.Now.AddSeconds(-10);
