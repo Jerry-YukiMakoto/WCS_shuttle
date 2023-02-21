@@ -57,12 +57,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirle.Def.T26YGAP0\Mirle.Def.T26YGAP0.csproj">
-      <Project>{e6f732fe-3905-49a7-b2cf-b4fa79c2dc5d}</Project>
-      <Name>Mirle.Def.T26YGAP0</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mirle.Def\Mirle.Def.csproj">
-      <Project>{906da4ee-6b8d-40c7-bd49-a410feb1d2c8}</Project>
+      <Project>{906DA4EE-6B8D-40C7-BD49-A410FEB1D2C8}</Project>
       <Name>Mirle.Def</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.Structure\Mirle.Structure.csproj">

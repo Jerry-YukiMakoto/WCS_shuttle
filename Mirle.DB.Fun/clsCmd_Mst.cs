@@ -326,6 +326,25 @@ namespace Mirle.DB.Fun
             return db.ExecuteSQL2(sql);
         }
 
+        public ExecuteSQLResult UpdateCmdFortesting(SqlServer db)
+        {
+            string sql = "UPDATE Cmd_Mst ";
+            sql += $"SET TRACE='0', ";
+            sql += $"Cmd_Sts='0', ";
+            sql += $"CarmoveComplete='0', ";
+            sql += $"TaskNo='0' ";
+            sql += $"WHERE Cmd_Sts='9' ";
+            return db.ExecuteSQL2(sql);
+        }
+
+        public ExecuteSQLResult UpdateCmdLOCFortesting(SqlServer db)
+        {
+            string sql = "UPDATE Loc_Mst ";
+            sql += $"SET Loc_STS='I' ";
+            sql += $"WHERE Loc='004002001' ";
+            return db.ExecuteSQL2(sql);
+        }
+
         public ExecuteSQLResult UpdateCmdMststsfor_DoubleStorage(string cmdSno,string newLoc,string trace,string TaskNo,int cmdmode, SqlServer db)
         {
             

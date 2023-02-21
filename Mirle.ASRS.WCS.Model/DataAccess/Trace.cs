@@ -63,6 +63,10 @@
         /// </summary>
         public const string PickUpStartSHCreport = "30A";
         /// <summary>
+        /// SHC回報完成，寫入PLC
+        /// </summary>
+        public const string PickUpStartSHCreportcmplete_WritePLC = "31B";
+        /// <summary>
         /// 收到SHC換Lifter到車輛層通知，寫入PLC觸發(SHC_CALL)
         /// </summary>
         public const string PickUpSHCcallWCSChangeLifter = "302";

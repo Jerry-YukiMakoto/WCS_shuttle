@@ -7,7 +7,6 @@ using WCS_API_Client;
 using WCS_API_Client.ReportInfo;
 using Mirle.Def;
 using Mirle.Structure;
-using Mirle.Def.T26YGAP0;
 
 namespace Mirle.CENS.T26YGAP0
 {
