@@ -69,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mirle.IASC", "Mirle.IASC\Mi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HslCommunicationPLC", "HslCommunicationPLC\HslCommunicationPLC.csproj", "{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IASCTest", "IASCTest\IASCTest.csproj", "{921DCDB4-C974-42AA-8652-E659F87F2EFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLCConfig", "PLC_ConfigSetting\PLCConfig.csproj", "{1D3D1247-C52F-45B9-846B-8B869BDCE7D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -157,10 +157,10 @@ Global
 		{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30F65FAA-8471-4EC4-8EA3-5A4E7B78AAE2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{921DCDB4-C974-42AA-8652-E659F87F2EFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{921DCDB4-C974-42AA-8652-E659F87F2EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{921DCDB4-C974-42AA-8652-E659F87F2EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{921DCDB4-C974-42AA-8652-E659F87F2EFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D3D1247-C52F-45B9-846B-8B869BDCE7D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3D1247-C52F-45B9-846B-8B869BDCE7D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3D1247-C52F-45B9-846B-8B869BDCE7D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D3D1247-C52F-45B9-846B-8B869BDCE7D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mirle.IASC;
 using Mirle.BarcodeReader;
+using PLCConfigSetting.PLCsetting;
 
 namespace Mirle.DB.Object.Service
 {
@@ -69,7 +70,7 @@ namespace Mirle.DB.Object.Service
                     {
                         stn = ASRS_Setting.A4;
                     }
-                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreInFA1andA3CallLifterAndSHCheckcommand(Plc1, stn, bufferIndex, e);
+                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreIn_OUT_A1andA3CallLifterAndSHCheckcommand(Plc1, stn, bufferIndex, e);
                 }
             }
             catch (Exception ex)
@@ -80,7 +81,22 @@ namespace Mirle.DB.Object.Service
             }
         }
 
+        public static void StoreIn_CALL_CHangeCommandStatus(clsBufferData Plc1, CommandStatusEventArgs e)//SHCcall命令狀態
+        {
+            try
+            {
 
+                clsDB_Proc.GetDB_Object().GetProcess().FunCommandChangeStatus(Plc1, e);
+                    
+                
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+            }
+        }
 
         public static void StoreIn_CarInLifter_WriteCmdInLifter(clsBufferData Plc1)//對lifter寫入命令
         {
@@ -100,15 +116,31 @@ namespace Mirle.DB.Object.Service
             }
         }
 
+        public static void Funtriggerlevel(clsBufferData Plc1)//對lifter寫入命令
+        {
+            try
+            {
+                    clsDB_Proc.GetDB_Object().GetProcess().FunWriPlcCompletefloor_CMD(Plc1);
+                
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+            }
+        }
+
+
         public static void FunSHC_ChangeLayerReq(clsBufferData Plc1, ChangeLayerEventArgsLayer e )//對lifter寫入命令
         {
             try
             {
                 if(clsDB_Proc.GetDB_Object().GetProcess().FunSHC_ChangeLayerReq(Plc1,e)==false)
                 {
-                   var shuttle = new clsStoreIn();
-                   shuttle._shuttleController?.S84("1", "0001");//Result_Code:0000=Succeess
-                   shuttle._shuttleController?.P85("1", "F", "0001");//Result_Code:0000=Succeess
+                   var shuttle=clsDB_Proc.GetDB_Object().GetProcess().returnshuttlecontroller();
+                   shuttle.S84("1", "0001");//Result_Code:0000=Succeess
+                   shuttle.P85("1", "F", "0001");//Result_Code:0000=Succeess
                 }
 
             }

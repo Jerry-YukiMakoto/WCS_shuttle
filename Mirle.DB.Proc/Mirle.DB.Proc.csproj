@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net472\Mirle.dll</HintPath>
+      <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
     </Reference>
     <Reference Include="Mirle.WriLog, Version=1.0.2101.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -78,7 +78,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLC.csproj">
       <Project>{30f65faa-8471-4ec4-8ea3-5a4e7b78aae2}</Project>
-      <Name>HslCommunicationPLCTool</Name>
+      <Name>HslCommunicationPLC</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.WCS.Controller\Mirle.ASRS.WCS.Controller.csproj">
       <Project>{0bbe099e-8f0a-4712-a570-e90dd6ec7267}</Project>
@@ -123,6 +123,10 @@
     <ProjectReference Include="..\Mirle.Structure\Mirle.Structure.csproj">
       <Project>{0a0d222e-0c76-4838-a8b1-6ca6f26cb225}</Project>
       <Name>Mirle.Structure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PLC_ConfigSetting\PLCConfig.csproj">
+      <Project>{1D3D1247-C52F-45B9-846B-8B869BDCE7D3}</Project>
+      <Name>PLCConfig</Name>
     </ProjectReference>
     <ProjectReference Include="..\WCS_API_Client\WCS_API_Client.csproj">
       <Project>{c09122bb-250e-4fe2-9880-1620a2b6cea4}</Project>

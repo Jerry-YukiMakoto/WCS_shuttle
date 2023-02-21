@@ -26,10 +26,11 @@ namespace Mirle.Def.T26YGAP0
         [Option(Alias = "CV PLC")]
         CV_PlcConfig CV { get; }
 
+        [Option(Alias = "SuttleStnNo")]
+        StnNoConfig StnNo_Suttle { get; }
+
         [Option(Alias = "StnNo")]
         StnNoConfig StnNo { get; }
-
-
     }
 
     public interface DatabaseConfig

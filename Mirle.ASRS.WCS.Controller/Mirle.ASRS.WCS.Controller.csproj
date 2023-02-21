@@ -43,7 +43,8 @@
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Mirle, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mirle.2.0.0\lib\net472\Mirle.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.13.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -115,7 +116,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HslCommunicationPLC\HslCommunicationPLC.csproj">
       <Project>{30f65faa-8471-4ec4-8ea3-5a4e7b78aae2}</Project>
-      <Name>HslCommunicationPLCTool</Name>
+      <Name>HslCommunicationPLC</Name>
     </ProjectReference>
     <ProjectReference Include="..\Mirle.ASRS.WCS.Model\Mirle.ASRS.WCS.Model.csproj">
       <Project>{95116d24-80f9-4bde-94ca-7f3567c76cdf}</Project>
@@ -132,6 +133,10 @@
     <ProjectReference Include="..\Mirle.MPLC.MCProtocol\Mirle.MPLC.MCProtocol.csproj">
       <Project>{10da0e99-fd46-4c3f-a87a-c5b66fcb4a87}</Project>
       <Name>Mirle.MPLC.MCProtocol</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PLC_ConfigSetting\PLCConfig.csproj">
+      <Project>{1D3D1247-C52F-45B9-846B-8B869BDCE7D3}</Project>
+      <Name>PLCConfig</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

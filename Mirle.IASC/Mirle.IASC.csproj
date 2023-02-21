@@ -15,12 +15,11 @@
 		<OutputType>Library</OutputType>
     <LangVersion>preview</LangVersion>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="Mirle" Version="2.0.0" />
-	</ItemGroup>
 	
 	<ItemGroup>
+		<Reference Include="Mirle">
+		  <HintPath>..\packages\Mirle.2.1.6\lib\net472\Mirle.dll</HintPath>
+		</Reference>
 		<Reference Include="PSDriver">
 			<HintPath>Library\PSDriver.dll</HintPath>
 		</Reference>

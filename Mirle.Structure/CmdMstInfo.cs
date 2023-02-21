@@ -9,12 +9,15 @@ namespace Mirle.Structure
     public class CmdMstInfo
     {
         public string CmdSno { get; set; }
+        public string TaskNo { get; set; }
         public string CmdSts { get; set; }
         public string Prt { get; set; }
         public string StnNo { get; set; }
         public string CmdMode { get; set; }
         public string IoType { get; set; }
         public string Loc { get; set; }
+
+        public string Loc_ID { get; set; }
         public string NewLoc { get; set; }
         /// <summary>
         /// 命令產生時間

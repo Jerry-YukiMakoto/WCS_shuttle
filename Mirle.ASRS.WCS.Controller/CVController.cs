@@ -7,6 +7,7 @@ using Mirle.MPLC.DataBlocks;
 using Mirle.MPLC.DataBlocks.DeviceRange;
 using Mirle.MPLC.MCProtocol;
 using Mirle.MPLC.SharedMemory;
+using PLCConfigSetting.PLCsetting;
 
 namespace Mirle.ASRS.WCS.Controller
 {

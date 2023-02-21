@@ -10,6 +10,8 @@ namespace Mirle.DB.Proc
     {
         public static clsLog Log = new clsLog("DB_Proc", true);
 
+        
+
         public static void StoreInLogTrace(int BufferIndex, string BufferName, string Msg)
         {
             Log.FunWriTraceLog_CV($"StoreIn => {BufferIndex} | {BufferName}: {Msg}");
@@ -44,6 +46,8 @@ namespace Mirle.DB.Proc
         {
             Log.FunWriTraceLog_CV($"EmptyStoreOut => {BufferIndex} | {BufferName}: {Msg}");
         }
+
+        
 
     }
 }

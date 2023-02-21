@@ -31,9 +31,9 @@ namespace Mirle.DB.Fun
 
                 intGetCnt = intGetCnt + 1;
 
-                strSql = "SELECT C.SNOTYP,C.TrnDate,C.SNO,M.MONTH_FLAG,M.INIT_SNO,M.MAX_SNO,M.SNO_LEN";
-                strSql += " FROM SNO_CTL C LEFT JOIN SNO_MAX M ON C.SNOTYP=M.SNO_TYPE";
-                strSql += " WHERE C.SNOTYP='" + objType.ToString() + "'";
+                strSql = "SELECT C.SNO_TYP,C.Trn_Date,C.SNO,M.MONTH_FLAG,M.INIT_SNO,M.MAX_SNO,M.SNO_LEN";
+                strSql += " FROM SNO_CTL C LEFT JOIN SNO_MAX M ON C.SNO_TYP=M.SNO_TYPE";
+                strSql += " WHERE C.SNO_TYP='" + objType.ToString() + "'";
 
                 intRtn = db.GetDataTable(strSql, ref dtSno, ref strEM);
                 if (intRtn == DBResult.Success)
@@ -62,7 +62,7 @@ namespace Mirle.DB.Fun
                     //{
                     //    strSql += ",TRN_MONTH = '" + strGetYearMonth + "'";
                     //}
-                    strSql += " WHERE SNOTYP = '" + objType.ToString() + "'";
+                    strSql += " WHERE SNO_TYP = '" + objType.ToString() + "'";
                     strSql += " AND SNO = " + lngSeq2;
                 }
                 else if (intRtn == DBResult.NoDataSelect)
@@ -76,7 +76,7 @@ namespace Mirle.DB.Fun
                     int iInitial = int.Parse(dtSno.Rows[0]["Init_Sno"].ToString());
                     #endregion v1.3 找尋序號長度 by Ian
 
-                    strSql = "INSERT INTO SNO_CTL (SNOTYP,TrnDate,SNO) VALUES ('" + objType.ToString() + "','" +
+                    strSql = "INSERT INTO SNO_CTL (SNO_TYP,Trn_Date,SNO) VALUES ('" + objType.ToString() + "','" +
                         DateTime.Now.ToString("yyyyMMdd") + "'," + iInitial.ToString() + ")";
 
                     lngSeq1 = iInitial;

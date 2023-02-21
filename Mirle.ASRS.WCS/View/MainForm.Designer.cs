@@ -41,6 +41,7 @@
             this.spcView = new System.Windows.Forms.SplitContainer();
             this.spcMainView = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanelSideBtn = new System.Windows.Forms.TableLayoutPanel();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnCmdMaintain = new System.Windows.Forms.Button();
             this.GridCmd = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -218,21 +219,36 @@
             this.tableLayoutPanelSideBtn.BackColor = System.Drawing.SystemColors.Control;
             this.tableLayoutPanelSideBtn.ColumnCount = 1;
             this.tableLayoutPanelSideBtn.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelSideBtn.Controls.Add(this.button1, 0, 3);
             this.tableLayoutPanelSideBtn.Controls.Add(this.btnCmdMaintain, 0, 1);
             this.tableLayoutPanelSideBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelSideBtn.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanelSideBtn.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.tableLayoutPanelSideBtn.Name = "tableLayoutPanelSideBtn";
-            this.tableLayoutPanelSideBtn.RowCount = 7;
+            this.tableLayoutPanelSideBtn.RowCount = 4;
             this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
-            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28572F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanelSideBtn.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanelSideBtn.Size = new System.Drawing.Size(187, 226);
             this.tableLayoutPanelSideBtn.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.AutoSize = true;
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button1.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(3, 154);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(181, 68);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "設備命令查詢";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.btnTaskMaintain_Click);
             // 
             // btnCmdMaintain
             // 
@@ -242,7 +258,7 @@
             this.btnCmdMaintain.Location = new System.Drawing.Point(3, 4);
             this.btnCmdMaintain.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnCmdMaintain.Name = "btnCmdMaintain";
-            this.btnCmdMaintain.Size = new System.Drawing.Size(181, 29);
+            this.btnCmdMaintain.Size = new System.Drawing.Size(181, 67);
             this.btnCmdMaintain.TabIndex = 4;
             this.btnCmdMaintain.Text = "系統命令查詢";
             this.btnCmdMaintain.UseVisualStyleBackColor = true;
@@ -317,6 +333,7 @@
         private System.Windows.Forms.Button btnCmdMaintain;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.DataGridView GridCmd;
+        private System.Windows.Forms.Button button1;
     }
 }
 

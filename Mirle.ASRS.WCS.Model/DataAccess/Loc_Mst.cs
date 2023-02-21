@@ -17,6 +17,8 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string LVl_Z { get; private set; }
         public string Old_Sts { get; private set; }
         public string EQU_ROWNO { get; private set; }
+
+        public string Loc_Txno { get; private set; }
         public string EQU_NO { get; private set; }
         public string PLT_QTY { get; private set; }
         public string ALO_QTY { get; private set; }
@@ -35,12 +37,22 @@ namespace Mirle.ASRS.WCS.Model.DataAccess
         public string QC_CODE { get; private set; }
         public string ITEM_TYPE { get; private set; }
 
+        public string Loc_ID { get; private set; }
+
 
         protected override ValueObject ConvaertDataRow(DataRow row)
         {
             if (row.Table.Columns.Contains("Loc"))
             {
                 Loc = Convert.ToString(row["Loc"]);
+            }
+            if (row.Table.Columns.Contains("Loc_Txno"))
+            {
+                Loc_Txno = Convert.ToString(row["Loc_Txno"]);
+            }
+            if (row.Table.Columns.Contains("Loc_ID"))
+            {
+                Loc_ID = Convert.ToString(row["Loc_ID"]);
             }
             if (row.Table.Columns.Contains("Loc_DD"))
             {

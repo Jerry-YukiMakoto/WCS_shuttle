@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HslCommunicationPLC.Siemens;
 using Mirle.ASRS.WCS.Model.PLCDefinitions;
+using PLCConfigSetting.PLCsetting;
 
 namespace Mirle.DB.Object.Service
 {
@@ -14,12 +15,18 @@ namespace Mirle.DB.Object.Service
         {
             try
             {
-                int bufferIndex = 2;
+                //for (int i = 0; i <= 1; i++)
+                //{
+                //    if (i == 0)
+                //    {
 
-                for (bufferIndex = 2; bufferIndex <= 4; bufferIndex += 2)
-                {
-                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreOutWriPlc1FA2andA4(Plc1, bufferIndex);
-                }
+                //    }
+                //    else
+                //    {
+
+                //    }
+                    clsDB_Proc.GetDB_Object().GetProcess().FunStoreOutWriPlc1FA2andA4(Plc1);
+                //}
             }
             catch (Exception ex)
             {
@@ -28,11 +35,28 @@ namespace Mirle.DB.Object.Service
                 clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
             }
         }
-        public static void StoreOut_WriteCVStartTriggerShuttle(clsBufferData Plc1)
+        public static void FunPickUpCmdtoSHC(clsBufferData Plc1)
         {
             try
             {
-                //clsDB_Proc.GetDB_Object().GetProcess().FunPickUpShuttleChangeLayer(Plc1);
+
+                clsDB_Proc.GetDB_Object().GetProcess().FunStoreOutStart_GiveSHCCommand(Plc1);
+
+            }
+            catch (Exception ex)
+            {
+                int errorLine = new System.Diagnostics.StackTrace(ex, true).GetFrame(0).GetFileLineNumber();
+                var cmet = System.Reflection.MethodBase.GetCurrentMethod();
+                clsWriLog.Log.subWriteExLog(cmet.DeclaringType.FullName + "." + cmet.Name, errorLine.ToString() + ":" + ex.Message);
+            }
+        }
+
+        public static void FunDoubletoSHC(clsBufferData Plc1)
+        {
+            try
+            {
+
+                clsDB_Proc.GetDB_Object().GetProcess().FunDoubleStorage_GiveSHCCommand(Plc1);
 
             }
             catch (Exception ex)
